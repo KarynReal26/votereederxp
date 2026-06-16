@@ -8,337 +8,236 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-
 /* ── NOT LOGGED IN ── */
-.not-logged-in {
-  min-height:80vh; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center; padding:2rem;
-}
+.not-logged-in { min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem; }
 
-/* ── DASHBOARD HERO ── */
+/* ── 4-PANEL STICKY HERO ── */
 .dashboard-hero {
-  position:sticky;
-  top:0;
-  z-index:100;
-  overflow:hidden;
+  position:sticky; top:0; z-index:100;
   background:linear-gradient(135deg,rgba(10,0,40,0.98),rgba(30,0,60,0.98));
-  border-bottom:1px solid var(--border-glow);
-  padding:1rem 1.5rem;
+  border-bottom:2px solid var(--border-glow);
+  padding:.75rem 1.5rem;
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:1rem;
-  align-items:stretch;
   backdrop-filter:blur(20px);
 }
 @media(max-width:1100px){ .dashboard-hero { grid-template-columns:repeat(2,1fr); position:relative; } }
 @media(max-width:600px){ .dashboard-hero { grid-template-columns:1fr; position:relative; } }
 
-/* Equal panel base style */
 .hero-panel {
   background:rgba(255,255,255,0.04);
   border:1px solid var(--border-glow);
   border-radius:12px;
-  padding:.85rem 1rem;
-  display:flex;
-  flex-direction:column;
-  min-height:160px;
+  padding:1rem 1.25rem;
+  display:flex; flex-direction:column;
+  min-height:200px;
 }
 
-/* CIVIC CHAMPION CENTER PANEL */
-.hero-civic-champ {
-  background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(191,0,255,0.08));
-  border: 1px solid rgba(255,215,0,0.3);
-  border-radius: 16px;
-  padding: 1.25rem;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-.civic-champ-crown { font-size: 2.5rem; margin-bottom: .25rem; display: block; }
-.civic-champ-title { font-family: var(--font-display); font-size: .65rem; color: var(--neon-gold); letter-spacing: .15em; text-transform: uppercase; margin-bottom: .5rem; }
-.civic-champ-name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 900; color: var(--text-primary); margin-bottom: .2rem; }
-.civic-champ-xp { font-family: var(--font-ui); font-size: .8rem; color: var(--neon-gold); margin-bottom: 1rem; }
-
-/* GUILD STATUS IN HERO */
-.hero-guild-status {
-  margin-top: .75rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border-glow);
-  border-radius: 14px;
-  padding: 1rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-}
-.hero-guild-emblem { font-size: 2.5rem; text-align: center; }
-.hero-guild-info { flex: 1; text-align: center; }
-.hero-guild-name { font-family: var(--font-display); font-size: 1.1rem; color: var(--neon-blue); font-weight: 900; letter-spacing: .05em; }
-.hero-guild-sub { font-family: var(--font-ui); font-size: .75rem; color: var(--text-dim); margin-top: .2rem; }
-.hero-guild-join { display: block; text-align: center; font-family: var(--font-display); font-size: .7rem; color: var(--neon-gold); text-decoration: none; border: 1px solid rgba(255,215,0,0.4); border-radius: 8px; padding: .5rem 1rem; margin-top: .5rem; transition: all .2s; letter-spacing: .08em; }
-.hero-guild-join:hover { background: rgba(255,215,0,0.1); }
-
-.hero-left { position:relative; z-index:2; }
-.hero-tag { font-family:var(--font-display); font-size:.75rem; color:var(--neon-pink); letter-spacing:.2em; text-transform:uppercase; margin-bottom:.5rem; }
-.hero-username { font-family:var(--font-display); font-size:clamp(1.8rem,4vw,3rem); font-weight:900; background:var(--gradient-neon); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:.25rem; }
-.hero-rank { font-family:var(--font-ui); font-size:1.1rem; color:var(--neon-gold); margin-bottom:1.25rem; }
+/* PANEL 1 — Personal Stats */
+.hero-tag { font-family:var(--font-display);font-size:.6rem;color:var(--neon-pink);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem; }
+.hero-username { font-family:var(--font-display);font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:900;background:var(--gradient-neon);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.2rem; }
+.hero-rank-row { display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem; }
+.hero-rank { font-family:var(--font-ui);font-size:.9rem;color:var(--neon-gold); }
+.hero-xp-inline { font-family:var(--font-display);font-size:.9rem;color:var(--neon-blue);font-weight:900; }
 
 /* XP BAR */
-.mega-xp-wrap { max-width:600px; margin-bottom:1rem; }
-.mega-xp-label { font-family:var(--font-display); font-size:.8rem; color:var(--text-dim); letter-spacing:.1em; margin-bottom:.5rem; display:flex; justify-content:space-between; }
-.mega-xp-track { height:24px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid var(--border-glow); overflow:hidden; position:relative; }
-.mega-xp-fill { height:100%; border-radius:12px; background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)); transition:width 1.2s cubic-bezier(.4,0,.2,1); position:relative; }
-.mega-xp-fill::after { content:''; position:absolute; right:-2px; top:50%; transform:translateY(-50%); width:20px; height:20px; background:#fff; border-radius:50%; box-shadow:0 0 12px var(--neon-blue); }
-.milestones { display:flex; justify-content:space-between; max-width:600px; margin-top:.4rem; }
-.milestone { font-family:var(--font-display); font-size:.55rem; color:var(--text-dim); letter-spacing:.05em; text-align:center; }
+.mega-xp-wrap { margin-bottom:.4rem; }
+.mega-xp-label { font-family:var(--font-display);font-size:.65rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem;display:flex;justify-content:space-between; }
+.mega-xp-track { height:20px;background:rgba(255,255,255,0.06);border-radius:10px;border:1px solid var(--border-glow);overflow:hidden;position:relative; }
+.mega-xp-fill { height:100%;border-radius:10px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative; }
+.mega-xp-fill::after { content:'';position:absolute;right:-2px;top:50%;transform:translateY(-50%);width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 0 10px var(--neon-blue); }
+.milestones { display:flex;justify-content:space-between;margin-top:.2rem; }
+.milestone { font-family:var(--font-display);font-size:.48rem;color:var(--text-dim);letter-spacing:.04em;text-align:center; }
 .milestone.reached { color:var(--neon-gold); }
 
-/* STATS ROW */
-.stats-row { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem; }
-.stat-chip { background:rgba(0,240,255,0.08); border:1px solid var(--border-glow); border-radius:12px; padding:.4rem .75rem; min-width:70px; text-align:center; }
-.stat-chip-val { font-family:var(--font-display); font-size:1.1rem; font-weight:900; color:var(--neon-gold); }
-.stat-chip-lbl { font-family:var(--font-ui); font-size:.6rem; color:var(--text-dim); letter-spacing:.08em; text-transform:uppercase; }
+/* STAT CHIPS */
+.stats-row { display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto; }
+.stat-chip { background:rgba(0,240,255,0.08);border:1px solid var(--border-glow);border-radius:10px;padding:.3rem .5rem;min-width:45px;text-align:center; }
+.stat-chip-val { font-family:var(--font-display);font-size:1.1rem;font-weight:900;color:var(--neon-gold); }
+.stat-chip-lbl { font-family:var(--font-ui);font-size:.55rem;color:var(--text-dim);letter-spacing:.06em;text-transform:uppercase; }
 
-/* MINI LEADERBOARD in hero */
-.hero-mini-lb {
-  background:rgba(0,0,0,0.3);
-  border:1px solid var(--border-glow);
-  border-radius:14px;
-  padding:1rem;
-  z-index:2;
-  position:relative;
-}
-.hero-mini-lb-title {
-  font-family:var(--font-display);
-  font-size:.7rem;
-  color:var(--neon-blue);
-  letter-spacing:.15em;
-  margin-bottom:.75rem;
-  text-transform:uppercase;
-}
-.mini-lb-row {
-  display:flex;
-  align-items:center;
-  gap:.5rem;
-  padding:.35rem .5rem;
-  border-radius:6px;
-  margin-bottom:.25rem;
-}
-.mini-lb-row.you { background:rgba(255,0,170,0.1); border:1px solid rgba(255,0,170,0.3); }
-.mini-lb-num { font-family:var(--font-display); font-size:.75rem; font-weight:900; width:20px; text-align:center; }
+/* PANEL 2 — Guild */
+.hero-guild-panel { text-align:center;justify-content:center;align-items:center;gap:.4rem; }
+.guild-emblem-hero { font-size:2.2rem;margin-bottom:.2rem; }
+.guild-name-hero { font-family:var(--font-display);font-size:1rem;font-weight:900;color:var(--neon-blue); }
+.guild-sub-hero { font-family:var(--font-ui);font-size:.7rem;color:var(--text-dim); }
+.guild-xp-hero { font-family:var(--font-display);font-size:.75rem;color:var(--neon-gold); }
+.guild-action-btn { margin-top:auto;font-family:var(--font-display);font-size:.65rem;color:var(--neon-gold);border:1px solid rgba(255,215,0,0.4);border-radius:6px;padding:.3rem .75rem;background:none;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-block; }
+.guild-action-btn:hover { background:rgba(255,215,0,0.1); }
+
+/* PANEL 3 — Civic Champion */
+.champ-panel { text-align:center;justify-content:center;align-items:center;gap:.3rem;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(191,0,255,0.05));border-color:rgba(255,215,0,0.3) !important; }
+.champ-trophy { font-size:2rem; }
+.champ-label { font-family:var(--font-display);font-size:.55rem;color:var(--neon-gold);letter-spacing:.15em;text-transform:uppercase; }
+.champ-name { font-family:var(--font-display);font-size:1rem;font-weight:900;color:var(--text-primary); }
+.champ-xp { font-family:var(--font-display);font-size:.72rem;color:var(--neon-gold); }
+.champ-prizes { font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim);line-height:1.7;margin-top:auto; }
+
+/* PANEL 4 — Top 5 Leaderboard */
+.mini-lb-panel { background:rgba(0,240,255,0.04) !important;border-color:rgba(0,240,255,0.2) !important; }
+.mini-lb-title { font-family:var(--font-display);font-size:.62rem;color:var(--neon-blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem; }
+.mini-lb-row { display:flex;align-items:center;gap:.5rem;padding:.3rem .4rem;border-radius:6px;margin-bottom:.2rem; }
+.mini-lb-row.you { background:rgba(255,0,170,0.1);border:1px solid rgba(255,0,170,0.3); }
+.mini-lb-num { font-family:var(--font-display);font-size:.8rem;font-weight:900;width:22px;text-align:center; }
 .mini-lb-num.gold { color:var(--neon-gold); }
 .mini-lb-num.silver { color:#aaaacc; }
 .mini-lb-num.bronze { color:#cd7f32; }
-.mini-lb-name { font-family:var(--font-ui); font-size:.78rem; color:var(--text-primary); flex:1; }
-.mini-lb-xp { font-family:var(--font-display); font-size:.68rem; color:var(--neon-gold); }
+.mini-lb-name { font-family:var(--font-ui);font-size:.82rem;color:var(--text-primary);flex:1; }
+.mini-lb-xp { font-family:var(--font-display);font-size:.72rem;color:var(--neon-gold); }
+
+/* ── FULL-WIDTH XP PROGRESS BAR (below hero) ── */
+.full-xp-bar-section {
+  background:linear-gradient(135deg,rgba(0,240,255,0.04),rgba(191,0,255,0.04));
+  border-bottom:1px solid var(--border-glow);
+  padding:.75rem 2rem;
+}
+.full-xp-track { height:24px;background:rgba(255,255,255,0.06);border-radius:12px;border:1px solid var(--border-glow);overflow:hidden;position:relative;margin-bottom:.3rem; }
+.full-xp-fill { height:100%;border-radius:12px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+.full-xp-milestones { display:flex;justify-content:space-between;max-width:100%; }
+.full-milestone { font-family:var(--font-display);font-size:.58rem;color:var(--text-dim);letter-spacing:.05em;text-align:center; }
+.full-milestone.reached { color:var(--neon-gold); }
 
 /* ── DASHBOARD LAYOUT ── */
-.dashboard-content { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; max-width:1280px; margin:0 auto; padding:1.5rem 2rem 3rem; }
+.dashboard-content { display:grid;grid-template-columns:1fr 320px;gap:1.5rem;max-width:1280px;margin:0 auto;padding:1.5rem 2rem 3rem; }
 .panel-full { grid-column:1/-1; }
-.panel { background:var(--bg-card); border:1px solid var(--border-glow); border-radius:16px; padding:1.25rem; }
-.panel-title { font-family:var(--font-display); font-size:.8rem; color:var(--neon-blue); letter-spacing:.15em; text-transform:uppercase; margin-bottom:1rem; padding-bottom:.6rem; border-bottom:1px solid var(--border-glow); display:flex; align-items:center; gap:.5rem; }
+.panel { background:var(--bg-card);border:1px solid var(--border-glow);border-radius:16px;padding:1.25rem; }
+.panel-title { font-family:var(--font-display);font-size:.8rem;color:var(--neon-blue);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border-glow);display:flex;align-items:center;gap:.5rem; }
+
+/* BADGES — full width, slightly bigger */
+.badge-grid-dash { display:grid;grid-template-columns:repeat(12,1fr);gap:.5rem; }
+@media(max-width:900px){ .badge-grid-dash { grid-template-columns:repeat(6,1fr); } }
+@media(max-width:480px){ .badge-grid-dash { grid-template-columns:repeat(4,1fr); } }
+.badge-item-dash { background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:10px;padding:.65rem .4rem;text-align:center;transition:all .3s; }
+.badge-item-dash.earned { border-color:var(--neon-gold);background:rgba(255,215,0,0.08);box-shadow:0 0 10px rgba(255,215,0,0.15); }
+.badge-item-dash.locked { opacity:.35;filter:grayscale(1); }
+.badge-icon-dash { font-size:1.6rem;display:block;margin-bottom:.25rem; }
+.badge-name-dash { font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);letter-spacing:.04em;line-height:1.3; }
+.badge-item-dash.earned .badge-name-dash { color:var(--neon-gold); }
 
 /* RANK PATH */
-.rank-path { display:flex; flex-direction:column; gap:.6rem; }
-.rank-row { display:flex; align-items:center; gap:.75rem; padding:.6rem .75rem; border-radius:10px; border:1px solid transparent; transition:all .3s; }
-.rank-row.current { border-color:var(--neon-pink); background:rgba(255,0,170,0.08); box-shadow:0 0 15px rgba(255,0,170,0.15); }
-.rank-row.achieved { border-color:rgba(0,255,136,0.3); background:rgba(0,255,136,0.05); }
+.rank-path { display:flex;flex-direction:column;gap:.6rem; }
+.rank-row { display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:10px;border:1px solid transparent;transition:all .3s; }
+.rank-row.current { border-color:var(--neon-pink);background:rgba(255,0,170,0.08);box-shadow:0 0 15px rgba(255,0,170,0.15); }
+.rank-row.achieved { border-color:rgba(0,255,136,0.3);background:rgba(0,255,136,0.05); }
 .rank-row.locked { opacity:.5; }
-.rank-dot { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:.65rem; font-weight:900; flex-shrink:0; }
-.rank-dot.current { background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple)); color:#fff; box-shadow:0 0 15px rgba(255,0,170,0.5); }
-.rank-dot.achieved { background:linear-gradient(135deg,#00ff88,#00f0ff); color:#000; }
-.rank-dot.locked { background:rgba(255,255,255,0.08); color:var(--text-dim); border:1px solid var(--border-glow); }
-.rank-name { font-family:var(--font-display); font-size:.85rem; font-weight:700; color:var(--text-primary); }
-.rank-req { font-family:var(--font-ui); font-size:.75rem; color:var(--text-dim); }
-.rank-perk { font-family:var(--font-ui); font-size:.7rem; color:var(--neon-gold); margin-left:auto; text-align:right; max-width:130px; }
+.rank-dot { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.65rem;font-weight:900;flex-shrink:0; }
+.rank-dot.current { background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));color:#fff;box-shadow:0 0 15px rgba(255,0,170,0.5); }
+.rank-dot.achieved { background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000; }
+.rank-dot.locked { background:rgba(255,255,255,0.08);color:var(--text-dim);border:1px solid var(--border-glow); }
+.rank-name { font-family:var(--font-display);font-size:.85rem;font-weight:700;color:var(--text-primary); }
+.rank-req { font-family:var(--font-ui);font-size:.75rem;color:var(--text-dim); }
+.rank-perk { font-family:var(--font-ui);font-size:.7rem;color:var(--neon-gold);margin-left:auto;text-align:right;max-width:130px; }
 
-/* ── MISSION BOARD ── */
-.mission-board { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; margin-bottom:1rem; }
+/* MISSION BOARD */
+.mission-board { display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem; }
 @media(max-width:900px){ .mission-board { grid-template-columns:repeat(2,1fr); } }
 @media(max-width:480px){ .mission-board { grid-template-columns:1fr; } }
-
-.board-col {
-  background:rgba(255,255,255,0.03);
-  border:1px solid var(--border-glow);
-  border-radius:14px;
-  padding:.75rem;
-  display:flex;
-  flex-direction:column;
-  gap:.5rem;
-}
-
-/* AVAILABLE column — fixed height with scroll */
-.col-todo {
-  max-height: 520px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-.col-todo::-webkit-scrollbar { width: 8px; }
-.col-todo::-webkit-scrollbar-track { background: rgba(0,240,255,0.05); border-radius: 4px; }
-.col-todo::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.4); border-radius: 4px; border: 1px solid rgba(0,240,255,0.2); }
-.col-todo::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.7); }
-
-/* IN PROGRESS column scroll */
-.col-progress {
-  max-height: 520px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-.col-progress::-webkit-scrollbar { width: 8px; }
-.col-progress::-webkit-scrollbar-track { background: rgba(255,215,0,0.05); border-radius: 4px; }
-.col-progress::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.4); border-radius: 4px; }
-.col-progress::-webkit-scrollbar-thumb:hover { background: rgba(255,215,0,0.7); }
-
-/* PENDING REVIEW column scroll */
-.col-review {
-  max-height: 520px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-.col-review::-webkit-scrollbar { width: 8px; }
-.col-review::-webkit-scrollbar-track { background: rgba(191,0,255,0.05); border-radius: 4px; }
-.col-review::-webkit-scrollbar-thumb { background: rgba(191,0,255,0.4); border-radius: 4px; }
-.col-review::-webkit-scrollbar-thumb:hover { background: rgba(191,0,255,0.7); }
-
-/* COMPLETE column scroll — newest on top */
-.col-done {
-  max-height: 520px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  display: flex;
-  flex-direction: column;
-}
-.col-done::-webkit-scrollbar { width: 8px; }
-.col-done::-webkit-scrollbar-track { background: rgba(0,255,136,0.05); border-radius: 4px; }
-.col-done::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.4); border-radius: 4px; }
-.col-done::-webkit-scrollbar-thumb:hover { background: rgba(0,255,136,0.7); }
-
-.board-col-header {
-  display:flex; align-items:center; justify-content:space-between;
-  padding-bottom:.6rem; border-bottom:1px solid var(--border-glow);
-  margin-bottom:.1rem;
-  position:sticky; top:0;
-  background:rgba(10,0,30,0.95);
-  z-index:2;
-  border-radius:4px;
-  padding-top:2px;
-}
-.board-col-title { font-family:var(--font-display); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; }
-.board-col-count { font-family:var(--font-display); font-size:.6rem; background:rgba(255,255,255,0.08); padding:.15rem .4rem; border-radius:20px; color:var(--text-dim); }
+.board-col { background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:14px;padding:.75rem;max-height:520px;overflow-y:auto;scroll-behavior:smooth;display:flex;flex-direction:column;gap:.5rem; }
+.board-col::-webkit-scrollbar { width:6px; }
+.board-col::-webkit-scrollbar-track { background:rgba(0,240,255,0.05);border-radius:3px; }
+.board-col::-webkit-scrollbar-thumb { background:rgba(0,240,255,0.3);border-radius:3px; }
+.board-col-header { display:flex;align-items:center;justify-content:space-between;padding-bottom:.5rem;border-bottom:1px solid var(--border-glow);margin-bottom:.1rem;position:sticky;top:0;background:rgba(10,0,30,0.95);z-index:2;border-radius:4px;padding-top:2px; }
+.board-col-title { font-family:var(--font-display);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase; }
+.board-col-count { font-family:var(--font-display);font-size:.6rem;background:rgba(255,255,255,0.08);padding:.15rem .4rem;border-radius:20px;color:var(--text-dim); }
 .col-todo .board-col-title { color:var(--neon-blue); }
 .col-progress .board-col-title { color:var(--neon-gold); }
 .col-review .board-col-title { color:var(--neon-purple); }
 .col-done .board-col-title { color:#00ff88; }
 
-/* MISSION CARDS — compact */
-.mission-card {
-  background:var(--bg-card);
-  border:1px solid var(--border-glow);
-  border-radius:8px;
-  padding:.55rem .65rem;
-  cursor:grab;
-  transition:all .2s;
-  user-select:none;
-}
-.mission-card:hover { border-color:var(--neon-blue); box-shadow:0 0 8px rgba(0,240,255,0.1); }
-.mission-card.dragging { opacity:.4; cursor:grabbing; }
-.mission-card.done-card { border-color:rgba(0,255,136,0.3); background:rgba(0,255,136,0.04); }
+/* MISSION CARDS with color-coded left border */
+.mission-card { background:var(--bg-card);border:1px solid var(--border-glow);border-radius:8px;padding:.55rem .65rem;cursor:grab;transition:all .2s;user-select:none; }
+.mission-card:hover { border-color:var(--neon-blue);box-shadow:0 0 8px rgba(0,240,255,0.1); }
+.mission-card.dragging { opacity:.4;cursor:grabbing; }
+.mission-card.done-card { border-color:rgba(0,255,136,0.3);background:rgba(0,255,136,0.04); }
 .mission-card.pending-card { border-color:rgba(191,0,255,0.3); }
-/* Verification type color coding */
+/* Color-coded left borders by verification type */
 .mission-card.verify-auto { border-left:3px solid #00ff88; }
 .mission-card.verify-self { border-left:3px solid var(--neon-gold); }
 .mission-card.verify-screenshot { border-left:3px solid var(--neon-purple); }
 .mission-card.verify-event { border-left:3px solid var(--neon-blue); }
 
-.mc-top { display:flex; align-items:center; gap:.4rem; margin-bottom:.25rem; }
-.mc-icon { font-size:.95rem; flex-shrink:0; }
-.mc-name { font-family:var(--font-ui); font-size:.78rem; font-weight:700; color:var(--text-primary); line-height:1.3; flex:1; }
-.mc-xp-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:.2rem; }
-.mc-xp { font-family:var(--font-display); font-size:.68rem; color:var(--neon-gold); }
-.mc-cat { font-family:var(--font-ui); font-size:.62rem; color:var(--text-dim); }
-.mc-verify { display:inline-block; font-family:var(--font-ui); font-size:.6rem; padding:.1rem .4rem; border-radius:20px; background:rgba(0,240,255,0.08); color:var(--neon-blue); border:1px solid rgba(0,240,255,0.2); }
-
-.mc-proof { margin-top:.6rem; padding-top:.6rem; border-top:1px solid var(--border-glow); }
-.mc-proof-label { font-family:var(--font-ui); font-size:.68rem; color:var(--text-dim); margin-bottom:.35rem; }
-.mc-input { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(0,240,255,0.2); border-radius:6px; padding:.4rem .6rem; color:var(--text-primary); font-family:var(--font-ui); font-size:.78rem; outline:none; box-sizing:border-box; margin-bottom:.35rem; }
+.mc-top { display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem; }
+.mc-icon { font-size:.95rem;flex-shrink:0; }
+.mc-name { font-family:var(--font-ui);font-size:.78rem;font-weight:700;color:var(--text-primary);line-height:1.3;flex:1; }
+.mc-xp-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem; }
+.mc-xp { font-family:var(--font-display);font-size:.68rem;color:var(--neon-gold); }
+.mc-cat { font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim); }
+.mc-verify { display:inline-block;font-family:var(--font-ui);font-size:.6rem;padding:.1rem .4rem;border-radius:20px;background:rgba(0,240,255,0.08);color:var(--neon-blue);border:1px solid rgba(0,240,255,0.2); }
+.mc-proof { margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border-glow); }
+.mc-proof-label { font-family:var(--font-ui);font-size:.68rem;color:var(--text-dim);margin-bottom:.35rem; }
+.mc-input { width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(0,240,255,0.2);border-radius:6px;padding:.4rem .6rem;color:var(--text-primary);font-family:var(--font-ui);font-size:.78rem;outline:none;box-sizing:border-box;margin-bottom:.35rem; }
 .mc-input:focus { border-color:var(--neon-blue); }
 .mc-input.error { border-color:var(--neon-pink); }
-.mc-btn { width:100%; font-family:var(--font-display); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; padding:.35rem; border-radius:6px; border:none; cursor:pointer; transition:all .2s; }
-.mc-btn-submit { background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink)); color:#fff; }
-.mc-btn-confirm { background:linear-gradient(135deg,#00ff88,#00f0ff); color:#000; }
-.mc-btn:hover { opacity:.9; transform:translateY(-1px); }
-.mc-msg { font-family:var(--font-ui); font-size:.68rem; margin-top:.3rem; text-align:center; }
+.mc-btn { width:100%;font-family:var(--font-display);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem;border-radius:6px;border:none;cursor:pointer;transition:all .2s; }
+.mc-btn-submit { background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff; }
+.mc-btn-confirm { background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000; }
+.mc-btn:hover { opacity:.9;transform:translateY(-1px); }
+.mc-msg { font-family:var(--font-ui);font-size:.68rem;margin-top:.3rem;text-align:center; }
+.drop-hint { border:1px dashed rgba(0,240,255,0.2);border-radius:8px;padding:1.2rem;text-align:center;font-family:var(--font-display);font-size:.6rem;color:rgba(0,240,255,0.3);letter-spacing:.1em; }
+.drop-hint.drag-over { border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,240,255,0.05); }
+.board-tabs { display:flex;gap:.4rem;margin-bottom:.75rem;flex-wrap:wrap; }
+.board-tab { font-family:var(--font-display);font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;border:1px solid var(--border-glow);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s; }
+.board-tab.active { background:var(--neon-blue);border-color:var(--neon-blue);color:#000; }
 
-.mission-card.mobile-selected {
-  border-color: var(--neon-pink) !important;
-  box-shadow: 0 0 15px rgba(255,0,170,0.4);
-  transform: scale(1.02);
-}
-.board-col-header.mobile-target {
-  background: rgba(0,240,255,0.1);
-  border-radius: 6px;
-  cursor: pointer;
-} border-radius:8px; padding:1.2rem; text-align:center; font-family:var(--font-display); font-size:.6rem; color:rgba(0,240,255,0.3); letter-spacing:.1em; }
-.drop-hint.drag-over { border-color:var(--neon-blue); color:var(--neon-blue); background:rgba(0,240,255,0.05); }
+/* COLOR LEGEND */
+.verify-legend { display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.6rem;align-items:center; }
+.verify-legend-item { display:flex;align-items:center;gap:.3rem;font-family:var(--font-ui);font-size:.68rem;color:var(--text-dim); }
+.verify-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
 
-.board-tabs { display:flex; gap:.4rem; margin-bottom:.75rem; flex-wrap:wrap; }
-.board-tab { font-family:var(--font-display); font-size:.63rem; letter-spacing:.06em; text-transform:uppercase; padding:.3rem .7rem; border-radius:20px; border:1px solid var(--border-glow); background:transparent; color:var(--text-dim); cursor:pointer; transition:all .2s; }
-.board-tab.active { background:var(--neon-blue); border-color:var(--neon-blue); color:#000; }
+/* HOW TO PLAY */
+.how-to-play { background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);border-radius:10px;padding:.75rem 1rem;margin-bottom:.75rem;display:none; }
+.how-to-play p { font-family:var(--font-ui);font-size:.78rem;color:var(--text-dim);line-height:1.8;margin:0; }
 
-/* BADGES */
-.badge-grid-dash { display:grid; grid-template-columns:repeat(12,1fr); gap:.5rem; }
-@media(max-width:900px) { .badge-grid-dash { grid-template-columns:repeat(6,1fr); } }
-@media(max-width:480px) { .badge-grid-dash { grid-template-columns:repeat(4,1fr); } }
-.badge-item-dash { background:rgba(255,255,255,0.03); border:1px solid var(--border-glow); border-radius:10px; padding:.6rem .4rem; text-align:center; transition:all .3s; }
-.badge-item-dash.earned { border-color:var(--neon-gold); background:rgba(255,215,0,0.08); box-shadow:0 0 10px rgba(255,215,0,0.15); }
-.badge-item-dash.locked { opacity:.35; filter:grayscale(1); }
-.badge-icon-dash { font-size:1.4rem; display:block; margin-bottom:.25rem; }
-.badge-name-dash { font-family:var(--font-ui); font-size:.58rem; color:var(--text-dim); letter-spacing:.04em; line-height:1.3; }
-.badge-item-dash.earned .badge-name-dash { color:var(--neon-gold); }
-
-/* GUILDS — compact cards */
-.guild-grid-dash { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; }
-.guild-card-dash { background:rgba(255,255,255,0.03); border:1px solid var(--border-glow); border-radius:8px; padding:.5rem .6rem; cursor:pointer; transition:all .3s; position:relative; overflow:hidden; }
-.guild-card-dash:hover { border-color:var(--neon-purple); transform:translateY(-1px); }
-.guild-card-dash.joined { border-color:var(--neon-gold); background:rgba(255,215,0,0.06); }
-.guild-top-bar { height:2px; border-radius:2px; margin-bottom:.4rem; }
-.guild-emblem-dash { font-size:1rem; margin-bottom:.15rem; }
-.guild-name-dash { font-family:var(--font-display); font-size:.6rem; font-weight:700; color:var(--text-primary); margin-bottom:.1rem; }
-.guild-desc-dash { font-family:var(--font-ui); font-size:.6rem; color:var(--text-dim); line-height:1.3; margin-bottom:.3rem; display:none; }
-.guild-members-dash { font-family:var(--font-ui); font-size:.58rem; color:var(--text-dim); margin-bottom:.3rem; }
-.guild-join-btn-dash { width:100%; font-family:var(--font-display); font-size:.55rem; letter-spacing:.05em; text-transform:uppercase; padding:.25rem; border-radius:4px; border:1px solid var(--neon-purple); background:rgba(191,0,255,0.1); color:var(--neon-purple); cursor:pointer; transition:all .2s; }
-.guild-join-btn-dash:hover { background:var(--neon-purple); color:#fff; }
-.guild-join-btn-dash.joined { border-color:var(--neon-gold); background:rgba(255,215,0,0.15); color:var(--neon-gold); }
-
-/* FULL LEADERBOARD */
-.lb-row { display:flex; align-items:center; gap:.6rem; padding:.5rem .6rem; border-radius:8px; margin-bottom:.35rem; border:1px solid transparent; }
-.lb-row.you { border-color:var(--neon-pink); background:rgba(255,0,170,0.08); }
-.lb-rank-num { font-family:var(--font-display); font-size:.85rem; font-weight:900; width:24px; text-align:center; color:var(--text-dim); }
-.lb-rank-num.gold { color:var(--neon-gold); }
-.lb-rank-num.silver { color:#aaaacc; }
-.lb-rank-num.bronze { color:#cd7f32; }
-.lb-avatar { width:28px; height:28px; border-radius:50%; background:rgba(0,240,255,0.1); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
-.lb-name { font-family:var(--font-ui); font-size:.82rem; color:var(--text-primary); flex:1; }
-.lb-xp { font-family:var(--font-display); font-size:.72rem; color:var(--neon-gold); }
+/* GUILDS — compact 4 per row */
+.guild-grid-dash { display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem; }
+@media(max-width:900px){ .guild-grid-dash { grid-template-columns:repeat(2,1fr); } }
+.guild-card-dash { background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:10px;padding:.6rem .75rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden; }
+.guild-card-dash:hover { border-color:var(--neon-purple);transform:translateY(-1px); }
+.guild-card-dash.joined { border-color:var(--neon-gold);background:rgba(255,215,0,0.06); }
+.guild-top-bar { height:2px;border-radius:2px;margin-bottom:.4rem; }
+.guild-emblem-dash { font-size:1.1rem;margin-bottom:.15rem; }
+.guild-name-dash { font-family:var(--font-display);font-size:.65rem;font-weight:700;color:var(--text-primary);margin-bottom:.1rem; }
+.guild-members-dash { font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);margin-bottom:.4rem; }
+.guild-btn-row { display:flex;gap:.3rem; }
+.guild-join-btn-dash { flex:1;font-family:var(--font-display);font-size:.58rem;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .4rem;border-radius:5px;border:1px solid var(--neon-purple);background:rgba(191,0,255,0.1);color:var(--neon-purple);cursor:pointer;transition:all .2s;text-align:center;text-decoration:none;display:block; }
+.guild-join-btn-dash:hover { background:var(--neon-purple);color:#fff; }
+.guild-join-btn-dash.joined { border-color:var(--neon-gold);background:rgba(255,215,0,0.15);color:var(--neon-gold); }
+.guild-hq-btn { flex:1;font-family:var(--font-display);font-size:.58rem;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .4rem;border-radius:5px;border:1px solid rgba(0,240,255,0.3);background:rgba(0,240,255,0.05);color:var(--neon-blue);cursor:pointer;transition:all .2s;text-align:center;text-decoration:none;display:block; }
+.guild-hq-btn:hover { background:rgba(0,240,255,0.15); }
 
 /* ACTIVITY */
-.activity-item { display:flex; align-items:center; gap:.6rem; padding:.5rem 0; border-bottom:1px solid rgba(255,255,255,0.05); }
-.activity-icon { font-size:1.1rem; flex-shrink:0; }
-.activity-text { font-family:var(--font-ui); font-size:.8rem; color:var(--text-dim); flex:1; }
-.activity-xp { font-family:var(--font-display); font-size:.72rem; color:#00ff88; white-space:nowrap; }
+.activity-item { display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05); }
+.activity-icon { font-size:1.1rem;flex-shrink:0; }
+.activity-text { font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);flex:1; }
+.activity-xp { font-family:var(--font-display);font-size:.72rem;color:#00ff88;white-space:nowrap; }
 
-@media(max-width:900px) {
-  .dashboard-content { grid-template-columns:1fr; padding:1rem; }
+/* HALL OF FAME */
+.hof-marquee-wrap { overflow:hidden;border:1px solid rgba(255,215,0,0.25);border-radius:12px;background:rgba(0,0,0,0.3);padding:.6rem 0;margin-bottom:2rem; }
+.hof-marquee-inner { display:flex;gap:1.5rem;width:max-content;animation:hofScroll 30s linear infinite;padding:0 1rem; }
+@keyframes hofScroll { 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
+.hof-marquee-item { display:flex;align-items:center;gap:.6rem;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:8px;padding:.4rem 1rem;white-space:nowrap;flex-shrink:0; }
+.hof-name { font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--neon-gold); }
+.hof-month { font-family:var(--font-ui);font-size:.65rem;color:var(--text-dim); }
+.hof-card { background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:.75rem;text-align:center;transition:all .3s; }
+.hof-card:hover { border-color:var(--neon-gold);background:rgba(255,215,0,0.1);transform:translateY(-2px); }
+.hof-card-avatar { font-size:1.8rem;margin-bottom:.3rem; }
+.hof-card-name { font-family:var(--font-display);font-size:.7rem;font-weight:700;color:var(--neon-gold);margin-bottom:.2rem; }
+.hof-card-month { font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim);margin-bottom:.2rem; }
+.hof-card-xp { font-family:var(--font-display);font-size:.68rem;color:#ffaa00; }
+
+@media(max-width:900px){
+  .dashboard-content { grid-template-columns:1fr;padding:1rem; }
   .panel-full { grid-column:1; }
-  .badge-grid-dash { grid-template-columns:repeat(3,1fr); }
+  .badge-grid-dash { grid-template-columns:repeat(6,1fr); }
   .guild-grid-dash { grid-template-columns:repeat(2,1fr); }
   .rank-perk { display:none; }
-  .col-todo { max-height:400px; }
 }
-@media(max-width:480px) {
-  .badge-grid-dash { grid-template-columns:repeat(3,1fr); gap:.4rem; }
-  .stats-row { gap:.4rem; }
-  .stat-chip { min-width:55px; padding:.35rem .5rem; }
-  .stat-chip-val { font-size:.95rem; }
+@media(max-width:480px){
+  .badge-grid-dash { grid-template-columns:repeat(3,1fr); }
+  .stats-row { gap:.3rem; }
+  .stat-chip { min-width:40px;padding:.25rem .3rem; }
+  .stat-chip-val { font-size:.9rem; }
 }
 </style>
 </head>
@@ -346,7 +245,8 @@
 <div class="page-content">
 
 <!-- NOT LOGGED IN -->
-<div id="not-logged-in" class="not-logged-in">
+<div id="not-logged-in" class="not-logged-in" style="display:none;">
+  <img src="images/karen-fist.png" alt="Karen Reeder" style="width:180px;opacity:0.3;margin-bottom:1.5rem;" onerror="this.style.display='none'">
   <div class="page-tag">// PLAYER DASHBOARD</div>
   <h1 class="page-title" style="font-size:clamp(1.8rem,5vw,3rem);margin-bottom:.75rem;">Your XP Awaits</h1>
   <p class="page-sub" style="margin-bottom:2rem;">Log in or create an account to track your XP, join a guild, and climb the leaderboard.</p>
@@ -356,76 +256,97 @@
 <!-- DASHBOARD -->
 <div id="dashboard" style="display:none;">
 
-  <!-- HERO — sticky, 4 equal panels -->
+  <!-- 4-PANEL STICKY HERO -->
   <div class="dashboard-hero">
 
     <!-- PANEL 1: Personal Stats -->
-    <div class="hero-panel hero-left">
-      <div class="hero-tag" style="font-size:.58rem;margin-bottom:.2rem;">// MY XP DASHBOARD</div>
-      <div class="hero-username" id="hero-username" style="font-size:clamp(1.1rem,2vw,1.6rem);margin-bottom:.2rem;">Loading...</div>
-      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">
-        <div class="hero-rank" id="hero-rank" style="margin:0;font-size:.78rem;">⚡ Supporter</div>
-        <div style="font-family:var(--font-display);font-size:.78rem;color:var(--neon-gold);font-weight:900;" id="stat-xp-inline">0 XP</div>
+    <div class="hero-panel">
+      <div class="hero-tag">// MY XP DASHBOARD</div>
+      <div class="hero-username" id="hero-username">Loading...</div>
+      <div class="hero-rank-row">
+        <div class="hero-rank" id="hero-rank">⚡ Supporter</div>
+        <div class="hero-xp-inline" id="hero-xp-inline">0 XP</div>
       </div>
-      <div class="mega-xp-wrap" style="margin-bottom:.4rem;">
-        <div class="mega-xp-label" style="font-size:.62rem;">
+      <div class="mega-xp-wrap">
+        <div class="mega-xp-label">
           <span id="xp-current-label">0 XP</span>
           <span id="xp-next-label">Next: 300 XP</span>
         </div>
-        <div class="mega-xp-track" style="height:10px;">
+        <div class="mega-xp-track">
           <div class="mega-xp-fill" id="xp-bar" style="width:0%"></div>
         </div>
-        <div class="milestones" style="margin-top:.2rem;">
-          <div class="milestone" data-xp="0" style="font-size:.48rem;">Support</div>
-          <div class="milestone" data-xp="300" style="font-size:.48rem;">Org</div>
-          <div class="milestone" data-xp="1000" style="font-size:.48rem;">Adv</div>
-          <div class="milestone" data-xp="3500" style="font-size:.48rem;">Build</div>
-          <div class="milestone" data-xp="8000" style="font-size:.48rem;">Cat</div>
-          <div class="milestone" data-xp="15000" style="font-size:.48rem;">Champ</div>
+        <div class="milestones">
+          <div class="milestone" data-xp="0">Support</div>
+          <div class="milestone" data-xp="300">Org</div>
+          <div class="milestone" data-xp="1000">Adv</div>
+          <div class="milestone" data-xp="3500">Build</div>
+          <div class="milestone" data-xp="8000">Cat</div>
+          <div class="milestone" data-xp="15000">Champ</div>
         </div>
       </div>
-      <div class="stats-row" style="gap:.3rem;margin-top:auto;">
-        <div class="stat-chip" style="min-width:38px;padding:.25rem .3rem;"><div class="stat-chip-val" id="stat-xp" style="font-size:.85rem;">0</div><div class="stat-chip-lbl" style="font-size:.48rem;">XP</div></div>
-        <div class="stat-chip" style="min-width:38px;padding:.25rem .3rem;"><div class="stat-chip-val" id="stat-rank" style="font-size:.85rem;">1</div><div class="stat-chip-lbl" style="font-size:.48rem;">Rank</div></div>
-        <div class="stat-chip" style="min-width:38px;padding:.25rem .3rem;"><div class="stat-chip-val" id="stat-badges" style="font-size:.85rem;">0</div><div class="stat-chip-lbl" style="font-size:.48rem;">Badges</div></div>
-        <div class="stat-chip" style="min-width:38px;padding:.25rem .3rem;"><div class="stat-chip-val" id="stat-lb" style="font-size:.85rem;">#—</div><div class="stat-chip-lbl" style="font-size:.48rem;">Board</div></div>
+      <div class="stats-row" style="margin-top:.5rem;">
+        <div class="stat-chip"><div class="stat-chip-val" id="stat-xp">0</div><div class="stat-chip-lbl">XP</div></div>
+        <div class="stat-chip"><div class="stat-chip-val" id="stat-rank">#—</div><div class="stat-chip-lbl">Rank</div></div>
+        <div class="stat-chip"><div class="stat-chip-val" id="stat-badges">0</div><div class="stat-chip-lbl">Badges</div></div>
+        <div class="stat-chip"><div class="stat-chip-val" id="stat-lb">#—</div><div class="stat-chip-lbl">Board</div></div>
       </div>
     </div>
 
     <!-- PANEL 2: Guild -->
-    <div class="hero-panel" id="hero-guild-status" style="text-align:center;justify-content:center;align-items:center;gap:.3rem;">
-      <div id="hero-guild-emblem" style="font-size:2rem;margin-bottom:.2rem;">⚔️</div>
-      <div id="hero-guild-name" style="font-family:var(--font-display);font-size:.85rem;font-weight:900;color:var(--neon-blue);">No Guild Yet</div>
-      <div id="hero-guild-sub" style="font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim);">Join a guild to compete</div>
-      <div id="hero-guild-xp" style="font-family:var(--font-display);font-size:.68rem;color:var(--neon-gold);"></div>
-      <a href="#guilds-section" id="hero-guild-join-btn" onclick="document.getElementById('guilds-section').scrollIntoView({behavior:'smooth'});return false;" style="margin-top:auto;font-family:var(--font-display);font-size:.62rem;color:var(--neon-gold);border:1px solid rgba(255,215,0,0.4);border-radius:6px;padding:.25rem .65rem;text-decoration:none;transition:all .2s;">⚔️ Join</a>
+    <div class="hero-panel hero-guild-panel" style="text-align:center;justify-content:center;align-items:center;">
+      <div class="guild-emblem-hero" id="hero-guild-emblem">⚔️</div>
+      <div class="guild-name-hero" id="hero-guild-name">No Guild Yet</div>
+      <div class="guild-sub-hero" id="hero-guild-sub">Reach Organizer (300 XP) to join</div>
+      <div class="guild-xp-hero" id="hero-guild-xp"></div>
+      <a href="#guilds-section" id="hero-guild-btn" onclick="document.getElementById('guilds-section').scrollIntoView({behavior:'smooth'});return false;" class="guild-action-btn" style="margin-top:auto;">⚔️ Join a Guild</a>
     </div>
 
     <!-- PANEL 3: Civic Champion -->
-    <div class="hero-panel" style="text-align:center;justify-content:center;align-items:center;gap:.3rem;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(191,0,255,0.05));border-color:rgba(255,215,0,0.3);">
-      <span style="font-size:1.8rem;">🏆</span>
-      <div style="font-family:var(--font-display);font-size:.55rem;color:var(--neon-gold);letter-spacing:.15em;text-transform:uppercase;">// Civic Champion</div>
-      <div id="champ-name" style="font-family:var(--font-display);font-size:.95rem;font-weight:900;color:var(--text-primary);">—</div>
-      <div id="champ-xp" style="font-family:var(--font-display);font-size:.68rem;color:var(--neon-gold);"></div>
-      <div style="font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);line-height:1.7;margin-top:auto;">
-        🎤 Speak at event · 📜 Certificate<br>📹 Social shoutout · 🏆 Hall of Fame
+    <div class="hero-panel champ-panel">
+      <div class="champ-trophy">🏆</div>
+      <div class="champ-label">// Civic Champion</div>
+      <div class="champ-name" id="champ-name">—</div>
+      <div class="champ-xp" id="champ-xp"></div>
+      <div class="champ-prizes">
+        🎤 Speak at event<br>
+        📜 Certificate<br>
+        📹 Social shoutout<br>
+        🏆 Hall of Fame
       </div>
     </div>
 
     <!-- PANEL 4: Top 5 Leaderboard -->
-    <div class="hero-panel hero-mini-lb" style="background:rgba(0,240,255,0.04);border-color:rgba(0,240,255,0.2);">
-      <div class="hero-mini-lb-title" style="font-size:.6rem;letter-spacing:.1em;margin-bottom:.4rem;">🏅 TOP 5 PLAYERS</div>
-      <div id="mini-leaderboard" style="flex:1;">
-        <div style="font-family:var(--font-display);font-size:.6rem;color:var(--neon-blue);text-align:center;padding:.35rem;letter-spacing:.08em;">// LOADING...</div>
+    <div class="hero-panel mini-lb-panel">
+      <div class="mini-lb-title">🏅 TOP 5 PLAYERS</div>
+      <div id="mini-leaderboard">
+        <div style="font-family:var(--font-display);font-size:.62rem;color:var(--neon-blue);text-align:center;padding:.5rem;letter-spacing:.08em;">// LOADING...</div>
       </div>
     </div>
+  </div>
 
+  <!-- FULL WIDTH XP BAR -->
+  <div class="full-xp-bar-section">
+    <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:.7rem;color:var(--text-dim);margin-bottom:.3rem;">
+      <span id="full-xp-label">0 XP</span>
+      <span id="full-xp-next">Next rank: Organizer at 300 XP</span>
+    </div>
+    <div class="full-xp-track">
+      <div class="full-xp-fill" id="full-xp-bar" style="width:0%"></div>
+    </div>
+    <div class="full-xp-milestones">
+      <div class="full-milestone" data-xp="0">Supporter</div>
+      <div class="full-milestone" data-xp="300">Organizer</div>
+      <div class="full-milestone" data-xp="1000">Advocate</div>
+      <div class="full-milestone" data-xp="3500">Builder</div>
+      <div class="full-milestone" data-xp="8000">Catalyst</div>
+      <div class="full-milestone" data-xp="15000">Champion</div>
+    </div>
   </div>
 
   <div class="dashboard-content">
 
-    <!-- BADGES — full width at top -->
-    <div class="panel panel-full" style="margin-bottom:0;">
+    <!-- BADGES — full width below progress bar -->
+    <div class="panel panel-full">
       <div class="panel-title">🎖️ Achievement Badges</div>
       <div class="badge-grid-dash" id="badge-grid">
         <div class="badge-item-dash locked" data-badge="First Knock"><span class="badge-icon-dash">🚪</span><div class="badge-name-dash">First Knock</div></div>
@@ -446,26 +367,23 @@
     <!-- MISSION BOARD — full width -->
     <div class="panel panel-full">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
-        <div class="panel-title" style="margin:0;">🎯 Mission Board</div>
-        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
-          <span style="font-size:.58rem;border-left:3px solid #00ff88;padding-left:.3rem;font-family:var(--font-ui);color:var(--text-dim);">Auto</span>
-          <span style="font-size:.58rem;border-left:3px solid var(--neon-gold);padding-left:.3rem;font-family:var(--font-ui);color:var(--text-dim);">Self-Report</span>
-          <span style="font-size:.58rem;border-left:3px solid var(--neon-purple);padding-left:.3rem;font-family:var(--font-ui);color:var(--text-dim);">Screenshot</span>
-          <span style="font-size:.58rem;border-left:3px solid var(--neon-blue);padding-left:.3rem;font-family:var(--font-ui);color:var(--text-dim);">Event Code</span>
-          <button onclick="var el=document.getElementById('mission-instructions');el.style.display=el.style.display==='none'?'block':'none'" style="font-family:var(--font-display);font-size:.58rem;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);color:var(--neon-blue);border-radius:6px;padding:.2rem .5rem;cursor:pointer;">❓ How to Play</button>
-        </div>
+        <div class="panel-title" style="margin:0;border:none;padding:0;">🎯 Mission Board</div>
+        <button onclick="var el=document.getElementById('how-to-play');el.style.display=el.style.display==='none'||el.style.display===''?'block':'none'" style="font-family:var(--font-display);font-size:.62rem;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);color:var(--neon-blue);border-radius:6px;padding:.25rem .6rem;cursor:pointer;">❓ How to Play</button>
       </div>
-      <div id="mission-instructions" style="display:none;background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);border-radius:10px;padding:.75rem;margin-bottom:.75rem;">
-        <div style="font-family:var(--font-ui);font-size:.76rem;color:var(--text-dim);line-height:1.8;">
-          🖱️ <strong style="color:var(--text-primary);">Desktop:</strong> Drag cards between columns &nbsp;|&nbsp;
-          📱 <strong style="color:var(--text-primary);">Mobile:</strong> Tap card → tap column to move<br>
-          🟢 Auto = instant XP &nbsp;🟡 Self-Report = confirm action &nbsp;🟣 Screenshot = upload proof &nbsp;🔵 Event Code = enter code at event<br>
-          ⏰ <strong style="color:var(--text-primary);">One mission type per day</strong> · 🏆 <strong style="color:var(--text-primary);">Newest completed missions appear at top</strong>
-        </div>
+
+      <div class="how-to-play" id="how-to-play">
+        <p>🖱️ <strong style="color:var(--text-primary);">Desktop:</strong> Drag cards between columns &nbsp;|&nbsp; 📱 <strong style="color:var(--text-primary);">Mobile:</strong> Tap card → tap column header to move<br>
+        ⏰ One mission type per day &nbsp;·&nbsp; 🏆 Newest completed missions appear at top of Done column</p>
       </div>
-      <div id="mobile-board-hint" style="display:none;font-family:var(--font-ui);font-size:.75rem;color:var(--text-dim);background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);border-radius:8px;padding:.5rem 1rem;margin-bottom:.75rem;text-align:center;">
-        📱 <strong style="color:var(--neon-pink);">Tap a card</strong> to select it · Then <strong style="color:var(--neon-blue);">tap a column header</strong> to move it there
+
+      <!-- Color legend -->
+      <div class="verify-legend">
+        <div class="verify-legend-item"><div class="verify-dot" style="background:#00ff88;"></div>Auto complete</div>
+        <div class="verify-legend-item"><div class="verify-dot" style="background:var(--neon-gold);"></div>Self-report</div>
+        <div class="verify-legend-item"><div class="verify-dot" style="background:var(--neon-purple);"></div>Screenshot</div>
+        <div class="verify-legend-item"><div class="verify-dot" style="background:var(--neon-blue);"></div>Event Code</div>
       </div>
+
       <div class="board-tabs" id="board-tabs">
         <button class="board-tab active" onclick="filterBoard('all',this)">All Missions</button>
         <button class="board-tab" onclick="filterBoard('Learning',this)">🎓 Learning</button>
@@ -475,33 +393,22 @@
         <button class="board-tab" onclick="filterBoard('Fun',this)">🎉 Fun</button>
         <button class="board-tab" onclick="filterBoard('Bonus',this)">⭐ Bonus</button>
       </div>
+
       <div class="mission-board">
         <div class="board-col col-todo" id="col-todo" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'todo')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header">
-            <div class="board-col-title">Available</div>
-            <div class="board-col-count" id="count-todo">0</div>
-          </div>
+          <div class="board-col-header"><div class="board-col-title">Available</div><div class="board-col-count" id="count-todo">0</div></div>
           <div class="drop-hint" id="hint-todo">// LOADING MISSIONS...</div>
         </div>
         <div class="board-col col-progress" id="col-progress" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'progress')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header">
-            <div class="board-col-title">In Progress</div>
-            <div class="board-col-count" id="count-progress">0</div>
-          </div>
+          <div class="board-col-header"><div class="board-col-title">In Progress</div><div class="board-col-count" id="count-progress">0</div></div>
           <div class="drop-hint" id="hint-progress">Drag missions here</div>
         </div>
         <div class="board-col col-review" id="col-review" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'review')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header">
-            <div class="board-col-title">Pending Review</div>
-            <div class="board-col-count" id="count-review">0</div>
-          </div>
+          <div class="board-col-header"><div class="board-col-title">Pending Review</div><div class="board-col-count" id="count-review">0</div></div>
           <div class="drop-hint" id="hint-review">Screenshots submitted here</div>
         </div>
         <div class="board-col col-done" id="col-done" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'done')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header">
-            <div class="board-col-title">Complete ✓</div>
-            <div class="board-col-count" id="count-done">0</div>
-          </div>
+          <div class="board-col-header"><div class="board-col-title">Complete ✓</div><div class="board-col-count" id="count-done">0</div></div>
           <div class="drop-hint" id="hint-done">Completed missions</div>
         </div>
       </div>
@@ -509,33 +416,30 @@
 
     <!-- LEFT COLUMN -->
     <div>
-
       <!-- RANK PATH -->
       <div class="panel" style="margin-bottom:1.25rem;">
         <div class="panel-title">🏆 Your Rank Path</div>
         <div class="rank-path" id="rank-path"></div>
       </div>
 
-      <!-- GUILDS -->
+      <!-- GUILDS — compact 4 per row -->
       <div class="panel" id="guilds-section">
         <div class="panel-title">⚔️ Guilds — Join Your Team</div>
-        <p style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);margin-bottom:.85rem;line-height:1.6;">Guilds compete for the highest total XP. Must be Organizer rank (300 XP) to join. After joining, visit <a href="https://www.instagram.com/electkarenreeder/" target="_blank" style="color:var(--neon-blue);">Karen's Instagram</a> and tap your guild's highlight to connect with teammates!</p>
+        <p style="font-family:var(--font-ui);font-size:.78rem;color:var(--text-dim);margin-bottom:.85rem;line-height:1.6;">Must be Organizer rank (300 XP) to join. You can switch guilds once every 30 days.</p>
         <div class="guild-grid-dash" id="guild-grid">
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00f0ff,#bf00ff)"></div><div class="guild-emblem-dash">⚡</div><div class="guild-name-dash">THE MOMENTUM</div><div class="guild-desc-dash">Operations powerhouses. You keep the campaign running — events, phone banks, logistics, and everything in between.</div><div class="guild-members-dash">48 members · Rank #1</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('The Momentum','⚡')">⚡ Join</button><a href="guild-momentum.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00ff88,#00f0ff)"></div><div class="guild-emblem-dash">⛏️</div><div class="guild-name-dash">THE MINERS</div><div class="guild-desc-dash">Data researchers and intelligence gatherers. You dig deep for the facts, stats, and insights that fuel the campaign.</div><div class="guild-members-dash">15 members · Rank #2</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('The Miners','⛏️')">⛏️ Join</button><a href="guild-builders.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#9b59b6,#ffd700)"></div><div class="guild-emblem-dash">🏛️</div><div class="guild-name-dash">THE ARCHITECTS</div><div class="guild-desc-dash">Policy visionaries. You analyze key issues, develop solutions, and build the agenda that will move District 29 forward.</div><div class="guild-members-dash">10 members · Rank #3</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('The Architects','🏛️')">🏛️ Join</button><a href="guild-rise.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#ffd700,#00f0ff)"></div><div class="guild-emblem-dash">🌊</div><div class="guild-name-dash">TURNOUT TITANS</div><div class="guild-desc-dash">Voter registration champions. You make sure every eligible voter is registered and ready to cast their ballot.</div><div class="guild-members-dash">29 members · Rank #4</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('Turnout Titans','🌊')">🌊 Join</button><a href="guild-titans.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00aaff,#bf00ff)"></div><div class="guild-emblem-dash">📡</div><div class="guild-name-dash">THE SIGNAL</div><div class="guild-desc-dash">The voice of the campaign. Storytellers, content creators, and communicators who spread Karen's message far and wide.</div><div class="guild-members-dash">22 members · Rank #5</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('The Signal','📡')">📡 Join</button><a href="guild-democracy.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#ff6600,#ffd700)"></div><div class="guild-emblem-dash">🔥</div><div class="guild-name-dash">DISTRICT WARRIORS</div><div class="guild-desc-dash">The boots on the ground. Door knockers, canvassers, and field organizers who show up and fight for every vote in District 29.</div><div class="guild-members-dash">15 members · Rank #6</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('District Warriors','🔥')">🔥 Join</button><a href="guild-warriors.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00d4aa,#ffd700)"></div><div class="guild-emblem-dash">💎</div><div class="guild-name-dash">THE TREASURY</div><div class="guild-desc-dash">The financial backbone. You keep the campaign funded, organized, and compliant so the mission never stops.</div><div class="guild-members-dash">0 members</div><div style="display:flex;gap:.3rem;margin-top:.3rem;"><button class="guild-join-btn-dash" style="flex:1;" onclick="joinGuild('The Treasury','💎')">💎 Join</button><a href="guild-treasury.html" class="guild-join-btn-dash" style="flex:1;text-align:center;text-decoration:none;display:block;">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00f0ff,#bf00ff)"></div><div class="guild-emblem-dash">⚡</div><div class="guild-name-dash">THE MOMENTUM</div><div class="guild-members-dash">48 members · Rank #1</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Momentum','⚡')">⚡ Join</button><a href="guild-momentum.html" class="guild-hq-btn">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00ff88,#00f0ff)"></div><div class="guild-emblem-dash">⛏️</div><div class="guild-name-dash">THE MINERS</div><div class="guild-members-dash">15 members · Rank #2</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Miners','⛏️')">⛏️ Join</button><a href="guild-builders.html" class="guild-hq-btn">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#9b59b6,#ffd700)"></div><div class="guild-emblem-dash">🏛️</div><div class="guild-name-dash">THE ARCHITECTS</div><div class="guild-members-dash">10 members · Rank #3</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Architects','🏛️')">🏛️ Join</button><a href="guild-rise.html" class="guild-hq-btn">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#ffd700,#00f0ff)"></div><div class="guild-emblem-dash">🌊</div><div class="guild-name-dash">TURNOUT TITANS</div><div class="guild-members-dash">29 members · Rank #4</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('Turnout Titans','🌊')">🌊 Join</button><a href="guild-titans.html" class="guild-hq-btn">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00aaff,#bf00ff)"></div><div class="guild-emblem-dash">📡</div><div class="guild-name-dash">THE SIGNAL</div><div class="guild-members-dash">22 members · Rank #5</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Signal','📡')">📡 Join</button><a href="guild-democracy.html" class="guild-hq-btn">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#ff6600,#ffd700)"></div><div class="guild-emblem-dash">🔥</div><div class="guild-name-dash">DISTRICT WARRIORS</div><div class="guild-members-dash">15 members · Rank #6</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('District Warriors','🔥')">🔥 Join</button><a href="guild-warriors.html" class="guild-hq-btn">🏰 HQ</a></div></div>
+          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00d4aa,#ffd700)"></div><div class="guild-emblem-dash">💎</div><div class="guild-name-dash">THE TREASURY</div><div class="guild-members-dash">0 members</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Treasury','💎')">💎 Join</button><a href="guild-treasury.html" class="guild-hq-btn">🏰 HQ</a></div></div>
         </div>
       </div>
-
     </div>
 
     <!-- RIGHT COLUMN -->
     <div>
-
       <!-- RECENT ACTIVITY -->
       <div class="panel" style="margin-bottom:1.25rem;">
         <div class="panel-title">📋 Recent Activity</div>
@@ -552,7 +456,7 @@
         </div>
       </div>
 
-      <!-- FACEBOOK FEED placeholder -->
+      <!-- FACEBOOK FEED -->
       <div class="panel" style="background:rgba(24,119,242,0.06);border-color:rgba(24,119,242,0.25);">
         <div class="panel-title" style="color:#4267B2;">📘 Campaign Updates</div>
         <div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1rem 0;line-height:1.7;">
@@ -560,126 +464,44 @@
           <a href="https://www.facebook.com/electkarenreeder" target="_blank" style="color:#4267B2;font-family:var(--font-display);font-size:.75rem;letter-spacing:.08em;">📘 FOLLOW ON FACEBOOK →</a>
         </div>
       </div>
-
     </div>
-          🏆 Hall of Fame feature
-        </div>
-      </div>
 
-    </div>
-  </div>
+  </div><!-- end dashboard-content -->
 </div><!-- end dashboard -->
 
-<style>
-@keyframes hofScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.hof-marquee-item {
-  display:flex;
-  align-items:center;
-  gap:.6rem;
-  background:rgba(255,215,0,0.08);
-  border:1px solid rgba(255,215,0,0.25);
-  border-radius:8px;
-  padding:.4rem 1rem;
-  white-space:nowrap;
-  flex-shrink:0;
-}
-.hof-trophy { font-size:1.4rem; }
-.hof-name { font-family:var(--font-display); font-size:.75rem; font-weight:700; color:var(--neon-gold); }
-.hof-month { font-family:var(--font-ui); font-size:.65rem; color:var(--text-dim); }
-.hof-xp { font-family:var(--font-display); font-size:.7rem; color:#ffaa00; }
+<!-- HALL OF FAME — outside dashboard -->
+<div style="max-width:1280px;margin:0 auto;padding:2rem 2rem 4rem;">
+  <div style="text-align:center;margin-bottom:2rem;">
+    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,170,0,0.08));border:2px solid rgba(255,215,0,0.4);border-radius:16px;padding:1.5rem 2rem;position:relative;overflow:hidden;">
+      <div style="font-family:var(--font-display);font-size:.75rem;color:var(--neon-gold);letter-spacing:.4em;text-transform:uppercase;margin-bottom:.5rem;">// LEGENDS OF DISTRICT 29</div>
+      <div style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);font-weight:900;background:linear-gradient(135deg,#ffd700,#ffaa00,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.1em;">🏆 HALL OF FAME 🏆</div>
+      <div style="font-family:var(--font-ui);font-size:.9rem;color:var(--text-dim);margin-top:.5rem;">Past Civic Champions who leveled up democracy in District 29.</div>
+    </div>
+  </div>
+  <div class="hof-marquee-wrap"><div id="hof-marquee" class="hof-marquee-inner"></div></div>
+  <div id="hof-table" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;"></div>
+</div>
 
-.hof-card {
-  background:rgba(255,215,0,0.06);
-  border:1px solid rgba(255,215,0,0.2);
-  border-radius:10px;
-  padding:.75rem;
-  text-align:center;
-  transition:all .3s;
-}
-.hof-card:hover { border-color:var(--neon-gold); background:rgba(255,215,0,0.1); transform:translateY(-2px); }
-.hof-card-avatar { font-size:1.8rem; margin-bottom:.3rem; }
-.hof-card-name { font-family:var(--font-display); font-size:.7rem; font-weight:700; color:var(--neon-gold); margin-bottom:.2rem; }
-.hof-card-month { font-family:var(--font-ui); font-size:.62rem; color:var(--text-dim); margin-bottom:.2rem; }
-.hof-card-xp { font-family:var(--font-display); font-size:.68rem; color:#ffaa00; }
-.hof-card-guild { font-family:var(--font-ui); font-size:.6rem; color:var(--text-dim); margin-top:.2rem; }
-@media(max-width:900px) { #hof-table { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:480px) { #hof-table { grid-template-columns:repeat(2,1fr); } }
-</style>
+<!-- JUICER SOCIAL FEED -->
+<div style="max-width:1280px;margin:0 auto;padding:0 2rem 4rem;">
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <div style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);letter-spacing:.3em;text-transform:uppercase;margin-bottom:.35rem;">// CAMPAIGN FEED</div>
+    <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--text-primary);">📱 Latest from the Trail</div>
+  </div>
+  <div style="border:1px solid var(--border-glow);border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.02);width:100%;">
+    <iframe src="https://www.juicer.io/api/feeds/elect-karen-reeder/iframe" frameborder="0" style="display:block;width:100%;height:500px;" title="Elect Karen Reeder - Social Feed"></iframe>
+  </div>
+</div>
 
 </div><!-- end page-content -->
 
-
-<!-- ============================================================
-     HALL OF FAME — outside dashboard, bottom of page
-============================================================ -->
-<div style="max-width:1280px;margin:0 auto;padding:2rem 2rem 4rem;">
-
-  <!-- Gold Banner -->
-  <div style="text-align:center;margin-bottom:2rem;position:relative;">
-    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,170,0,0.08));border:2px solid rgba(255,215,0,0.4);border-radius:16px;padding:1.5rem 2rem;position:relative;overflow:hidden;">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,215,0,0.08),transparent);pointer-events:none;"></div>
-      <div style="font-family:var(--font-display);font-size:.75rem;color:var(--neon-gold);letter-spacing:.4em;text-transform:uppercase;margin-bottom:.5rem;">// LEGENDS OF DISTRICT 29</div>
-      <div style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);font-weight:900;background:linear-gradient(135deg,#ffd700,#ffaa00,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.1em;">🏆 HALL OF FAME 🏆</div>
-      <div style="font-family:var(--font-ui);font-size:.9rem;color:var(--text-dim);margin-top:.5rem;">Past Civic Champions who leveled up democracy in District 29. Every action counted.</div>
-    </div>
-  </div>
-
-  <!-- Scrolling Marquee -->
-  <div class="hof-marquee-wrap">
-    <div id="hof-marquee" class="hof-marquee-inner">
-    </div>
-  </div>
-
-  <!-- Champion Cards Grid -->
-  <div id="hof-table" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
-  </div>
-
-</div>
-
-<style>
-@keyframes hofScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.hof-marquee-wrap {
-  overflow:hidden;
-  border:1px solid rgba(255,215,0,0.25);
-  border-radius:12px;
-  background:rgba(0,0,0,0.3);
-  padding:.6rem 0;
-  margin-bottom:2rem;
-}
-.hof-marquee-inner {
-  display:flex;
-  gap:1.5rem;
-  width:max-content;
-  animation:hofScroll 30s linear infinite;
-  padding:0 1rem;
-}
-</style>
-  <!-- SOCIAL FEED -->
-  <div style="max-width:1280px;margin:0 auto;padding:0 2rem 4rem;">
-    <div style="text-align:center;margin-bottom:1.5rem;">
-      <div style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);letter-spacing:.3em;text-transform:uppercase;margin-bottom:.35rem;">// CAMPAIGN FEED</div>
-      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--text-primary);">📱 Latest from the Trail</div>
-      <div style="font-family:var(--font-ui);font-size:.85rem;color:var(--text-dim);margin-top:.35rem;">Follow along as Karen fights for District 29</div>
-    </div>
-    <div style="border:1px solid var(--border-glow);border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.02);width:100%;">
-      <iframe src="https://www.juicer.io/api/feeds/elect-karen-reeder/iframe" frameborder="0" style="display:block;width:100%;height:500px;" title="Elect Karen Reeder - Juicer social media feed"></iframe>
-    </div>
-  </div>
-
 <script>
-const SUPABASE_URL   = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
-const SUPABASE_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
-const RANK_CSV       = 'https://api.allorigins.win/raw?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=114264924';
-const GAME_CSV_URL   = 'https://api.allorigins.win/raw?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=1810466887';
-const FUN_CSV_URL    = 'https://api.allorigins.win/raw?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=15253665';
-const EVENTS_CSV_URL = 'https://api.allorigins.win/raw?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=0';
-
+const SUPABASE_URL  = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
+const RANK_CSV      = '/.netlify/functions/sheets-proxy?gid=114264924';
+const GAME_CSV_URL  = '/.netlify/functions/sheets-proxy?gid=1810466887';
+const FUN_CSV_URL   = '/.netlify/functions/sheets-proxy?gid=15253665';
+const EVENTS_CSV_URL= '/.netlify/functions/sheets-proxy?gid=0';
 
 const RANKS = [
   { name:'Supporter',      xp:0,     icon:'🌱', perk:'Campaign badge + welcome pack' },
@@ -715,26 +537,27 @@ function parseCSV(text) {
 function getCurrentRank(xp) {
   const ranks = window.RANKS_LIVE || RANKS;
   let rank = ranks[0];
-  for(const r of ranks) { if(xp >= r.xp) rank = r; else break; }
+  for(const r of ranks){ if(xp>=r.xp) rank=r; else break; }
   return rank;
 }
 
 function getNextRank(xp) {
   const ranks = window.RANKS_LIVE || RANKS;
-  for(const r of ranks) { if(xp < r.xp) return r; }
+  for(const r of ranks){ if(xp<r.xp) return r; }
   return null;
 }
 
 async function loadRanks() {
   try {
     const res = await fetch(RANK_CSV);
+    if(!res.ok) throw new Error('rank fetch failed');
     const text = await res.text();
-    const rows = parseCSV(text).filter(r => r.Rank && r['XP Required']);
-    window.RANKS_LIVE = rows.map(r => ({
-      name: r.Rank, xp: parseInt(r['XP Required'])||0,
-      icon: r.Icon||'⭐', perk: r.Perks||r.Reward||'', color: r.Color||'var(--neon-blue)',
+    const rows = parseCSV(text).filter(r=>r.Rank&&r['XP Required']);
+    window.RANKS_LIVE = rows.map(r=>({
+      name:r.Rank, xp:parseInt(r['XP Required'])||0,
+      icon:r.Icon||'⭐', perk:r.Perks||r.Reward||'', color:r.Color||'var(--neon-blue)',
     }));
-  } catch(e) { window.RANKS_LIVE = null; }
+  } catch(e){ window.RANKS_LIVE=null; }
 }
 
 function updateDashboard(user, profile) {
@@ -744,67 +567,59 @@ function updateDashboard(user, profile) {
 
   document.getElementById('not-logged-in').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+
+  // Hero username
   document.getElementById('hero-username').textContent = username;
 
+  // Rank + XP
   const curRank = getCurrentRank(xp);
   const nextRank = getNextRank(xp);
   document.getElementById('hero-rank').textContent = curRank.icon + ' ' + curRank.name;
+  document.getElementById('hero-xp-inline').textContent = xp.toLocaleString() + ' XP';
 
-  const pct = nextRank ? Math.min(((xp - curRank.xp)/(nextRank.xp - curRank.xp))*100,100) : 100;
-  document.getElementById('xp-bar').style.width = pct + '%';
-  document.getElementById('xp-current-label').textContent = xp.toLocaleString() + ' XP';
-  document.getElementById('xp-next-label').textContent = nextRank
-    ? 'Next: ' + nextRank.name + ' at ' + nextRank.xp.toLocaleString() + ' XP'
-    : '🏆 MAX RANK ACHIEVED!';
+  // XP bars
+  const pct = nextRank ? Math.min(((xp-curRank.xp)/(nextRank.xp-curRank.xp))*100,100) : 100;
+  document.getElementById('xp-bar').style.width = pct+'%';
+  document.getElementById('full-xp-bar').style.width = pct+'%';
+  document.getElementById('xp-current-label').textContent = xp.toLocaleString()+' XP';
+  document.getElementById('full-xp-label').textContent = xp.toLocaleString()+' XP';
+  document.getElementById('xp-next-label').textContent = nextRank ? 'Next: '+nextRank.name+' at '+nextRank.xp.toLocaleString()+' XP' : '🏆 MAX RANK!';
+  document.getElementById('full-xp-next').textContent = nextRank ? 'Next rank: '+nextRank.name+' at '+nextRank.xp.toLocaleString()+' XP' : '🏆 MAX RANK ACHIEVED!';
 
-  document.querySelectorAll('.milestone').forEach(m => {
-    if(xp >= parseInt(m.dataset.xp)) m.classList.add('reached');
+  // Milestones highlight
+  document.querySelectorAll('.milestone,.full-milestone').forEach(m=>{
+    if(xp>=parseInt(m.dataset.xp)) m.classList.add('reached');
   });
 
-  // Update guild status in hero
-  const guildEmblems = {
-    'District Warriors': '🔥', 'Turnout Titans': '🌊', 'The Momentum': '⚡',
-    'The Signal': '📡', 'The Miners': '⛏️', 'The Architects': '🏛️', 'The Treasury': '💎'
-  };
-  const heroGuildName = document.getElementById('hero-guild-name');
-  const heroGuildSub = document.getElementById('hero-guild-sub');
-  const heroGuildEmblem = document.getElementById('hero-guild-emblem');
-  const heroGuildJoinBtn = document.getElementById('hero-guild-join-btn');
-
-  if (guild) {
-    if (heroGuildName) heroGuildName.textContent = guild;
-    if (heroGuildSub) heroGuildSub.textContent = 'Your guild — keep climbing! ⚡';
-    if (heroGuildEmblem) heroGuildEmblem.textContent = guildEmblems[guild] || '⚔️';
-    if (heroGuildJoinBtn) { heroGuildJoinBtn.textContent = '→ Guild HQ'; heroGuildJoinBtn.style.color = 'var(--neon-blue)'; heroGuildJoinBtn.style.borderColor = 'rgba(0,240,255,0.4)'; }
-    // Load guild total XP
-    fetch(`${SUPABASE_URL}/rest/v1/profiles?guild=eq.${encodeURIComponent(guild)}&select=total_xp`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    }).then(r=>r.json()).then(members => {
-      const total = members.reduce((s,m)=>(s+(m.total_xp||0)),0);
-      const el = document.getElementById('hero-guild-xp');
-      if (el) el.textContent = '⚡ Guild XP: ' + total.toLocaleString();
-    }).catch(()=>{});
-  } else {
-    if (heroGuildName) heroGuildName.textContent = 'No Guild Yet';
-    if (heroGuildSub) heroGuildSub.textContent = 'Reach Organizer (300 XP) to join a guild';
-    if (heroGuildEmblem) heroGuildEmblem.textContent = '⚔️';
-    if (heroGuildJoinBtn) heroGuildJoinBtn.textContent = '⚔️ Join';
-  }
-
+  // Stat chips
   document.getElementById('stat-xp').textContent = xp.toLocaleString();
-  const inlineXp = document.getElementById('stat-xp-inline');
-  if (inlineXp) inlineXp.textContent = xp.toLocaleString() + ' XP';
-  const statGuild = document.getElementById('stat-guild');
-  if (statGuild) statGuild.textContent = guild ? guild.split(' ')[0] : '—';
 
+  // Guild hero panel
+  const guildEmblems = {
+    'District Warriors':'🔥','Turnout Titans':'🌊','The Momentum':'⚡',
+    'The Signal':'📡','The Miners':'⛏️','The Architects':'🏛️','The Treasury':'💎'
+  };
   if(guild) {
-    document.querySelectorAll('.guild-join-btn-dash').forEach(btn => {
-      const card = btn.closest('.guild-card-dash');
-      const cardName = card.querySelector('.guild-name-dash').textContent;
-      if(guild.toUpperCase() === cardName.toUpperCase()) {
-        btn.textContent = '✓ Your Guild';
-        btn.classList.add('joined');
+    document.getElementById('hero-guild-emblem').textContent = guildEmblems[guild]||'⚔️';
+    document.getElementById('hero-guild-name').textContent = guild;
+    document.getElementById('hero-guild-sub').textContent = 'Your guild — keep climbing! ⚡';
+    const btn = document.getElementById('hero-guild-btn');
+    btn.textContent = '→ Guild HQ';
+    btn.style.color = 'var(--neon-blue)';
+    // Load guild total XP
+    fetch(`${SUPABASE_URL}/rest/v1/profiles?guild=eq.${encodeURIComponent(guild)}&select=total_xp`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    }).then(r=>r.json()).then(members=>{
+      const total = members.reduce((s,m)=>(s+(m.total_xp||0)),0);
+      document.getElementById('hero-guild-xp').textContent = '⚡ Guild XP: '+total.toLocaleString();
+    }).catch(()=>{});
+    // Mark joined guild card
+    document.querySelectorAll('.guild-card-dash').forEach(card=>{
+      const name = card.querySelector('.guild-name-dash').textContent;
+      if(guild.toUpperCase()===name.toUpperCase()){
         card.classList.add('joined');
+        const btn = card.querySelector('.guild-join-btn-dash');
+        if(btn){ btn.textContent='✓ Your Guild'; btn.classList.add('joined'); }
       }
     });
   }
@@ -816,652 +631,483 @@ function updateDashboard(user, profile) {
   loadActivity(user.id);
   loadGuildChatFeed(guild);
   loadUserBadges(user.id);
+  refreshGuildButtons(guild, profile?.guild_joined_at || null);
 }
 
 function buildRankPath(xp) {
   const ranks = window.RANKS_LIVE || RANKS;
   const container = document.getElementById('rank-path');
   container.innerHTML = '';
-  ranks.forEach(r => {
-    const status = xp >= r.xp ? (getCurrentRank(xp).name === r.name ? 'current' : 'achieved') : 'locked';
-    const color = r.color || 'var(--neon-blue)';
-    const dotStyle = status === 'current'
+  ranks.forEach(r=>{
+    const status = xp>=r.xp?(getCurrentRank(xp).name===r.name?'current':'achieved'):'locked';
+    const color = r.color||'var(--neon-blue)';
+    const dotStyle = status==='current'
       ? `background:linear-gradient(135deg,${color},var(--neon-purple));box-shadow:0 0 15px ${color}40;`
-      : status === 'achieved' ? 'background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000;' : '';
+      : status==='achieved'?'background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000;':'';
     container.innerHTML += `
       <div class="rank-row ${status}">
         <div class="rank-dot ${status}" style="${dotStyle}">${r.icon}</div>
-        <div>
-          <div class="rank-name">${r.name}</div>
-          <div class="rank-req">${r.xp.toLocaleString()} XP ${status==='achieved'?'✓':status==='current'?'← You are here':''}</div>
-        </div>
+        <div><div class="rank-name">${r.name}</div><div class="rank-req">${r.xp.toLocaleString()} XP ${status==='achieved'?'✓':status==='current'?'← You are here':''}</div></div>
         <div class="rank-perk">${r.perk}</div>
       </div>`;
   });
 }
 
-// ── BADGES ──────────────────────────────────────────────
 async function loadUserBadges(userId) {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/user_badges?user_id=eq.${userId}&select=badge_id,badges(name)`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/user_badges?user_id=eq.${userId}&select=badge_id,badges(name)`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
     const data = await res.json();
-    const earnedNames = new Set(data.map(b => b.badges?.name).filter(Boolean));
+    const earnedNames = new Set(data.map(b=>b.badges?.name).filter(Boolean));
     document.getElementById('stat-badges').textContent = earnedNames.size;
-
-    document.querySelectorAll('#badge-grid .badge-item-dash').forEach(el => {
-      const name = el.dataset.badge;
-      if(earnedNames.has(name)) {
-        el.classList.remove('locked');
-        el.classList.add('earned');
-      }
+    document.querySelectorAll('#badge-grid .badge-item-dash').forEach(el=>{
+      if(earnedNames.has(el.dataset.badge)){ el.classList.remove('locked'); el.classList.add('earned'); }
     });
-  } catch(e) { /* silent */ }
-}
-
-// Mobile tip helper
-function showMobileTip(card, msg) {
-  let tip = card.querySelector('.mobile-tip');
-  if (!tip) {
-    tip = document.createElement('div');
-    tip.className = 'mobile-tip';
-    tip.style.cssText = 'font-family:var(--font-ui);font-size:.65rem;color:var(--neon-blue);margin-top:.35rem;text-align:center;';
-    card.appendChild(tip);
-  }
-  tip.textContent = msg;
-  setTimeout(() => tip.remove(), 3000);
+  } catch(e){}
 }
 
 // ── MISSION BOARD ────────────────────────────────────────
-let allMissions = [];
-let completedIds = new Set();
-let eventCodes = {};
-let draggedCard = null;
-let currentFilter = 'all';
+let allMissions=[], completedIds=new Set(), eventCodes={}, draggedCard=null, currentFilter='all';
 
 async function loadEventCodes() {
   try {
     const res = await fetch(EVENTS_CSV_URL);
     const text = await res.text();
-    const rows = parseCSV(text);
-    rows.forEach(r => {
-      if(r['Event Code'] && r.Type) eventCodes[r.Type.toLowerCase()] = r['Event Code'].trim();
-    });
-  } catch(e) {}
+    parseCSV(text).forEach(r=>{ if(r['Event Code']&&r.Type) eventCodes[r.Type.toLowerCase()]=r['Event Code'].trim(); });
+  } catch(e){}
 }
 
 async function loadMissions() {
   try {
     await loadEventCodes();
-    const [gameRes, funRes] = await Promise.all([fetch(GAME_CSV_URL), fetch(FUN_CSV_URL)]);
-    const gameRows = parseCSV(await gameRes.text()).filter(r => r.Action && r.Active === 'YES');
-    const funRows  = parseCSV(await funRes.text()).filter(r => r.Action && r.Active === 'YES');
-
-    allMissions = [...gameRows, ...funRows].map((r, i) => ({
-      id: 'mission_' + i,
-      category: r.Category || 'Other',
-      action: r.Action,
-      xp: parseInt(r.XP) || 0,
-      verification: r.Verification || 'Auto',
-      icon: r.Icon || '⚡',
-      description: r.Description || '',
-      repeatable: (r.Repeatable || 'YES') === 'YES',
-      guild: r.Guild || '',
+    const [gameRes,funRes] = await Promise.all([fetch(GAME_CSV_URL),fetch(FUN_CSV_URL)]);
+    const gameRows = parseCSV(await gameRes.text()).filter(r=>r.Action&&r.Active==='YES');
+    const funRows  = parseCSV(await funRes.text()).filter(r=>r.Action&&r.Active==='YES');
+    allMissions = [...gameRows,...funRows].map((r,i)=>({
+      id:'mission_'+i, category:r.Category||'Other', action:r.Action,
+      xp:parseInt(r.XP)||0, verification:r.Verification||'Auto',
+      icon:r.Icon||'⚡', description:r.Description||'',
+      repeatable:(r.Repeatable||'YES')==='YES',
     }));
-
-    const saved = JSON.parse(localStorage.getItem('vrxp_completed') || '[]');
+    const saved = JSON.parse(localStorage.getItem('vrxp_completed')||'[]');
     completedIds = new Set(saved);
     renderBoard();
-
-    // Load any missions saved as in-progress from guild pages or index
-    await loadSavedInProgress();
-
-  } catch(err) {
-    document.getElementById('hint-todo').textContent = '// Unable to load missions';
+  } catch(err){
+    document.getElementById('hint-todo').textContent='// Unable to load missions';
     console.error(err);
   }
 }
 
-async function loadSavedInProgress() {
-  if (!window.sb) return;
-  try {
-    const { data: { user } } = await window.sb.auth.getUser();
-    if (!user) return;
-
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/user_missions?user_id=eq.${user.id}&status=eq.in_progress&select=*`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    const saved = await res.json();
-    if (!saved || !saved.length) return;
-
-    saved.forEach(row => {
-      // Find matching mission in allMissions
-      const mission = allMissions.find(m => m.action === row.action);
-      if (!mission) return;
-      // Don't add if already in progress or done
-      if (document.getElementById(mission.id)) {
-        const existing = document.getElementById(mission.id);
-        const existingCol = existing.closest('.board-col');
-        if (existingCol && existingCol.id !== 'col-todo') return;
-        // Move from todo to in-progress
-        addProofUI(existing, mission.verification);
-        document.getElementById('col-progress').appendChild(existing);
-      }
-    });
-    updateCounts();
-  } catch(e) { console.warn('Could not load saved in-progress missions', e); }
-}
-
 function renderBoard(filter) {
-  if(filter !== undefined) currentFilter = filter;
+  if(filter!==undefined) currentFilter=filter;
   const colTodo = document.getElementById('col-todo');
-  colTodo.querySelectorAll('.mission-card').forEach(c => c.remove());
-
-  const missions = allMissions.filter(m => {
-    if(currentFilter !== 'all' && m.category !== currentFilter) return false;
-    if(!m.repeatable && completedIds.has(m.id)) return false; // one-and-done disappear
+  colTodo.querySelectorAll('.mission-card').forEach(c=>c.remove());
+  allMissions.filter(m=>{
+    if(currentFilter!=='all'&&m.category!==currentFilter) return false;
+    if(!m.repeatable&&completedIds.has(m.id)) return false;
     return true;
-  });
-
-  missions.forEach(m => colTodo.appendChild(createMissionCard(m)));
+  }).forEach(m=>colTodo.appendChild(createMissionCard(m)));
   updateCounts();
 }
 
 function createMissionCard(m) {
   const card = document.createElement('div');
   card.className = 'mission-card';
-  // Add verification color class
-  const v = m.verification || 'Auto';
-  if(v === 'Auto' || v === 'Honor System' && false) card.classList.add('verify-auto');
-  else if(v === 'Honor System' || v === 'Self-report') card.classList.add('verify-self');
-  else if(v === 'Screenshot') card.classList.add('verify-screenshot');
-  else if(v === 'Event Code') card.classList.add('verify-event');
+  // Color-coded left border by verification type
+  const v = m.verification||'Auto';
+  if(v==='Auto') card.classList.add('verify-auto');
+  else if(v==='Honor System'||v==='Self-report') card.classList.add('verify-self');
+  else if(v==='Screenshot') card.classList.add('verify-screenshot');
+  else if(v==='Event Code') card.classList.add('verify-event');
   else card.classList.add('verify-auto');
-  card.id = m.id;
-  card.draggable = true;
-  card.dataset.id = m.id;
-  card.dataset.xp = m.xp;
-  card.dataset.verify = m.verification;
-  card.dataset.repeatable = m.repeatable;
-  card.dataset.action = m.action;
-  card.dataset.category = m.category;
 
-  card.innerHTML = `
-    <div class="mc-top">
-      <div class="mc-icon">${m.icon}</div>
-      <div class="mc-name">${m.action}</div>
-    </div>
-    <div class="mc-xp-row">
-      <div class="mc-xp">+${m.xp} XP</div>
-      <div class="mc-cat">${m.category}</div>
-    </div>
+  card.id=m.id; card.draggable=true;
+  card.dataset.id=m.id; card.dataset.xp=m.xp;
+  card.dataset.verify=m.verification; card.dataset.repeatable=m.repeatable;
+  card.dataset.action=m.action; card.dataset.category=m.category;
+  card.innerHTML=`
+    <div class="mc-top"><div class="mc-icon">${m.icon}</div><div class="mc-name">${m.action}</div></div>
+    <div class="mc-xp-row"><div class="mc-xp">+${m.xp} XP</div><div class="mc-cat">${m.category}</div></div>
     <div class="mc-verify">${m.verification}</div>`;
-
-  card.addEventListener('dragstart', e => { draggedCard = card; setTimeout(()=>card.classList.add('dragging'),0); });
-  card.addEventListener('dragend', () => { card.classList.remove('dragging'); draggedCard = null; });
-
-  // Mobile tap-to-select then tap-column-to-move
-  card.addEventListener('touchend', e => {
-    if (!('ontouchstart' in window)) return;
-    e.preventDefault();
-    const selected = document.querySelector('.mission-card.mobile-selected');
-    if (selected && selected !== card) {
-      // Deselect previous
-      selected.classList.remove('mobile-selected');
-    }
-    card.classList.toggle('mobile-selected');
-    if (card.classList.contains('mobile-selected')) {
-      showMobileTip(card, '👆 Now tap a column header to move here');
-    }
-  });
+  card.addEventListener('dragstart',e=>{draggedCard=card;setTimeout(()=>card.classList.add('dragging'),0);});
+  card.addEventListener('dragend',()=>{card.classList.remove('dragging');draggedCard=null;});
   return card;
 }
 
-function boardDragOver(e) { e.preventDefault(); e.currentTarget.querySelector('.drop-hint')?.classList.add('drag-over'); }
-function boardDragLeave(e) { e.currentTarget.querySelector('.drop-hint')?.classList.remove('drag-over'); }
-function boardDrop(e, colId) {
+function boardDragOver(e){e.preventDefault();e.currentTarget.querySelector('.drop-hint')?.classList.add('drag-over');}
+function boardDragLeave(e){e.currentTarget.querySelector('.drop-hint')?.classList.remove('drag-over');}
+function boardDrop(e,colId){
   e.preventDefault();
   e.currentTarget.querySelector('.drop-hint')?.classList.remove('drag-over');
   if(!draggedCard) return;
-  const verify = draggedCard.dataset.verify;
-  const col = document.getElementById('col-' + colId);
-
-  if(colId === 'progress') {
-    addProofUI(draggedCard, verify);
-    col.appendChild(draggedCard);
-  } else if(colId === 'todo') {
-    removeProofUI(draggedCard);
-    document.getElementById('col-todo').appendChild(draggedCard);
-  } else if(colId === 'done') {
-    if(verify === 'Auto') { completeCard(draggedCard); col.appendChild(draggedCard); }
-    else { addProofUI(draggedCard, verify); document.getElementById('col-progress').appendChild(draggedCard); }
+  const verify=draggedCard.dataset.verify;
+  const col=document.getElementById('col-'+colId);
+  if(colId==='progress'){addProofUI(draggedCard,verify);col.appendChild(draggedCard);}
+  else if(colId==='todo'){removeProofUI(draggedCard);document.getElementById('col-todo').appendChild(draggedCard);}
+  else if(colId==='done'){
+    if(verify==='Auto'){completeCard(draggedCard);col.appendChild(draggedCard);}
+    else{addProofUI(draggedCard,verify);document.getElementById('col-progress').appendChild(draggedCard);}
   }
   updateCounts();
 }
 
-function addProofUI(card, verify) {
+function addProofUI(card,verify) {
   if(card.querySelector('.mc-proof')) return;
-  const proof = document.createElement('div');
-  proof.className = 'mc-proof';
-
-  if(verify === 'Auto') {
-    proof.innerHTML = `<button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ Mark Complete</button>`;
-  } else if(verify === 'Event Code') {
-    proof.innerHTML = `
-      <div class="mc-proof-label">Enter today's event code</div>
-      <input class="mc-input" placeholder="e.g. WALK0614" maxlength="20">
-      <div style="font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim);margin-bottom:.35rem;">Karen announces the code at the start of the event</div>
-      <button class="mc-btn mc-btn-submit" onclick="submitEventCode(this)">Submit Code</button>
-      <div class="mc-msg"></div>`;
-  } else if(verify === 'Honor System') {
-    proof.innerHTML = `<div class="mc-proof-label">Confirm you completed your shift</div><button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ I Completed My Shift</button>`;
-  } else if(verify === 'Self-report') {
-    proof.innerHTML = `<div class="mc-proof-label">Confirm you completed this action</div><button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ I Did This</button>`;
-  } else if(verify === 'Screenshot') {
-    proof.innerHTML = `
-      <div class="mc-proof-label">Upload screenshot as proof</div>
-      <input type="file" accept="image/*" class="mc-input" style="padding:.3rem;">
-      <input class="mc-input" placeholder="Post URL (optional)">
-      <button class="mc-btn mc-btn-submit" onclick="submitScreenshot(this)">Submit for Review</button>
-      <div class="mc-msg"></div>`;
-  } else if(verify === 'ActBlue Order #') {
-    proof.innerHTML = `
-      <div class="mc-proof-label">Enter your ActBlue order number</div>
-      <input class="mc-input" placeholder="e.g. 12345678">
-      <button class="mc-btn mc-btn-submit" onclick="submitActBlue(this)">Submit</button>
-      <div class="mc-msg"></div>`;
-  } else if(verify === 'Username') {
-    proof.innerHTML = `
-      <div class="mc-proof-label">Enter the username of who you recruited</div>
-      <input class="mc-input" placeholder="Their VoteReederXP username">
-      <button class="mc-btn mc-btn-submit" onclick="submitUsername(this)">Submit</button>
-      <div class="mc-msg"></div>`;
-  } else if(verify === 'Quiz') {
-    proof.innerHTML = `<div class="mc-proof-label">Complete the voter quiz on Voting 101</div><a href="register.html" class="mc-btn mc-btn-submit" style="display:block;text-align:center;text-decoration:none;">Go to Voting 101 →</a>`;
-  } else {
-    proof.innerHTML = `<button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ Mark Complete</button>`;
-  }
+  const proof=document.createElement('div'); proof.className='mc-proof';
+  if(verify==='Auto'||verify==='Self-report') proof.innerHTML=`<button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ Mark Complete</button>`;
+  else if(verify==='Event Code') proof.innerHTML=`<div class="mc-proof-label">Enter today's event code</div><input class="mc-input" placeholder="e.g. WALK0614" maxlength="20"><div style="font-size:.62rem;color:var(--text-dim);margin-bottom:.35rem;">Karen announces the code at the event</div><button class="mc-btn mc-btn-submit" onclick="submitEventCode(this)">Submit Code</button><div class="mc-msg"></div>`;
+  else if(verify==='Honor System') proof.innerHTML=`<div class="mc-proof-label">Confirm you completed your shift</div><button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ I Completed My Shift</button>`;
+  else if(verify==='Screenshot') proof.innerHTML=`<div class="mc-proof-label">Upload screenshot as proof</div><input type="file" accept="image/*" class="mc-input" style="padding:.3rem;"><input class="mc-input" placeholder="Post URL (optional)"><button class="mc-btn mc-btn-submit" onclick="submitScreenshot(this)">Submit for Review</button><div class="mc-msg"></div>`;
+  else if(verify==='ActBlue Order #') proof.innerHTML=`<div class="mc-proof-label">Enter your ActBlue order number</div><input class="mc-input" placeholder="e.g. 12345678"><button class="mc-btn mc-btn-submit" onclick="submitActBlue(this)">Submit</button><div class="mc-msg"></div>`;
+  else if(verify==='Username') proof.innerHTML=`<div class="mc-proof-label">Enter the username you recruited</div><input class="mc-input" placeholder="Their VoteReederXP username"><button class="mc-btn mc-btn-submit" onclick="submitUsername(this)">Submit</button><div class="mc-msg"></div>`;
+  else if(verify==='Quiz') proof.innerHTML=`<div class="mc-proof-label">Complete the quiz on Voting 101</div><a href="register.html" class="mc-btn mc-btn-submit" style="display:block;text-align:center;text-decoration:none;">Go to Voting 101 →</a>`;
+  else proof.innerHTML=`<button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ Mark Complete</button>`;
   card.appendChild(proof);
 }
 
-function removeProofUI(card) { card.querySelector('.mc-proof')?.remove(); card.classList.remove('pending-card','done-card'); }
+function removeProofUI(card){card.querySelector('.mc-proof')?.remove();card.classList.remove('pending-card','done-card');}
 
-function submitEventCode(btn) {
-  const card = btn.closest('.mission-card');
-  const input = card.querySelector('.mc-input');
-  const msg = card.querySelector('.mc-msg');
-  const code = input.value.trim().toUpperCase();
-  const action = card.dataset.action.toLowerCase();
-  let validCode = null;
-  for(const [type, ec] of Object.entries(eventCodes)) {
-    if(action.includes(type.toLowerCase())) { validCode = ec.toUpperCase(); break; }
-  }
-  if(!validCode) {
-    const allCodes = Object.values(eventCodes).map(c=>c.toUpperCase());
-    if(allCodes.includes(code)) validCode = code;
-  }
-  if(!validCode) { msg.style.color='var(--neon-pink)'; msg.textContent='✗ No active event code. Ask Karen!'; return; }
-  if(code === validCode) {
-    msg.style.color='#00ff88'; msg.textContent='✓ Code verified!';
-    setTimeout(()=>completeCard(card),800);
-  } else {
-    input.classList.add('error'); msg.style.color='var(--neon-pink)'; msg.textContent='✗ Wrong code. Try again.';
-  }
+function submitEventCode(btn){
+  const card=btn.closest('.mission-card');
+  const input=card.querySelector('.mc-input');
+  const msg=card.querySelector('.mc-msg');
+  const code=input.value.trim().toUpperCase();
+  const action=card.dataset.action.toLowerCase();
+  let validCode=null;
+  for(const [type,ec] of Object.entries(eventCodes)){if(action.includes(type)){validCode=ec.toUpperCase();break;}}
+  if(!validCode){const all=Object.values(eventCodes).map(c=>c.toUpperCase());if(all.includes(code))validCode=code;}
+  if(!validCode){msg.style.color='var(--neon-pink)';msg.textContent='✗ No active event code. Ask Karen!';return;}
+  if(code===validCode){msg.style.color='#00ff88';msg.textContent='✓ Code verified!';setTimeout(()=>completeCard(card),800);}
+  else{input.classList.add('error');msg.style.color='var(--neon-pink)';msg.textContent='✗ Wrong code. Try again.';}
 }
 
-function submitActBlue(btn) {
-  const card = btn.closest('.mission-card');
-  const input = card.querySelector('.mc-input');
-  const msg = card.querySelector('.mc-msg');
-  const orderNum = input.value.trim();
-  if(!orderNum||orderNum.length<4) { msg.style.color='var(--neon-pink)'; msg.textContent='✗ Please enter your ActBlue order number'; return; }
-  msg.style.color='#00ff88'; msg.textContent='✓ Submitted! XP pending verification.';
-  setTimeout(()=>{ card.classList.add('pending-card'); document.getElementById('col-review').appendChild(card); updateCounts(); },800);
+function submitActBlue(btn){
+  const card=btn.closest('.mission-card');
+  const input=card.querySelector('.mc-input');
+  const msg=card.querySelector('.mc-msg');
+  if(!input.value.trim()||input.value.trim().length<4){msg.style.color='var(--neon-pink)';msg.textContent='✗ Please enter your ActBlue order number';return;}
+  msg.style.color='#00ff88';msg.textContent='✓ Submitted! XP pending verification.';
+  setTimeout(()=>{card.classList.add('pending-card');document.getElementById('col-review').appendChild(card);updateCounts();},800);
 }
 
-function submitUsername(btn) {
-  const card = btn.closest('.mission-card');
-  const input = card.querySelector('.mc-input');
-  const msg = card.querySelector('.mc-msg');
-  const username = input.value.trim();
-  if(!username) { msg.style.color='var(--neon-pink)'; msg.textContent='✗ Please enter their username'; return; }
-  msg.style.color='#00ff88'; msg.textContent='✓ Submitted!';
+function submitUsername(btn){
+  const card=btn.closest('.mission-card');
+  const input=card.querySelector('.mc-input');
+  const msg=card.querySelector('.mc-msg');
+  if(!input.value.trim()){msg.style.color='var(--neon-pink)';msg.textContent='✗ Please enter their username';return;}
+  msg.style.color='#00ff88';msg.textContent='✓ Submitted!';
   setTimeout(()=>completeCard(card),800);
 }
 
-function submitScreenshot(btn) {
-  const card = btn.closest('.mission-card');
-  const fileInput = card.querySelector('input[type="file"]');
-  const msg = card.querySelector('.mc-msg');
-  if(!fileInput.files[0]) { msg.style.color='var(--neon-pink)'; msg.textContent='✗ Please upload a screenshot'; return; }
-  msg.style.color='var(--neon-purple)'; msg.textContent='✓ Submitted for review!';
+function submitScreenshot(btn){
+  const card=btn.closest('.mission-card');
+  const fileInput=card.querySelector('input[type="file"]');
+  const msg=card.querySelector('.mc-msg');
+  if(!fileInput.files[0]){msg.style.color='var(--neon-pink)';msg.textContent='✗ Please upload a screenshot';return;}
+  msg.style.color='var(--neon-purple)';msg.textContent='✓ Submitted for review!';
   card.classList.add('pending-card');
-  setTimeout(()=>{ document.getElementById('col-review').appendChild(card); updateCounts(); },800);
-  if(window.awardXP) awardXP(card.dataset.action, card.dataset.category, parseInt(card.dataset.xp));
+  setTimeout(()=>{document.getElementById('col-review').appendChild(card);updateCounts();},800);
+  if(window.awardXP) awardXP(card.dataset.action,card.dataset.category,parseInt(card.dataset.xp));
 }
 
-function confirmComplete(btn) { completeCard(btn.closest('.mission-card')); }
+function confirmComplete(btn){completeCard(btn.closest('.mission-card'));}
 
-function completeCard(card) {
-  const xp = parseInt(card.dataset.xp);
-  const action = card.dataset.action;
-  const category = card.dataset.category;
-  const id = card.dataset.id;
-  const repeatable = card.dataset.repeatable === 'true';
-
-  card.classList.add('done-card'); card.classList.remove('pending-card');
+function completeCard(card){
+  const xp=parseInt(card.dataset.xp);
+  const action=card.dataset.action;
+  const category=card.dataset.category;
+  const id=card.dataset.id;
+  const repeatable=card.dataset.repeatable==='true';
+  card.classList.add('done-card');card.classList.remove('pending-card');
   card.querySelector('.mc-proof')?.remove();
-  card.draggable = false; card.style.cursor = 'default';
-  card.innerHTML += `<div style="font-family:var(--font-display);font-size:.6rem;color:#00ff88;margin-top:.4rem;letter-spacing:.08em;">✓ COMPLETE — +${xp} XP</div>`;
-  // Prepend so newest shows at TOP
-  const doneCol = document.getElementById('col-done');
-  doneCol.insertBefore(card, doneCol.firstChild);
-
-  // One-and-done: save to localStorage so it disappears on reload
-  if(!repeatable) {
+  card.draggable=false;card.style.cursor='default';
+  card.innerHTML+=`<div style="font-family:var(--font-display);font-size:.6rem;color:#00ff88;margin-top:.4rem;letter-spacing:.08em;">✓ COMPLETE — +${xp} XP</div>`;
+  // Newest completed missions at TOP
+  const doneCol=document.getElementById('col-done');
+  doneCol.insertBefore(card,doneCol.firstChild);
+  if(!repeatable){
     completedIds.add(id);
-    localStorage.setItem('vrxp_completed', JSON.stringify([...completedIds]));
-    // Remove from available if still there
+    localStorage.setItem('vrxp_completed',JSON.stringify([...completedIds]));
     document.getElementById('col-todo').querySelector('#'+id)?.remove();
   }
-
-  if(window.awardXP) awardXP(action, category, xp);
+  if(window.awardXP) awardXP(action,category,xp);
   updateCounts();
 }
 
-function filterBoard(cat, btn) {
+function filterBoard(cat,btn){
   document.querySelectorAll('.board-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   renderBoard(cat);
 }
 
-function updateCounts() {
-  ['todo','progress','review','done'].forEach(id => {
-    const count = document.getElementById('col-'+id).querySelectorAll('.mission-card').length;
-    document.getElementById('count-'+id).textContent = count;
-    const hint = document.getElementById('hint-'+id);
-    if(hint) hint.style.display = count > 0 ? 'none' : 'block';
+function updateCounts(){
+  ['todo','progress','review','done'].forEach(id=>{
+    const count=document.getElementById('col-'+id).querySelectorAll('.mission-card').length;
+    document.getElementById('count-'+id).textContent=count;
+    const hint=document.getElementById('hint-'+id);
+    if(hint) hint.style.display=count>0?'none':'block';
   });
 }
 
-// Show mobile double-tap hint on touch devices
-if ('ontouchstart' in window) {
-  const hint = document.getElementById('mobile-board-hint');
-  if (hint) hint.style.display = 'block';
-
-  // Add tap-to-move on column headers
-  document.querySelectorAll('.board-col-header').forEach(header => {
-    header.addEventListener('touchend', e => {
-      const selected = document.querySelector('.mission-card.mobile-selected');
-      if (!selected) return;
-      e.preventDefault();
-      const col = header.closest('.board-col');
-      const colId = col.id;
-
-      if (colId === 'col-todo') {
-        removeProofUI(selected);
-        col.appendChild(selected);
-      } else if (colId === 'col-progress') {
-        addProofUI(selected, selected.dataset.verify);
-        col.appendChild(selected);
-      } else if (colId === 'col-review') {
-        selected.classList.add('pending-card');
-        col.appendChild(selected);
-      } else if (colId === 'col-done') {
-        const verify = selected.dataset.verify;
-        if (verify === 'Auto' || verify === 'Honor System' || verify === 'Self-report') {
-          completeCard(selected);
-        } else {
-          selected.classList.add('pending-card');
-          document.getElementById('col-review').appendChild(selected);
-        }
-      }
-
-      selected.classList.remove('mobile-selected');
-      updateCounts();
-    });
-  });
-}
-
-async function loadMiniLeaderboard(currentUserId) {
+async function loadMiniLeaderboard(currentUserId){
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc&limit=5`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc&limit=5`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
-    const data = await res.json();
-    if(!data||!data.length) {
-      document.getElementById('mini-leaderboard').innerHTML = '<div style="font-family:var(--font-ui);font-size:.75rem;color:var(--text-dim);text-align:center;padding:.5rem;">No players yet!</div>';
-      return;
-    }
-    const avatars = ['🥇','🥈','🥉','4️⃣','5️⃣'];
-    const mini = document.getElementById('mini-leaderboard');
-    mini.innerHTML = '';
-    data.forEach((p,i) => {
-      const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-      const isYou = p.id === currentUserId;
-      mini.innerHTML += `
+    const data=await res.json();
+    if(!data||!data.length) return;
+    const avatars=['🥇','🥈','🥉','4️⃣','5️⃣'];
+    const mini=document.getElementById('mini-leaderboard');
+    mini.innerHTML='';
+    data.forEach((p,i)=>{
+      const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const isYou=p.id===currentUserId;
+      mini.innerHTML+=`
         <div class="mini-lb-row ${isYou?'you':''}">
           <div class="mini-lb-num ${rankClass}">${avatars[i]||i+1}</div>
           <div class="mini-lb-name">${p.username||'Anonymous'}${isYou?' ◀':''}</div>
           <div class="mini-lb-xp">${(p.total_xp||0).toLocaleString()} XP</div>
         </div>`;
     });
-  } catch(e) { console.error('Mini leaderboard error:', e); }
+  } catch(e){}
 }
 
-// ── GUILD CHAT FEED ──────────────────────────────────────
-async function loadGuildChatFeed(guild) {
-  const feed = document.getElementById('guild-chat-feed');
-  if (!feed) return;
-  if (!guild) {
-    feed.innerHTML = '<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">Join a guild to see chat messages here!</div>';
-    return;
-  }
+async function loadLeaderboard(currentUserId){
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/guild_messages?guild=eq.${encodeURIComponent(guild)}&order=created_at.desc&limit=10`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc&limit=10`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
-    const msgs = await res.json();
-    if (!msgs || !msgs.length) {
-      feed.innerHTML = '<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">No messages yet — be the first to chat in your guild!</div>';
-      return;
-    }
-    feed.innerHTML = msgs.map(m => `
-      <div style="padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem;">
-          <span style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);font-weight:700;">${m.username||'Player'}</span>
-          <span style="font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);">${new Date(m.created_at).toLocaleDateString()}</span>
-          ${m.is_announcement ? '<span style="font-size:.6rem;background:rgba(255,215,0,0.2);color:var(--neon-gold);padding:.1rem .4rem;border-radius:4px;font-family:var(--font-display);">📌 PIN</span>' : ''}
-        </div>
-        <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);line-height:1.5;">${m.message}</div>
-      </div>`).join('');
-  } catch(e) { console.error('Guild chat feed error:', e); }
-}
-
-// ── FULL LEADERBOARD ─────────────────────────────────────
-async function loadLeaderboard(currentUserId) {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc&limit=10`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    const data = await res.json();
+    const data=await res.json();
     if(!data||!data.length) return;
-    const avatars = ['🦁','🐉','🌟','🔥','💚','⚡','🎯','🌊','🏆','📣'];
-    const list = document.getElementById('leaderboard-list');
-    list.innerHTML = '';
-    let userInTop10 = false;
-
     // Civic champion = #1
-    if(data[0]) {
-      document.getElementById('champ-name').textContent = data[0].username || 'Anonymous';
-      document.getElementById('champ-xp').textContent = (data[0].total_xp||0).toLocaleString() + ' XP';
+    if(data[0]){
+      document.getElementById('champ-name').textContent=data[0].username||'Anonymous';
+      document.getElementById('champ-xp').textContent=(data[0].total_xp||0).toLocaleString()+' XP';
     }
-
-    data.forEach((p,i) => {
-      const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-      const isYou = p.id === currentUserId;
-      if(isYou) { userInTop10=true; document.getElementById('stat-lb').textContent='#'+(i+1); document.getElementById('stat-rank').textContent=i+1; }
-      list.innerHTML += `
-        <div class="lb-row ${isYou?'you':''}">
-          <div class="lb-rank-num ${rankClass}">${i+1}</div>
-          <div class="lb-avatar">${avatars[i]||'⚡'}</div>
-          <div class="lb-name">${p.username||'Anonymous'}${isYou?' (You)':''}</div>
-          <div class="lb-xp">${(p.total_xp||0).toLocaleString()} XP</div>
-        </div>`;
+    let userInTop10=false;
+    data.forEach((p,i)=>{
+      const isYou=p.id===currentUserId;
+      if(isYou){userInTop10=true;document.getElementById('stat-lb').textContent='#'+(i+1);document.getElementById('stat-rank').textContent=i+1;}
     });
-
-    if(!userInTop10 && currentUserId) {
-      const posRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    if(!userInTop10&&currentUserId){
+      const posRes=await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,total_xp&order=total_xp.desc`,{
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
       });
-      const allData = await posRes.json();
-      const pos = allData.findIndex(p=>p.id===currentUserId)+1;
-      const me = allData.find(p=>p.id===currentUserId);
-      if(me && pos>0) {
-        list.innerHTML += `
-          <div style="text-align:center;font-family:var(--font-ui);font-size:.72rem;color:var(--text-dim);padding:.4rem 0;">•••</div>
-          <div class="lb-row you">
-            <div class="lb-rank-num">${pos}</div>
-            <div class="lb-avatar">⚡</div>
-            <div class="lb-name">${me.username||'You'} (You)</div>
-            <div class="lb-xp">${(me.total_xp||0).toLocaleString()} XP</div>
-          </div>`;
-        document.getElementById('stat-lb').textContent='#'+pos;
-        document.getElementById('stat-rank').textContent=pos;
-      }
+      const allData=await posRes.json();
+      const pos=allData.findIndex(p=>p.id===currentUserId)+1;
+      if(pos>0){document.getElementById('stat-lb').textContent='#'+pos;document.getElementById('stat-rank').textContent=pos;}
     }
-  } catch(e) { console.error('Leaderboard error:',e); }
+  } catch(e){}
 }
 
-// ── ACTIVITY FEED ────────────────────────────────────────
-async function loadActivity(userId) {
+async function loadActivity(userId){
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/xp_transactions?user_id=eq.${userId}&order=created_at.desc&limit=5`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/xp_transactions?user_id=eq.${userId}&order=created_at.desc&limit=5`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
-    const data = await res.json();
-    if(!data||data.length===0) return;
-    const feed = document.getElementById('activity-feed');
-    feed.innerHTML = data.map(tx=>`
+    const data=await res.json();
+    if(!data||!data.length) return;
+    const feed=document.getElementById('activity-feed');
+    feed.innerHTML=data.map(tx=>`
       <div class="activity-item">
         <div class="activity-icon">${CAT_ICONS[tx.category]||'⚡'}</div>
         <div class="activity-text">${tx.action||'XP earned'}</div>
         <div class="activity-xp">+${tx.xp_amount||tx.amount||0} XP</div>
       </div>`).join('');
-  } catch(e) {}
+  } catch(e){}
 }
 
-// ── GUILDS ───────────────────────────────────────────────
-window.joinGuild = function(guildName, emoji) {
-  if(!window.sb) { alert('Please log in to join a guild.'); return; }
-  window.sb.auth.getSession().then(({ data: { session } }) => {
-    if(!session) { document.getElementById('auth-overlay').classList.add('open'); return; }
-    window.sb.from('profiles').update({ guild: guildName }).eq('id', session.user.id)
-      .then(({ error }) => {
-        if(!error) {
-          document.querySelectorAll('.guild-join-btn-dash').forEach(btn => {
-            const card = btn.closest('.guild-card-dash');
-            const cardName = card.querySelector('.guild-name-dash').textContent;
-            const isThis = guildName.toUpperCase() === cardName.toUpperCase();
-            btn.textContent = isThis ? '✓ Your Guild' : btn.textContent;
-            btn.classList.toggle('joined', isThis);
-            card.classList.toggle('joined', isThis);
-          });
-          // Update hero guild display
-          const heroGuildName = document.getElementById('hero-guild-name');
-          const heroGuildEmblem = document.getElementById('hero-guild-emblem');
-          const heroGuildSub = document.getElementById('hero-guild-sub');
-          const heroGuildJoinBtn = document.getElementById('hero-guild-join-btn');
-          if (heroGuildName) heroGuildName.textContent = guildName;
-          if (heroGuildEmblem) heroGuildEmblem.textContent = emoji;
-          if (heroGuildSub) heroGuildSub.textContent = 'Your guild — keep climbing! ⚡';
-          if (heroGuildJoinBtn) { heroGuildJoinBtn.textContent = '→ Guild HQ'; }
-          const statGuild = document.getElementById('stat-guild');
-          if (statGuild) statGuild.textContent = guildName.split(' ')[0];
+async function loadGuildChatFeed(guild){
+  const feed=document.getElementById('guild-chat-feed');
+  if(!guild){feed.innerHTML='<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">Join a guild to see chat messages here!</div>';return;}
+  try {
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/guild_messages?guild=eq.${encodeURIComponent(guild)}&order=created_at.desc&limit=10`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    });
+    const msgs=await res.json();
+    if(!msgs||!msgs.length){feed.innerHTML='<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">No messages yet!</div>';return;}
+    feed.innerHTML=msgs.map(m=>`
+      <div style="padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem;">
+          <span style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);font-weight:700;">${m.username||'Player'}</span>
+          <span style="font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);">${new Date(m.created_at).toLocaleDateString()}</span>
+        </div>
+        <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);line-height:1.5;">${m.message}</div>
+      </div>`).join('');
+  } catch(e){}
+}
+
+function showGuildToast(msg) {
+  let toast = document.getElementById('guild-toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'guild-toast';
+    toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(0,240,255,0.15));border:1px solid var(--neon-gold);border-radius:12px;padding:.75rem 1.5rem;font-family:var(--font-display);font-size:.85rem;color:var(--neon-gold);z-index:9999;text-align:center;box-shadow:0 0 30px rgba(255,215,0,0.3);transition:opacity .5s;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.display = 'block';
+  setTimeout(()=>{ toast.style.opacity='0'; setTimeout(()=>toast.style.display='none',500); }, 3500);
+}
+
+function refreshGuildButtons(currentGuild, guildJoinedAt) {
+  document.querySelectorAll('.guild-card-dash').forEach(card=>{
+    const name = card.querySelector('.guild-name-dash').textContent;
+    const isJoined = currentGuild && currentGuild.toUpperCase()===name.toUpperCase();
+    const btn = card.querySelector('.guild-join-btn-dash');
+    card.classList.toggle('joined', isJoined);
+    if(btn){
+      if(isJoined){
+        btn.textContent = '✓ Your Guild · Leave';
+        btn.classList.add('joined');
+        btn.style.fontSize = '.52rem';
+      } else {
+        // Show join or locked based on 30-day rule
+        if(currentGuild && guildJoinedAt){
+          const daysSince=(Date.now()-new Date(guildJoinedAt))/86400000;
+          if(daysSince<30){
+            btn.textContent = `🔒 Switch in ${Math.ceil(30-daysSince)}d`;
+            btn.classList.remove('joined');
+            btn.style.opacity = '.5';
+            btn.style.cursor = 'not-allowed';
+          }
         }
+      }
+    }
+  });
+}
+
+window.joinGuild = function(guildName, emoji) {
+  if(!window.sb){ alert('Please log in to join a guild.'); return; }
+  window.sb.auth.getSession().then(({data:{session}})=>{
+    if(!session){ document.getElementById('auth-overlay').classList.add('open'); return; }
+
+    window.sb.from('profiles').select('guild,guild_joined_at,total_xp').eq('id',session.user.id).single()
+      .then(({data:profile})=>{
+        const currentGuild = profile?.guild || null;
+        const joinedAt = profile?.guild_joined_at || null;
+        const xp = profile?.total_xp || 0;
+
+        // Leaving current guild
+        if(currentGuild && currentGuild.toUpperCase()===guildName.toUpperCase()){
+          if(!confirm(`Leave ${guildName}? You can rejoin after 30 days.`)) return;
+          window.sb.from('profiles').update({guild:null, guild_joined_at:new Date().toISOString()}).eq('id',session.user.id)
+            .then(({error})=>{
+              if(!error){
+                showGuildToast('👋 You have left ' + guildName);
+                document.getElementById('hero-guild-emblem').textContent='⚔️';
+                document.getElementById('hero-guild-name').textContent='No Guild Yet';
+                document.getElementById('hero-guild-sub').textContent='Reach Organizer (300 XP) to join';
+                document.getElementById('hero-guild-xp').textContent='';
+                document.getElementById('hero-guild-btn').textContent='⚔️ Join a Guild';
+                refreshGuildButtons(null, new Date().toISOString());
+              }
+            });
+          return;
+        }
+
+        // Check XP requirement (300 XP = Organizer)
+        if(xp < 300){
+          alert(`You need 300 XP (Organizer rank) to join a guild. You have ${xp} XP — keep earning!`);
+          return;
+        }
+
+        // Check 30-day switching rule
+        if(currentGuild && joinedAt){
+          const daysSince=(Date.now()-new Date(joinedAt))/86400000;
+          if(daysSince<30){
+            alert(`You can switch guilds every 30 days. You can switch again in ${Math.ceil(30-daysSince)} days.`);
+            return;
+          }
+        }
+
+        // Confirm join
+        if(!confirm(`Join ${emoji} ${guildName}? You can switch guilds after 30 days.`)) return;
+
+        // Update Supabase — guild_joined_at timestamp triggers Make.com webhook
+        window.sb.from('profiles').update({
+          guild: guildName,
+          guild_joined_at: new Date().toISOString()
+        }).eq('id', session.user.id)
+          .then(({error})=>{
+            if(!error){
+              showGuildToast(`⚡ Welcome to ${guildName}! Check your email for next steps.`);
+              document.getElementById('hero-guild-emblem').textContent=emoji;
+              document.getElementById('hero-guild-name').textContent=guildName;
+              document.getElementById('hero-guild-sub').textContent='Your guild — keep climbing! ⚡';
+              document.getElementById('hero-guild-btn').textContent='→ Guild HQ';
+              document.getElementById('hero-guild-btn').style.color='var(--neon-blue)';
+              // Load guild total XP
+              window.sb.from('profiles').select('total_xp').eq('guild',guildName)
+                .then(({data:members})=>{
+                  const total=members?.reduce((s,m)=>(s+(m.total_xp||0)),0)||0;
+                  document.getElementById('hero-guild-xp').textContent='⚡ Guild XP: '+total.toLocaleString();
+                });
+              refreshGuildButtons(guildName, new Date().toISOString());
+            } else {
+              alert('Error joining guild. Please try again.');
+            }
+          });
       });
   });
 };
 
-// ── AUTH INIT ────────────────────────────────────────────
-// ── HALL OF FAME ─────────────────────────────────────────
-async function loadHallOfFame() {
+async function loadHallOfFame(){
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/hall_of_fame?select=*&order=created_at.asc`, {
-      headers: { 
-        'apikey': SUPABASE_KEY, 
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json'
-      }
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/hall_of_fame?select=*&order=created_at.asc`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
-    const data = await res.json();
-    console.log('Hall of Fame data:', data);
-    
-    if (!data || !data.length) {
-      console.warn('Hall of Fame: no data returned');
-      document.getElementById('hof-marquee').innerHTML = '<div class="hof-marquee-item"><span class="hof-trophy">🏆</span><div><div class="hof-name">Be the first Civic Champion!</div><div class="hof-month">Earn the most XP this month</div></div></div>';
+    const data=await res.json();
+    if(!data||!data.length){
+      document.getElementById('hof-marquee').innerHTML='<div class="hof-marquee-item"><span>🏆</span><div><div class="hof-name">Be the first Civic Champion!</div></div></div>';
       return;
     }
-
-    const marquee = document.getElementById('hof-marquee');
-    const table = document.getElementById('hof-table');
-    if (!marquee || !table) { console.warn('HOF elements not found'); return; }
-
-    // Build marquee items — doubled for seamless loop
-    const items = data.map(c => `
-      <div class="hof-marquee-item">
-        <span class="hof-trophy">${c.avatar || '🏆'}</span>
-        <div>
-          <div class="hof-name">${c.username}</div>
-          <div class="hof-month">${c.month}</div>
-        </div>
-        <div class="hof-xp">⚡ ${(c.xp_amount||0).toLocaleString()} XP</div>
-      </div>`).join('');
-    marquee.innerHTML = items + items;
-
-    // Build cards grid
-    table.innerHTML = data.map(c => `
+    const items=data.map(c=>`<div class="hof-marquee-item"><span style="font-size:1.4rem;">${c.avatar||'🏆'}</span><div><div class="hof-name">${c.username}</div><div class="hof-month">${c.month}</div></div><div class="hof-xp" style="font-family:var(--font-display);font-size:.7rem;color:#ffaa00;">⚡ ${(c.xp_amount||0).toLocaleString()} XP</div></div>`).join('');
+    document.getElementById('hof-marquee').innerHTML=items+items;
+    document.getElementById('hof-table').innerHTML=data.map(c=>`
       <div class="hof-card">
-        <div class="hof-card-avatar">${c.avatar || '🏆'}</div>
+        <div class="hof-card-avatar">${c.avatar||'🏆'}</div>
         <div class="hof-card-name">${c.username}</div>
         <div class="hof-card-month">${c.month}</div>
         <div class="hof-card-xp">⚡ ${(c.xp_amount||0).toLocaleString()} XP</div>
-        <div class="hof-card-guild">${c.guild || ''}</div>
+        <div style="font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);">${c.guild||''}</div>
       </div>`).join('');
-
-  } catch(e) { console.error('Hall of Fame error:', e); }
+  } catch(e){console.error('Hall of Fame error:',e);}
 }
 
+// ── AUTH CHECK — MUST STAY AFTER ALL FUNCTIONS, BEFORE xp.js/shared.js ──
 loadRanks();
 loadHallOfFame();
+
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if(!window.sb) return;
     clearInterval(check);
-    window.sb.auth.getSession().then(({ data: { session } }) => {
-      if(session) {
-        window.sb.from('profiles').select('*').eq('id', session.user.id).single()
-          .then(({ data: profile }) => updateDashboard(session.user, profile));
+    window.sb.auth.getSession().then(({data:{session}})=>{
+      if(session){
+        window.sb.from('profiles').select('*').eq('id',session.user.id).single()
+          .then(({data:profile})=>updateDashboard(session.user,profile));
       } else {
-        document.getElementById('not-logged-in').style.display = 'flex';
-        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('not-logged-in').style.display='flex';
+        document.getElementById('dashboard').style.display='none';
       }
     });
-
-    window.sb.auth.onAuthStateChange((event, session) => {
-      if(session) {
-        window.sb.from('profiles').select('*').eq('id', session.user.id).single()
-          .then(({ data: profile }) => updateDashboard(session.user, profile));
+    window.sb.auth.onAuthStateChange((event,session)=>{
+      if(session){
+        window.sb.from('profiles').select('*').eq('id',session.user.id).single()
+          .then(({data:profile})=>updateDashboard(session.user,profile));
       } else {
-        document.getElementById('not-logged-in').style.display = 'flex';
-        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('not-logged-in').style.display='flex';
+        document.getElementById('dashboard').style.display='none';
       }
     });
   }, 200);
 });
 </script>
 
+<!-- ⚠️ CRITICAL: xp.js and shared.js MUST be last — never move above the auth check -->
 <script src="xp.js"></script>
 <script src="shared.js"></script>
 </body>
