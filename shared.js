@@ -362,7 +362,7 @@ window.signInWithGoogle = async function() {
   if (!window.sb) return;
   await window.sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/index.html' }
+    options: { redirectTo: window.location.origin + '/game.html' }
   });
 };
 
@@ -370,7 +370,7 @@ window.signInWithFacebook = async function() {
   if (!window.sb) return;
   await window.sb.auth.signInWithOAuth({
     provider: 'facebook',
-    options: { redirectTo: window.location.origin + '/index.html' }
+    options: { redirectTo: window.location.origin + '/game.html' }
   });
 };
 
@@ -413,7 +413,7 @@ window.handlePasswordReset = async function() {
   if (!email) { msg.className='auth-msg error'; msg.textContent='✗ Please enter your email.'; return; }
   try {
     const {error} = await window.sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/index.html'
+      redirectTo: window.location.origin + '/game.html'
     });
     if (error) throw error;
     msg.className='auth-msg success'; msg.textContent='✓ Reset link sent! Check your email.';
