@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>District Warriors — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.guild-hero {
+  background: linear-gradient(135deg, rgba(255,102,0,0.15), rgba(255,215,0,0.08));
+  border-bottom: 2px solid #ff6600;
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.guild-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,102,0,0.1), transparent 70%);
+  pointer-events: none;
+}
+.guild-emblem { font-size: 5rem; margin-bottom: .75rem; display: block; }
+.guild-name { font-family: var(--font-display); font-size: clamp(2rem,5vw,3.5rem); font-weight: 900; color: #ff6600; text-shadow: 0 0 30px rgba(255,102,0,0.5); margin-bottom: .5rem; }
+.guild-tagline { font-family: var(--font-ui); font-size: 1.1rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+.guild-stats-bar { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+.guild-stat { text-align: center; }
+.guild-stat-val { font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: #ff6600; }
+.guild-stat-lbl { font-family: var(--font-ui); font-size: .75rem; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase; }
+
+.guild-content { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+@media(max-width:900px) { .guild-content { grid-template-columns: 1fr; padding: 1rem; } }
+
+.panel { background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.panel-title { font-family: var(--font-display); font-size: .8rem; color: #ff6600; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 1px solid rgba(255,102,0,0.3); }
+
+/* CHAT */
+.chat-wrap { display: flex; flex-direction: column; height: 500px; }
+.chat-messages { flex: 1; overflow-y: auto; padding: .5rem 0; display: flex; flex-direction: column; gap: .5rem; }
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(255,102,0,0.4); border-radius: 4px; }
+.chat-msg { padding: .6rem .85rem; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+.chat-msg.announcement { background: rgba(255,102,0,0.1); border-color: rgba(255,102,0,0.3); }
+.chat-msg.own { background: rgba(0,240,255,0.06); border-color: rgba(0,240,255,0.2); }
+.chat-msg-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .25rem; }
+.chat-username { font-family: var(--font-display); font-size: .7rem; color: #ff6600; font-weight: 700; }
+.chat-msg.own .chat-username { color: var(--neon-blue); }
+.chat-time { font-family: var(--font-ui); font-size: .65rem; color: var(--text-dim); margin-left: auto; }
+.chat-pin { font-size: .65rem; color: #ff6600; margin-left: .25rem; }
+.chat-text { font-family: var(--font-ui); font-size: .88rem; color: var(--text-primary); line-height: 1.5; }
+.chat-delete { font-size: .65rem; color: var(--text-dim); cursor: pointer; margin-left: auto; opacity: 0; transition: opacity .2s; }
+.chat-msg:hover .chat-delete { opacity: 1; }
+.chat-input-wrap { border-top: 1px solid var(--border-glow); padding-top: .75rem; margin-top: .75rem; }
+.chat-input-row { display: flex; gap: .5rem; }
+.chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,102,0,0.3); border-radius: 8px; padding: .6rem .85rem; color: var(--text-primary); font-family: var(--font-ui); font-size: .9rem; outline: none; }
+.chat-input:focus { border-color: #ff6600; }
+.chat-send-btn { font-family: var(--font-display); font-size: .65rem; letter-spacing: .08em; background: linear-gradient(135deg, #ff6600, #ffd700); color: #000; border: none; border-radius: 8px; padding: .6rem 1rem; cursor: pointer; white-space: nowrap; font-weight: 700; }
+.chat-announce-btn { font-family: var(--font-display); font-size: .6rem; letter-spacing: .06em; background: rgba(255,102,0,0.15); color: #ff6600; border: 1px solid rgba(255,102,0,0.4); border-radius: 6px; padding: .4rem .75rem; cursor: pointer; margin-top: .4rem; width: 100%; }
+.chat-not-member { text-align: center; padding: 2rem; font-family: var(--font-ui); color: var(--text-dim); font-size: .9rem; }
+.chat-not-member a { color: #ff6600; }
+
+/* LEADERBOARD */
+.guild-lb-row { display: flex; align-items: center; gap: .75rem; padding: .5rem .6rem; border-radius: 8px; margin-bottom: .35rem; border: 1px solid transparent; }
+.guild-lb-row.leader { border-color: rgba(255,102,0,0.4); background: rgba(255,102,0,0.08); }
+.guild-lb-num { font-family: var(--font-display); font-size: .85rem; font-weight: 900; width: 24px; text-align: center; color: var(--text-dim); }
+.guild-lb-num.gold { color: var(--neon-gold); }
+.guild-lb-num.silver { color: #aaaacc; }
+.guild-lb-num.bronze { color: #cd7f32; }
+.guild-lb-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,102,0,0.15); display: flex; align-items: center; justify-content: center; font-size: .9rem; }
+.guild-lb-name { font-family: var(--font-ui); font-size: .85rem; color: var(--text-primary); flex: 1; }
+.guild-lb-xp { font-family: var(--font-display); font-size: .72rem; color: var(--neon-gold); }
+.guild-leader-badge { font-family: var(--font-ui); font-size: .6rem; color: #ff6600; border: 1px solid rgba(255,102,0,0.4); border-radius: 4px; padding: .1rem .3rem; margin-left: .25rem; }
+
+/* EMAIL FORM */
+.email-form { display: none; }
+.email-form.visible { display: block; }
+.email-label { font-family: var(--font-ui); font-size: .8rem; color: var(--text-dim); margin-bottom: .35rem; display: block; }
+.email-input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,102,0,0.3); border-radius: 8px; padding: .55rem .85rem; color: var(--text-primary); font-family: var(--font-ui); font-size: .88rem; outline: none; box-sizing: border-box; margin-bottom: .75rem; }
+.email-textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,102,0,0.3); border-radius: 8px; padding: .55rem .85rem; color: var(--text-primary); font-family: var(--font-ui); font-size: .88rem; outline: none; box-sizing: border-box; min-height: 120px; resize: vertical; margin-bottom: .75rem; }
+.email-send-btn { width: 100%; font-family: var(--font-display); font-size: .72rem; letter-spacing: .08em; background: linear-gradient(135deg, #ff6600, #ffd700); color: #000; border: none; border-radius: 8px; padding: .65rem; cursor: pointer; font-weight: 700; }
+
+.panel-events { margin-bottom: 1.25rem; }
+.event-mission-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-glow);
+  border-radius: 10px;
+  padding: .85rem 1rem;
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.event-mission-card:hover { border-color: #ff6600; }
+.em-icon { font-size: 1.4rem; flex-shrink: 0; }
+.em-info { flex: 1; }
+.em-title { font-family: var(--font-ui); font-size: .9rem; font-weight: 700; color: var(--text-primary); margin-bottom: .2rem; }
+.em-meta { font-family: var(--font-ui); font-size: .75rem; color: var(--text-dim); }
+.em-xp { font-family: var(--font-display); font-size: .72rem; color: var(--neon-gold); white-space: nowrap; }
+.em-join-btn {
+  font-family: var(--font-display); font-size: .65rem; letter-spacing: .06em;
+  background: linear-gradient(135deg, #ff6600, var(--neon-purple));
+  color: #fff; border: none; border-radius: 6px; padding: .4rem .85rem;
+  cursor: pointer; white-space: nowrap; transition: all .2s;
+}
+.em-join-btn:hover { opacity: .85; transform: translateY(-1px); }
+
+</style>
+</head>
+<body>
+<div class="page-content">
+
+  <div class="guild-hero">
+    <span class="guild-emblem">🔥</span>
+    <div class="guild-name">DISTRICT WARRIORS</div>
+    <div class="guild-tagline">The boots on the ground for District 29. You fight for every vote.</div>
+    <div class="guild-stats-bar">
+      <div class="guild-stat"><div class="guild-stat-val" id="guild-members">—</div><div class="guild-stat-lbl">Members</div></div>
+      <div class="guild-stat"><div class="guild-stat-val" id="guild-total-xp">—</div><div class="guild-stat-lbl">Total XP</div></div>
+      <div class="guild-stat"><div class="guild-stat-val" id="guild-rank">#—</div><div class="guild-stat-lbl">Guild Rank</div></div>
+    </div>
+  </div>
+
+  <div class="guild-content">
+
+    <!-- LEFT: CHAT -->
+    <div>
+      <div class="panel">
+        <div class="panel-title">💬 Guild Chat</div>
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chat-messages">
+            <div style="text-align:center;padding:2rem;font-family:var(--font-ui);font-size:.85rem;color:var(--text-dim);">Loading messages...</div>
+          </div>
+          <div class="chat-input-wrap" id="chat-input-area" style="display:none;">
+            <div class="chat-input-row">
+              <input class="chat-input" id="chat-input" placeholder="Message your guild..." maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}">
+              <button class="chat-send-btn" onclick="sendMessage()">SEND</button>
+            </div>
+            <button class="chat-announce-btn" id="announce-btn" style="display:none;" onclick="sendMessage(true)">📌 Post as Announcement</button>
+          </div>
+          <div class="chat-not-member" id="chat-not-member" style="display:none;">
+            <p>You must be a member of District Warriors to chat.</p>
+            <p style="margin-top:.5rem;"><a href="game.html">Join this guild on the game page →</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- UPCOMING EVENTS + GUILD MISSIONS -->
+    <div class="panel panel-events">
+      <div class="panel-title">📅 Upcoming Events & Missions</div>
+      <div id="guild-events-missions">
+        <div style="text-align:center;padding:1rem;font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);">Loading...</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: LEADERBOARD + EMAIL -->
+    <div>
+      <div class="panel">
+        <div class="panel-title">🏆 Guild Leaderboard</div>
+        <div id="guild-leaderboard">
+          <div style="text-align:center;padding:1rem;font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);">Loading...</div>
+        </div>
+      </div>
+
+      <div class="panel" id="email-panel" style="display:none;">
+        <div class="panel-title">📧 Email Guild Members</div>
+        <label class="email-label">Subject</label>
+        <input class="email-input" id="email-subject" placeholder="e.g. Block walk this Saturday!">
+        <label class="email-label">Message</label>
+        <textarea class="email-textarea" id="email-body" placeholder="Write your message to all District Warriors members..."></textarea>
+        <button class="email-send-btn" onclick="sendGuildEmail()">⚡ SEND TO ALL DISTRICT WARRIORS</button>
+        <div id="email-msg" style="font-family:var(--font-ui);font-size:.82rem;margin-top:.5rem;text-align:center;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const GUILD_NAME = 'District Warriors';
+const GUILD_EMAIL = 'field@votereeder-brazoria.com';
+const GUILD_MAX = 50;
+const GUILD_COLOR = '#ff6600';
+const MAKE_WEBHOOK = 'https://hook.us2.make.com/g1pa5yb4en22koh65mgvhl543jktc8qp'; // update with guild email webhook
+const SUPABASE_URL = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
+const ADMIN_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=60615754&single=true&output=csv';
+
+let currentUser = null;
+let currentUsername = null;
+let isGuildMember = false;
+let isGuildLeader = false;
+let realtimeChannel = null;
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g,'').trim());
+  return lines.slice(1).map(line => {
+    const cols = []; let cur = '', inQ = false;
+    for(let i = 0; i < line.length; i++) {
+      if(line[i]==='"'){inQ=!inQ;}
+      else if(line[i]===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=line[i];}
+    }
+    cols.push(cur.trim());
+    const obj = {};
+    headers.forEach((h,i) => obj[h] = (cols[i]||'').replace(/^"|"$/g,'').trim());
+    return obj;
+  });
+}
+
+async function loadGuildStats() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?guild=eq.${encodeURIComponent(GUILD_NAME)}&select=id,username,total_xp`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const members = await res.json();
+    const totalXP = members.reduce((sum, m) => sum + (m.total_xp || 0), 0);
+    document.getElementById('guild-members').textContent = members.length;
+    // Show full badge if at capacity
+    if(members.length >= GUILD_MAX) {
+      const joinBtns = document.querySelectorAll('.guild-join-btn-dash');
+      joinBtns.forEach(btn => { btn.textContent = '🔒 Guild Full'; btn.disabled = true; btn.style.opacity = '.5'; });
+    }
+    document.getElementById('guild-total-xp').textContent = totalXP.toLocaleString();
+
+    // Leaderboard
+    const sorted = [...members].sort((a,b) => (b.total_xp||0) - (a.total_xp||0));
+    const avatars = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+    const lb = document.getElementById('guild-leaderboard');
+    lb.innerHTML = sorted.slice(0,10).map((m,i) => {
+      const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const isYou = currentUser && m.id === currentUser.id;
+      return `<div class="guild-lb-row ${i===0?'leader':''}">
+        <div class="guild-lb-num ${rankClass}">${i+1}</div>
+        <div class="guild-lb-avatar">${avatars[i]||'⚡'}</div>
+        <div class="guild-lb-name">${m.username||'Anonymous'}${isYou?' (You)':''}</div>
+        <div class="guild-lb-xp">${(m.total_xp||0).toLocaleString()} XP</div>
+      </div>`;
+    }).join('') || '<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1rem;">No members yet — be the first!</div>';
+
+  } catch(e) { console.error(e); }
+}
+
+async function checkGuildLeader() {
+  try {
+    const res = await fetch(ADMIN_CSV);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    const leader = rows.find(r =>
+      r.Guild === GUILD_NAME &&
+      r['Guild Role'] === 'Guild Leader' &&
+      r.Email === currentUser?.email
+    );
+    if (leader) {
+      isGuildLeader = true;
+      document.getElementById('announce-btn').style.display = 'block';
+      document.getElementById('email-panel').style.display = 'block';
+    }
+  } catch(e) {}
+}
+
+async function loadMessages() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/guild_messages?guild=eq.${encodeURIComponent(GUILD_NAME)}&order=created_at.asc&limit=100`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const msgs = await res.json();
+    renderMessages(msgs);
+  } catch(e) {}
+}
+
+function renderMessages(msgs) {
+  const container = document.getElementById('chat-messages');
+  if (!msgs || msgs.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:2rem;font-family:var(--font-ui);font-size:.85rem;color:var(--text-dim);">No messages yet — start the conversation! 🔥</div>';
+    return;
+  }
+  container.innerHTML = msgs.map(m => {
+    const isOwn = currentUser && m.user_id === currentUser.id;
+    const time = new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const date = new Date(m.created_at).toLocaleDateString([], {month:'short',day:'numeric'});
+    return `<div class="chat-msg ${m.is_announcement?'announcement':''} ${isOwn?'own':''}" data-id="${m.id}">
+      <div class="chat-msg-header">
+        <span class="chat-username">${m.username||'Anonymous'}</span>
+        ${m.is_announcement?'<span class="chat-pin">📌 ANNOUNCEMENT</span>':''}
+        <span class="chat-time">${date} ${time}</span>
+        ${isOwn?`<span class="chat-delete" onclick="deleteMessage('${m.id}')">✕</span>`:''}
+      </div>
+      <div class="chat-text">${escapeHtml(m.message)}</div>
+    </div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function sendMessage(isAnnouncement = false) {
+  if (!currentUser || !isGuildMember) return;
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/guild_messages`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        guild: GUILD_NAME,
+        user_id: currentUser.id,
+        username: currentUsername,
+        message: message,
+        is_announcement: isAnnouncement && isGuildLeader
+      })
+    });
+  } catch(e) { console.error(e); }
+}
+
+async function deleteMessage(id) {
+  if (!currentUser) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/guild_messages?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+  } catch(e) {}
+}
+
+async function sendGuildEmail() {
+  const subject = document.getElementById('email-subject').value.trim();
+  const body    = document.getElementById('email-body').value.trim();
+  const msg     = document.getElementById('email-msg');
+  if (!subject || !body) { msg.style.color='var(--neon-pink)'; msg.textContent='Please fill in subject and message.'; return; }
+
+  msg.style.color='var(--text-dim)'; msg.textContent='Sending...';
+  try {
+    await fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'guild_email', guild: GUILD_NAME, group_email: GUILD_EMAIL, subject, body, sender: currentUsername })
+    });
+    msg.style.color='#00ff88'; msg.textContent='✓ Email sent to all District Warriors!';
+    document.getElementById('email-subject').value = '';
+    document.getElementById('email-body').value = '';
+  } catch(e) {
+    msg.style.color='var(--neon-pink)'; msg.textContent='Something went wrong. Try again.';
+  }
+}
+
+function setupRealtime() {
+  if (!window.sb) return;
+  realtimeChannel = window.sb
+    .channel('guild-warriors-chat')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'guild_messages',
+      filter: `guild=eq.${GUILD_NAME}`
+    }, () => loadMessages())
+    .subscribe();
+}
+
+
+const EVENTS_CSV_URL2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=0&single=true&output=csv';
+const GAME_CSV_URL2   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=1810466887&single=true&output=csv';
+const FUN_CSV_URL2    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=15253665&single=true&output=csv';
+
+async function loadGuildEventsMissions() {
+  try {
+    const [evRes, gmRes, fnRes] = await Promise.all([
+      fetch(EVENTS_CSV_URL2),
+      fetch(GAME_CSV_URL2),
+      fetch(FUN_CSV_URL2)
+    ]);
+    const events   = parseCSV(await evRes.text());
+    const gameMiss = parseCSV(await gmRes.text());
+    const funMiss  = parseCSV(await fnRes.text());
+
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    // Filter upcoming events for this guild
+    const guildEvents = events.filter(e => {
+      if (!e.Guild || e.Guild.trim() !== GUILD_NAME) return false;
+      if (!e.Date) return true;
+      const d = new Date(e.Date);
+      return d >= today;
+    }).slice(0, 5);
+
+    // Filter missions for this guild
+    const guildMissions = [...gameMiss, ...funMiss].filter(m =>
+      m.Active === 'YES' && m.Guild && m.Guild.trim() === GUILD_NAME
+    ).slice(0, 5);
+
+    const container = document.getElementById('guild-events-missions');
+    let html = '';
+
+    if (guildEvents.length === 0 && guildMissions.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:1.5rem;font-family:var(--font-ui);font-size:.85rem;color:var(--text-dim);">No upcoming events or missions — check back soon!</div>';
+      return;
+    }
+
+    // Events first
+    guildEvents.forEach(e => {
+      const dateStr = e.Date ? new Date(e.Date).toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'}) : 'TBD';
+      html += `<div class="event-mission-card">
+        <div class="em-icon">📅</div>
+        <div class="em-info">
+          <div class="em-title">${e.Title || e.Type || 'Event'}</div>
+          <div class="em-meta">${dateStr}${e.Location ? ' · ' + e.Location : ''}</div>
+        </div>
+        <div class="em-xp">+${e.XP || 400} XP</div>
+        <button class="em-join-btn" onclick="joinMission('${(e.Title||e.Type||'Event').replace(/'/g,"\'")}','Events',${e.XP||400},'📅','Event Code')">
+          ⚡ JOIN
+        </button>
+      </div>`;
+    });
+
+    // Missions
+    guildMissions.forEach(m => {
+      html += `<div class="event-mission-card">
+        <div class="em-icon">${m.Icon || '⚡'}</div>
+        <div class="em-info">
+          <div class="em-title">${m.Action}</div>
+          <div class="em-meta">${m.Category} · ${m.Verification}</div>
+        </div>
+        <div class="em-xp">+${m.XP || 0} XP</div>
+        <button class="em-join-btn" onclick="joinMission('${m.Action.replace(/'/g,"\'")}','${m.Category}',${m.XP||0},'${m.Icon||'⚡'}','${m.Verification}')">
+          ⚡ JOIN
+        </button>
+      </div>`;
+    });
+
+    container.innerHTML = html;
+  } catch(e) { console.warn('Could not load guild events/missions', e); }
+}
+
+// Auth init
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(async () => {
+    if (!window.sb) return;
+    clearInterval(check);
+
+    const { data: { session } } = await window.sb.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      const { data: profile } = await window.sb.from('profiles').select('username,guild,total_xp').eq('id', session.user.id).single();
+      currentUsername = profile?.username || session.user.email.split('@')[0];
+      isGuildMember = profile?.guild === GUILD_NAME;
+
+      if (isGuildMember) {
+        document.getElementById('chat-input-area').style.display = 'block';
+        document.getElementById('chat-not-member').style.display = 'none';
+        await checkGuildLeader();
+      } else {
+        document.getElementById('chat-input-area').style.display = 'none';
+        document.getElementById('chat-not-member').style.display = 'block';
+      }
+    } else {
+      document.getElementById('chat-input-area').style.display = 'none';
+      document.getElementById('chat-not-member').style.display = 'block';
+      document.getElementById('chat-not-member').innerHTML = '<p>Please <a href="#" onclick="document.getElementById(\'auth-overlay\').classList.add(\'open\')" style="color:#ff6600;">log in</a> to view and join the guild chat.</p>';
+    }
+
+    loadGuildStats();
+    loadGuildEventsMissions();
+    loadMessages();
+    setupRealtime();
+  }, 200);
+});
+</script>
+<script src="xp.js"></script>
+
+  <!-- SOCIAL FEED -->
+  <div style="max-width:1280px;margin:2rem auto;padding:0 2rem 4rem;">
+    <div style="text-align:center;margin-bottom:1.5rem;">
+      <div style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);letter-spacing:.3em;text-transform:uppercase;margin-bottom:.35rem;">// CAMPAIGN FEED</div>
+      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--text-primary);">📱 Latest from the Trail</div>
+    </div>
+    <div style="border:1px solid var(--border-glow);border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.02);width:100%;">
+      <div style="position:relative;width:100%;padding-bottom:100%;height:0;overflow:hidden;">
+        <iframe src="https://www.juicer.io/api/feeds/elect-karen-reeder/iframe" frameborder="0" style="position:absolute;top:0;left:0;width:100%;height:500px;display:block;" title="Elect Karen Reeder - Juicer social media feed"></iframe>
+      </div>
+    </div>
+  </div>
+<script src="shared.js"></script>
+</body>
+</html>

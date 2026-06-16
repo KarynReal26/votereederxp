@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join the Campaign — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<style>
+.reg-page { max-width: 780px; margin: 0 auto; padding: 1.5rem 2rem 4rem; }
+
+/* Welcome banner */
+.reg-welcome {
+  background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(191,0,255,0.08));
+  border: 1px solid rgba(0,240,255,0.25);
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.reg-welcome-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+.reg-welcome-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: .75rem;
+}
+.reg-welcome-text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.reg-welcome-text strong { color: var(--text-primary); }
+
+/* Form card */
+.reg-form-card {
+  background: var(--bg-card);
+  border: 2px solid var(--neon-blue);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,240,255,0.12);
+}
+.reg-form-header {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  padding: .7rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.reg-form-header span {
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .1em;
+  color: #fff;
+}
+.reg-form-body { padding: 2rem 2.5rem; }
+@media(max-width:600px) { .reg-form-body { padding: 1.5rem 1rem; } }
+
+/* Section labels */
+.reg-section {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  color: var(--neon-pink);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin: 1.75rem 0 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border-glow);
+}
+.reg-section:first-of-type { margin-top: 0; }
+
+/* Fields */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 0; }
+@media(max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+.form-group { margin-bottom: 1.25rem; }
+.form-label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: .82rem;
+  color: var(--neon-blue);
+  letter-spacing: .05em;
+  margin-bottom: .4rem;
+}
+.form-label .req { color: var(--neon-pink); }
+.form-label .hint { color: var(--text-dim); font-size: .78rem; font-weight: 400; }
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(0,240,255,0.25);
+  border-radius: 8px;
+  padding: .7rem 1rem;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  box-sizing: border-box;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 12px rgba(0,240,255,0.15);
+}
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300f0ff' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 12px; padding-right: 2.5rem; }
+.form-select option { background: #0a0a1a; color: #e0e0ff; }
+.form-textarea { resize: vertical; min-height: 90px; }
+
+/* Username field */
+.username-input { border-color: rgba(255,215,0,0.3) !important; }
+.username-input:focus { border-color: var(--neon-gold) !important; box-shadow: 0 0 12px rgba(255,215,0,0.15) !important; }
+.username-note {
+  background: rgba(255,215,0,0.06);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 6px;
+  padding: .5rem .75rem;
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  color: var(--text-dim);
+  margin-top: .4rem;
+}
+#username-check-msg { font-size: .8rem; margin-top: .3rem; min-height: 1.1em; }
+
+/* Password strength */
+.pw-requirements {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  margin-top: .5rem;
+  display: none;
+}
+.pw-req-list { list-style: none; padding: 0; margin: 0; }
+.pw-req-item { font-family: var(--font-ui); font-size: .8rem; color: #ff4444; padding: .15rem 0; }
+.pw-req-item::before { content: '✗ '; }
+.pw-req-item.met { color: #00ff88; }
+.pw-req-item.met::before { content: '✓ '; }
+
+/* Social login */
+.social-divider {
+  display: flex; align-items: center; gap: .75rem; margin: 1.5rem 0;
+}
+.social-divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+.social-divider-text { font-family: var(--font-ui); font-size: .8rem; color: var(--text-dim); white-space: nowrap; }
+.social-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: .8rem;
+  border-radius: 8px;
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: .6rem;
+}
+.social-btn-google {
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+.social-btn-google:hover { background: rgba(255,255,255,0.1); }
+
+/* Team select */
+.team-select {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(0,240,255,0.25);
+  border-radius: 8px;
+  padding: .5rem;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  outline: none;
+  cursor: pointer;
+}
+.team-select option { background: #0a0a1a; padding: .4rem; }
+
+/* Privacy / legal */
+.legal-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.legal-box p {
+  font-family: var(--font-ui);
+  font-size: .8rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin: 0 0 .6rem;
+}
+.legal-box p:last-of-type { margin-bottom: .75rem; }
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  margin-bottom: .6rem;
+}
+.check-row input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: var(--neon-blue);
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.check-row label {
+  font-family: var(--font-ui);
+  font-size: .88rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.check-row label a { color: var(--neon-blue); }
+.check-row label .req { color: var(--neon-pink); }
+
+/* Submit */
+.reg-submit-btn {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: .1em;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  margin-top: .5rem;
+  transition: opacity .2s, box-shadow .2s;
+  box-shadow: 0 0 20px rgba(0,240,255,0.2);
+}
+.reg-submit-btn:hover { opacity: .9; box-shadow: 0 0 35px rgba(0,240,255,0.4); }
+.reg-submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Submit message */
+#reg-submit-msg {
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  margin-top: .75rem;
+  min-height: 1.2em;
+}
+
+/* Success */
+.reg-success {
+  display: none;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+.reg-success-icon { font-size: 4rem; margin-bottom: 1rem; }
+.reg-success h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--neon-blue);
+  margin-bottom: .75rem;
+}
+.reg-success p {
+  font-family: var(--font-ui);
+  color: var(--text-dim);
+  font-size: 1rem;
+  margin-bottom: .5rem;
+  line-height: 1.6;
+}
+.reg-success .xp-award {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--neon-gold);
+  text-shadow: 0 0 20px var(--neon-gold);
+  margin: 1rem 0;
+}
+
+/* Already have account */
+.already-member {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  color: var(--text-dim);
+}
+.already-member a { color: var(--neon-blue); cursor: pointer; }
+
+.cf-turnstile { margin: 1rem 0; }
+.form-error { color: var(--neon-pink); font-family: var(--font-ui); font-size: .8rem; margin-top: .3rem; display: none; }
+</style>
+</head>
+<body>
+<div class="page-content">
+<div class="reg-page">
+
+  <!-- PAGE HERO -->
+  <div class="page-hero" style="text-align:center;">
+    <div class="page-tag">// ENLIST NOW</div>
+    <h1 class="page-title">Join Team Reeder</h1>
+  </div>
+
+  <!-- WELCOME MESSAGE -->
+  <div class="reg-welcome">
+    <div class="reg-welcome-icon">🎖️</div>
+    <div class="reg-welcome-title">Thank You for Stepping Up</div>
+    <p class="reg-welcome-text">
+      By volunteering for Karen Reeder's campaign, you're not just helping one candidate —
+      <strong>you're fighting for the future of District 29.</strong>
+      This is your opportunity to impact democracy directly. We have a real chance for change
+      in Texas, and <strong>you are now a part of our journey.</strong>
+      <br><br>
+      Fill out the form below to join the team, create your VoteReederXP account,
+      and start earning XP for every action you take. Welcome to the movement. ⚡
+    </p>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="reg-form-card">
+    <div class="reg-form-header">
+      <span>⚡ VOLUNTEER ENLISTMENT + ACCOUNT CREATION</span>
+      <span>+200 XP on completion</span>
+    </div>
+    <div class="reg-form-body">
+
+      <!-- SUCCESS STATE -->
+      <div class="reg-success" id="reg-success">
+        <div class="reg-success-icon">🎖️</div>
+        <h3>MISSION ACCEPTED!</h3>
+        <p>Welcome to Team Reeder! Check your email to confirm your account, then log in to start earning XP and making an impact.</p>
+        <div class="xp-award">+200 XP AWARDED!</div>
+        <p style="margin-top:1rem;">
+          <a href="index.html" class="btn btn-primary" style="display:inline-flex;margin-right:.5rem;">🏠 Go to Home</a>
+          <a href="game.html" style="color:var(--neon-blue);font-family:var(--font-ui);">→ View your missions</a>
+        </p>
+      </div>
+
+      <!-- MAIN FORM -->
+      <div id="reg-form-inner">
+
+        <!-- GOOGLE SIGN IN -->
+        <button onclick="signInWithGoogleVolunteer()" class="social-btn social-btn-google">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+          Continue with Google
+        </button>
+
+        <div class="social-divider">
+          <div class="social-divider-line"></div>
+          <span class="social-divider-text">or fill out the form</span>
+          <div class="social-divider-line"></div>
+        </div>
+
+        <!-- PERSONAL INFO -->
+        <div class="reg-section">// Your Info</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name <span class="req">*</span></label>
+            <input type="text" id="reg-first" class="form-input" placeholder="First name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name <span class="req">*</span></label>
+            <input type="text" id="reg-last" class="form-input" placeholder="Last name">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email <span class="req">*</span></label>
+            <input type="email" id="reg-email" class="form-input" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone <span class="req">*</span></label>
+            <input type="tel" id="reg-phone" class="form-input" placeholder="(555) 000-0000">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Current Stage <span class="req">*</span></label>
+            <select id="reg-stage" class="form-select">
+              <option value="">Select one...</option>
+              <option>High School</option>
+              <option>College</option>
+              <option>Professional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Profession / Job Title <span class="req">*</span></label>
+            <input type="text" id="reg-profession" class="form-input" placeholder="Your profession or job title">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company / School / Organization <span class="req">*</span></label>
+          <input type="text" id="reg-org" class="form-input" placeholder="School, company, or organization">
+        </div>
+
+        <!-- AREAS OF INTEREST -->
+        <div class="reg-section">// How You Want to Help</div>
+        <div class="form-group">
+          <label class="form-label">Areas of Interest <span class="req">*</span> <span class="hint">— hold Ctrl/Cmd to pick multiple</span></label>
+          <select id="reg-teams" multiple size="10" class="team-select">
+            <option value="Core Leadership">🧭 Core Leadership</option>
+            <option value="Data Team">📊 Data Team</option>
+            <option value="Outreach Team">📣 Outreach Team</option>
+            <option value="Field Team">🚪 Field Team</option>
+            <option value="Finance Team">💰 Finance Team</option>
+            <option value="Communications Team">📢 Communications Team</option>
+            <option value="Operations Team">⚙️ Operations Team</option>
+            <option value="Political / Coalitions Team">🤝 Political / Coalitions</option>
+            <option value="Legal / Compliance Team">⚖️ Legal / Compliance</option>
+            <option value="Issue Teams (Advisory)">🎯 Issue Teams (Advisory)</option>
+          </select>
+          <div class="form-error" id="teams-error">Please select at least one area of interest.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Anything else you want us to know? <span class="hint">— optional</span></label>
+          <textarea id="reg-notes" class="form-textarea" placeholder="Skills, availability, questions..."></textarea>
+        </div>
+
+        <!-- ACCOUNT CREATION -->
+        <div class="reg-section">// Create Your VoteReederXP Account</div>
+        <div class="form-group">
+          <label class="form-label" style="color:var(--neon-gold);">⚡ Username <span class="req">*</span></label>
+          <input type="text" id="reg-username" class="form-input username-input" placeholder="e.g. TexasTechVoter" maxlength="30" oninput="checkRegUsername(this.value)">
+          <div class="username-note">🛡️ <strong>Privacy rule:</strong> Do NOT use your real name. Choose an alias that protects your identity.</div>
+          <div id="username-check-msg"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="req">*</span></label>
+          <input type="password" id="reg-password" class="form-input" placeholder="Create a strong password" minlength="8" oninput="checkRegPassword(this.value);document.getElementById('reg-pw-req').style.display='block'">
+          <div class="pw-requirements" id="reg-pw-req">
+            <ul class="pw-req-list">
+              <li class="pw-req-item" id="rreq-length">At least 8 characters</li>
+              <li class="pw-req-item" id="rreq-upper">One uppercase letter (A-Z)</li>
+              <li class="pw-req-item" id="rreq-lower">One lowercase letter (a-z)</li>
+              <li class="pw-req-item" id="rreq-number">One number (0-9)</li>
+              <li class="pw-req-item" id="rreq-special">One special character (!@#$%^&*)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- LEGAL / TERMS -->
+        <div class="reg-section">// Terms & Agreements</div>
+        <div class="legal-box">
+          <p>By submitting this form and signing up for texts, you consent to receive marketing text messages (e.g., event invitations, program updates), polling or voting-related text messages (e.g., election reminders, opinion surveys), and public service announcement text messages (e.g., legislative updates, voter education) from Karen Reeder for Texas House District 29 at the phone number you provided, including messages sent by autodialer. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe at any time.</p>
+          <p>Your information will be used only for campaign communication purposes and will not be sold, rented, or shared with third parties outside of the campaign or its authorized service providers.</p>
+          <p style="font-size:.78rem;color:rgba(255,255,255,0.35);">Paid for by Karen Reeder for Texas House District 29.</p>
+
+          <div class="check-row">
+            <input type="checkbox" id="reg-age">
+            <label for="reg-age">I confirm that I am at least 18 years old (or 16 with parental consent for volunteer roles). <span class="req">*</span></label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="reg-tcpa">
+            <label for="reg-tcpa">I agree to receive campaign text messages and understand I can opt out at any time by replying STOP. <span class="req">*</span></label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="reg-privacy">
+            <label for="reg-privacy">I agree to the <a href="privacy.html" target="_blank">Privacy Policy</a> and <a href="terms.html" target="_blank">Terms of Use</a>. <span class="req">*</span></label>
+          </div>
+          <div class="form-error" id="legal-error">Please check all required boxes above.</div>
+        </div>
+
+        <!-- TURNSTILE -->
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADlXJRYWrvbYfwji" data-theme="dark"></div>
+
+        <button class="reg-submit-btn" id="reg-submit-btn" onclick="submitRegistration()">
+          ⚡ ENLIST NOW — JOIN TEAM REEDER
+        </button>
+        <div id="reg-submit-msg"></div>
+
+        <div class="already-member">
+          Already have an account? <a onclick="openLoginModal()">Log in here →</a>
+        </div>
+
+      </div><!-- end reg-form-inner -->
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
+const MAKE_VOLUNTEER_WEBHOOK = 'https://hook.us2.make.com/22nytlq9h0q8x4t0md8yfblf62r7w7fc';
+
+function checkRegUsername(val) {
+  const msg = document.getElementById('username-check-msg');
+  if (!val) { msg.textContent = ''; return; }
+  if (val.length < 3) { msg.style.color = '#ff4444'; msg.textContent = '✗ Too short (min 3 characters)'; return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(val)) { msg.style.color = '#ff4444'; msg.textContent = '✗ Letters, numbers, and underscores only'; return; }
+  msg.style.color = '#00ff88'; msg.textContent = '✓ Looks good!';
+}
+
+function checkRegPassword(pw) {
+  const set = (id, met) => { const el = document.getElementById(id); if (el) el.classList.toggle('met', met); };
+  set('rreq-length', pw.length >= 8);
+  set('rreq-upper', /[A-Z]/.test(pw));
+  set('rreq-lower', /[a-z]/.test(pw));
+  set('rreq-number', /[0-9]/.test(pw));
+  set('rreq-special', /[^a-zA-Z0-9]/.test(pw));
+}
+
+function isPasswordStrong(pw) {
+  return pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[^a-zA-Z0-9]/.test(pw);
+}
+
+function showRegMsg(type, text) {
+  const msg = document.getElementById('reg-submit-msg');
+  const ok = type === 'success';
+  msg.style.cssText = `color:${ok ? '#00ff88' : '#ff4444'};margin-top:.75rem;font-family:var(--font-ui);font-size:.9rem;text-align:center;`;
+  msg.textContent = text;
+}
+
+function openLoginModal() {
+  // Trigger the shared.js login modal
+  const overlay = document.getElementById('auth-overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    if (window.switchTab) switchTab('login');
+  }
+}
+
+window.signInWithGoogleVolunteer = async function() {
+  // Store that they came from volunteer page so we can show username prompt
+  localStorage.setItem('reg_source', 'volunteer');
+  if (window.sb) {
+    await window.sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/index.html' }
+    });
+  } else {
+    // Fallback — wait for sb to load
+    const wait = setInterval(() => {
+      if (window.sb) {
+        clearInterval(wait);
+        window.sb.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin + '/index.html' }
+        });
+      }
+    }, 200);
+  }
+};
+
+async function submitRegistration() {
+  const first    = document.getElementById('reg-first').value.trim();
+  const last     = document.getElementById('reg-last').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const phone    = document.getElementById('reg-phone').value.trim();
+  const stage    = document.getElementById('reg-stage').value;
+  const prof     = document.getElementById('reg-profession').value.trim();
+  const org      = document.getElementById('reg-org').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const notes    = document.getElementById('reg-notes').value.trim();
+  const teams    = [...document.querySelectorAll('#reg-teams option:checked')].map(o => o.value);
+  const ageOk    = document.getElementById('reg-age').checked;
+  const tcpaOk   = document.getElementById('reg-tcpa').checked;
+  const privOk   = document.getElementById('reg-privacy').checked;
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+  let valid = true;
+
+  if (!first || !last || !email || !phone || !stage || !prof || !org) {
+    showRegMsg('error', '✗ Please fill in all required personal info fields.');
+    valid = false;
+  }
+  if (teams.length === 0) {
+    document.getElementById('teams-error').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('teams-error').style.display = 'none';
+  }
+  if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) {
+    showRegMsg('error', '✗ Please choose a valid username (letters, numbers, underscores, min 3 chars).');
+    valid = false;
+  }
+  if (!isPasswordStrong(password)) {
+    showRegMsg('error', '✗ Please create a stronger password that meets all requirements.');
+    valid = false;
+  }
+  if (!ageOk || !tcpaOk || !privOk) {
+    document.getElementById('legal-error').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('legal-error').style.display = 'none';
+  }
+  if (!turnstileToken) {
+    showRegMsg('error', '✗ Please complete the security check.');
+    valid = false;
+  }
+  if (!valid) return;
+
+  const btn = document.getElementById('reg-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⚡ Enlisting...';
+
+  // Wait for Supabase to be ready
+  const waitForSb = () => new Promise(resolve => {
+    if (window.sb) return resolve();
+    const i = setInterval(() => { if (window.sb) { clearInterval(i); resolve(); } }, 100);
+  });
+
+  try {
+    await waitForSb();
+
+    // 1. Create Supabase auth account
+    const { data: authData, error: authError } = await window.sb.auth.signUp({
+      email,
+      password,
+      options: { data: { username, full_name: first + ' ' + last } }
+    });
+    if (authError) throw authError;
+
+    const userId = authData?.user?.id;
+
+    // 2. Save volunteer record
+    await fetch(`${SUPABASE_URL}/rest/v1/volunteers`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        first_name: first, last_name: last, email, phone,
+        current_stage: stage, profession: prof, organization: org,
+        roles: teams.join(', '), privacy_agreed: true, notes, username
+      })
+    });
+
+    // 3. Award 200 XP if user ID available
+    if (userId) {
+      await fetch(`${SUPABASE_URL}/rest/v1/rpc/award_xp`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          p_user_id: userId,
+          p_action: 'volunteer_signup',
+          p_category: 'Field Work',
+          p_amount: 200
+        })
+      }).catch(() => {});
+    }
+
+    // 4. Fire Make webhook → Smartsheet
+    fetch(MAKE_VOLUNTEER_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: first, last_name: last, email, phone, current_stage: stage, profession: prof, organization: org, roles: teams.join(', '), notes, username })
+    }).catch(() => {});
+
+    // 5. Show success
+    document.getElementById('reg-form-inner').style.display = 'none';
+    document.getElementById('reg-success').style.display = 'block';
+
+  } catch(err) {
+    showRegMsg('error', '✗ ' + (err.message || 'Something went wrong. Please try again.'));
+    btn.disabled = false;
+    btn.textContent = '⚡ ENLIST NOW — JOIN TEAM REEDER';
+    if (window.turnstile) turnstile.reset();
+  }
+}
+</script>
+
+<script src="xp.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>

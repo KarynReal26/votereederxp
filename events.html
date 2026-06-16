@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,240,255,0.015) 2px,rgba(0,240,255,0.015) 4px); pointer-events:none; z-index:1; }
+.events-page { max-width:1280px; margin:0 auto; padding:1.5rem 2rem 3rem; }
+.featured-event { display:grid; grid-template-columns:1.2fr 1fr; gap:0; border:2px solid var(--neon-blue); border-radius:16px; overflow:hidden; margin-bottom:3rem; box-shadow:0 0 40px rgba(0,240,255,0.2); cursor:pointer; transition:all .3s; min-height:400px; background:var(--bg-card); }
+.featured-event:hover { border-color:var(--neon-pink); box-shadow:0 0 50px rgba(255,0,170,0.3); }
+@media(max-width:768px){ .featured-event{ grid-template-columns:1fr; } }
+.featured-event-img { width:100%; height:100%; min-height:400px; object-fit:cover; display:block; }
+.featured-event-body { padding:2.5rem; display:flex; flex-direction:column; justify-content:center; }
+.featured-next-label { display:inline-block; background:var(--neon-pink); color:#fff; font-family:var(--font-display); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; padding:.3rem .8rem; border-radius:4px; margin-bottom:1rem; width:fit-content; }
+.featured-event-type { font-family:var(--font-display); font-size:.75rem; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.5rem; }
+.featured-event-title { font-family:var(--font-display); font-size:clamp(1.4rem,2.5vw,2rem); font-weight:900; color:var(--text-primary); line-height:1.2; margin-bottom:.75rem; }
+.featured-event-meta { font-family:Rajdhani,sans-serif; font-size:1rem; color:var(--text-dim); margin-bottom:.35rem; }
+.featured-event-desc { font-size:1rem; color:var(--text-dim); line-height:1.6; margin-bottom:1.5rem; flex:1; }
+.featured-event-footer { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+.scroll-section { margin-bottom:3rem; }
+.scroll-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; padding-bottom:.75rem; border-bottom:1px solid var(--border-glow); }
+.scroll-section-label { font-family:var(--font-display); font-size:.85rem; color:var(--neon-blue); letter-spacing:.15em; text-transform:uppercase; }
+.scroll-arrows { display:flex; gap:.5rem; }
+.scroll-btn { background:rgba(0,240,255,0.1); border:1px solid var(--neon-blue); color:var(--neon-blue); width:36px; height:36px; border-radius:6px; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.scroll-btn:hover { background:var(--neon-blue); color:var(--bg-deep); }
+.scroll-track { display:flex; gap:1.25rem; overflow-x:auto; scroll-behavior:smooth; padding-bottom:1rem; scrollbar-width:none; }
+.scroll-track::-webkit-scrollbar { display:none; }
+.event-card { flex:0 0 280px; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:12px; overflow:hidden; cursor:pointer; transition:all .3s; }
+.event-card:hover { border-color:var(--neon-blue); box-shadow:0 0 25px rgba(0,240,255,0.2); transform:translateY(-4px); }
+.event-card-img { width:100%; height:150px; object-fit:cover; display:block; border-bottom:1px solid var(--border-glow); }
+.event-card-body { padding:1rem; }
+.event-card-badge { display:inline-block; font-family:var(--font-display); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .6rem; border-radius:20px; margin-bottom:.5rem; }
+.event-card-title { font-family:var(--font-display); font-size:.9rem; font-weight:700; color:var(--text-primary); margin-bottom:.35rem; }
+.event-card-meta { font-family:Rajdhani,sans-serif; font-size:.85rem; color:var(--text-dim); margin-bottom:.25rem; }
+.event-card-desc { font-size:.82rem; color:var(--text-dim); line-height:1.4; margin-bottom:.75rem; }
+.event-card-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+.btn-rsvp { font-family:var(--font-display); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:var(--neon-pink); border:none; padding:.45rem 1rem; border-radius:6px; cursor:pointer; text-decoration:none; transition:all .2s; }
+.btn-rsvp:hover { background:var(--neon-purple); }
+.btn-photos { font-family:var(--font-display); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--neon-gold); background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.3); padding:.45rem 1rem; border-radius:6px; cursor:pointer; text-decoration:none; transition:all .2s; }
+.btn-photos:hover { background:rgba(255,215,0,0.2); }
+.loading-events { text-align:center; padding:4rem 0; font-family:var(--font-display); font-size:1rem; color:var(--neon-blue); letter-spacing:.2em; }
+.no-events { text-align:center; padding:3rem 0; font-family:var(--font-display); color:var(--text-dim); font-size:.9rem; letter-spacing:.1em; }
+.events-error { text-align:center; padding:3rem; background:rgba(255,68,68,0.05); border:1px solid rgba(255,68,68,0.2); border-radius:12px; margin:2rem 0; }
+.events-error p { font-family:var(--font-ui); color:var(--text-dim); margin:.5rem 0; }
+</style>
+</head>
+<body>
+<div class="page-content">
+<div class="events-page">
+
+  <div class="page-hero" style="text-align:center;">
+    <div class="page-tag">// CAMPAIGN OPERATIONS</div>
+    <h1 class="page-title">Events</h1>
+    <p class="page-sub">Attend events to earn <span style="color:var(--neon-gold);">XP</span>. RSVP on Mobilize to get location details.</p>
+  </div>
+
+  <div id="loading-events" class="loading-events">// LOADING MISSION BRIEFINGS...</div>
+  <div id="events-error" class="events-error" style="display:none;">
+    <div style="font-size:2rem;margin-bottom:.75rem;">📡</div>
+    <p style="font-family:var(--font-display);color:var(--neon-blue);">Unable to load events right now.</p>
+    <p>Check back soon or <a href="mailto:info@votereederxp.com" style="color:var(--neon-blue);">contact us</a> for upcoming event info.</p>
+  </div>
+
+  <div id="featured-section" style="display:none;margin-bottom:2rem;">
+    <div id="featured-event" class="featured-event"></div>
+  </div>
+
+  <div id="upcoming-section" class="scroll-section" style="display:none;">
+    <div class="scroll-section-header">
+      <div class="scroll-section-label">// Upcoming Events</div>
+      <div class="scroll-arrows">
+        <button class="scroll-btn" onclick="document.getElementById('upcoming-track').scrollLeft -= 320">←</button>
+        <button class="scroll-btn" onclick="document.getElementById('upcoming-track').scrollLeft += 320">→</button>
+      </div>
+    </div>
+    <div class="scroll-track" id="upcoming-track"></div>
+  </div>
+
+  <div id="past-section" class="scroll-section" style="display:none;">
+    <div class="scroll-section-header">
+      <div class="scroll-section-label">// Past Events</div>
+      <div class="scroll-arrows">
+        <button class="scroll-btn" onclick="document.getElementById('past-track').scrollLeft -= 320">←</button>
+        <button class="scroll-btn" onclick="document.getElementById('past-track').scrollLeft += 320">→</button>
+      </div>
+    </div>
+    <div class="scroll-track" id="past-track"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── Uses Netlify function proxy to avoid Google Sheets CORS/401 ──
+// Endpoint: /.netlify/functions/events-proxy
+// Falls back to direct URL in local dev
+
+const PROXY_URL = '/.netlify/functions/events-proxy';
+const DIRECT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=0&single=true&output=csv';
+
+const EVENT_TYPES = {
+  'Campaign Kickoff': { emoji:'🚀', color:'#ffd700', bg:'rgba(255,215,0,0.15)', img:'images/event-campaign-kickoff.png' },
+  'Block Walk':       { emoji:'🚶', color:'#00f0ff', bg:'rgba(0,240,255,0.15)', img:'images/event-block-walk.png' },
+  'Meet and Greet':   { emoji:'🤝', color:'#ffd700', bg:'rgba(255,215,0,0.15)', img:'images/event-meet-greet.png' },
+  'Rally':            { emoji:'📣', color:'#ff00aa', bg:'rgba(255,0,170,0.15)', img:'images/event-rally.png' },
+  'Town Hall':        { emoji:'🏛️', color:'#bf00ff', bg:'rgba(191,0,255,0.15)', img:'images/event-town-hall.png' },
+  'Phone Bank':       { emoji:'📞', color:'#00ff88', bg:'rgba(0,255,136,0.15)', img:'images/event-phone-bank.png' },
+  'Letter Writing':   { emoji:'✉️', color:'#00f0ff', bg:'rgba(0,240,255,0.15)', img:'images/event-letter-writing.png' }
+};
+const DEFAULT_TYPE = { emoji:'⚡', color:'#00f0ff', bg:'rgba(0,240,255,0.15)', img:'images/event-karen.png' };
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).map(line => {
+    const cols = []; let cur='', inQ=false;
+    for(let i=0;i<line.length;i++){
+      if(line[i]==='"'){inQ=!inQ;}
+      else if(line[i]===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=line[i];}
+    }
+    cols.push(cur.trim());
+    const obj={};
+    headers.forEach((h,i)=>obj[h]=(cols[i]||'').replace(/^"|"$/g,'').trim());
+    return obj;
+  }).filter(r=>r.Type&&r.Type.trim()!=='');
+}
+
+function makeCard(e, isPast) {
+  const type = EVENT_TYPES[e.Type] || DEFAULT_TYPE;
+  const hasPhotos = isPast && e.Photos && e.Photos.startsWith('http');
+  const hasLink = e.Link && e.Link.startsWith('http');
+  const card = document.createElement('div');
+  card.className = 'event-card';
+  card.innerHTML = `
+    <img class="event-card-img" src="${type.img}" alt="${e.Type}" onerror="this.style.display='none'">
+    <div class="event-card-body">
+      <span class="event-card-badge" style="color:${type.color};background:${type.bg};">${type.emoji} ${e.Type}</span>
+      <div class="event-card-title">${e.Title || e.Type + ' for Karen'}</div>
+      <div class="event-card-meta">📅 ${e.Date||'Date TBA'}</div>
+      <div class="event-card-meta">⏰ ${e.Time||'Time TBA'}</div>
+      <div class="event-card-desc">${e.Comments||''}</div>
+      <div class="event-card-footer">
+        <span class="xp-badge">+${isPast?'0':'400'} XP</span>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          ${hasPhotos?`<a href="${e.Photos}" target="_blank" class="btn-photos">📸 Photos</a>`:''}
+          ${hasLink&&!isPast?`<a href="${e.Link}" target="_blank" class="btn-rsvp">RSVP →</a>`:''}
+        </div>
+      </div>
+    </div>`;
+  return card;
+}
+
+async function loadEvents() {
+  try {
+    // Try proxy first, fall back to direct (works in local dev)
+    let res = await fetch(PROXY_URL).catch(() => null);
+    if (!res || !res.ok) {
+      res = await fetch(DIRECT_URL);
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const text = await res.text();
+    const all = parseCSV(text);
+
+    document.getElementById('loading-events').style.display = 'none';
+
+    const upcoming = all.filter(e => e.Status === 'upcoming');
+    const past = all.filter(e => e.Status === 'past').reverse();
+
+    if (upcoming.length > 0) {
+      const f = upcoming[0];
+      const type = EVENT_TYPES[f.Type] || DEFAULT_TYPE;
+      const hasLink = f.Link && f.Link.startsWith('http');
+      document.getElementById('featured-event').innerHTML = `
+        <img class="featured-event-img" src="${type.img}" alt="${f.Type}" onerror="this.src='images/event-karen.png'">
+        <div class="featured-event-body">
+          <span class="featured-next-label">⚡ Up Next</span>
+          <div class="featured-event-type" style="color:${type.color};">${type.emoji} ${f.Type}</div>
+          <div class="featured-event-title">${f.Title || f.Type + ' for Karen'}</div>
+          <div class="featured-event-meta">📅 ${f.Date||'Date TBA'}</div>
+          <div class="featured-event-meta">⏰ ${f.Time||'Time TBA'}</div>
+          <div class="featured-event-desc">${f.Comments||''}</div>
+          <div class="featured-event-footer">
+            <span class="xp-badge">+400 XP</span>
+            ${hasLink?`<a href="${f.Link}" target="_blank" class="btn-rsvp" style="font-size:.85rem;padding:.6rem 1.5rem;">RSVP on Mobilize →</a>`:''}
+          </div>
+        </div>`;
+      document.getElementById('featured-section').style.display = 'block';
+
+      if (upcoming.length > 1) {
+        const track = document.getElementById('upcoming-track');
+        upcoming.slice(1).forEach(e => track.appendChild(makeCard(e, false)));
+        document.getElementById('upcoming-section').style.display = 'block';
+      }
+    } else {
+      document.getElementById('loading-events').style.display = 'none';
+    }
+
+    if (past.length > 0) {
+      const track = document.getElementById('past-track');
+      past.forEach(e => track.appendChild(makeCard(e, true)));
+      document.getElementById('past-section').style.display = 'block';
+    }
+
+    if (upcoming.length === 0 && past.length === 0) {
+      document.getElementById('events-error').style.display = 'block';
+    }
+
+  } catch(err) {
+    console.error('Events load error:', err);
+    document.getElementById('loading-events').style.display = 'none';
+    document.getElementById('events-error').style.display = 'block';
+  }
+}
+
+loadEvents();
+</script>
+
+<script src="shared.js"></script>
+</body>
+</html>

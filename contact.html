@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<style>
+.contact-page { max-width:700px; margin:0 auto; padding:1.5rem 2rem 4rem; }
+.contact-form-card {
+  background:var(--bg-card);
+  border:1px solid var(--border-glow);
+  border-radius:16px;
+  padding:2rem 2.5rem;
+  margin-bottom:2rem;
+}
+.form-field { margin-bottom:1.25rem; }
+.form-field label {
+  display:block;
+  font-family:var(--font-ui); font-size:.8rem; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim);
+  margin-bottom:.45rem;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(0,240,255,0.2);
+  border-radius:8px;
+  padding:.85rem 1rem;
+  color:var(--text-primary);
+  font-family:var(--font-ui); font-size:.95rem;
+  outline:none;
+  transition:border-color .2s;
+  box-sizing:border-box;
+}
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  border-color:var(--neon-blue);
+  box-shadow:0 0 10px rgba(0,240,255,0.12);
+}
+.form-field textarea { min-height:120px; resize:vertical; }
+.form-field select option { background:var(--bg-deep); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:480px){ .form-row{ grid-template-columns:1fr; } }
+.form-section-label {
+  font-family:var(--font-display); font-size:.75rem; color:var(--neon-pink);
+  letter-spacing:.15em; text-transform:uppercase; margin:1.5rem 0 1rem;
+  padding-bottom:.5rem; border-bottom:1px solid var(--border-glow);
+}
+.radio-group { display:flex; gap:1rem; flex-wrap:wrap; }
+.radio-option {
+  display:flex; align-items:center; gap:.5rem;
+  font-family:var(--font-ui); font-size:.9rem; color:var(--text-dim);
+  cursor:pointer;
+}
+.radio-option input[type="radio"] { accent-color:var(--neon-blue); width:16px; height:16px; }
+#contact-msg {
+  display:none; margin-top:1rem; padding:.75rem 1rem;
+  border-radius:8px; font-family:var(--font-ui); font-size:.9rem; text-align:center;
+}
+.donate-nudge {
+  background:linear-gradient(135deg,rgba(191,0,255,0.1),rgba(255,0,170,0.1));
+  border:1px solid rgba(255,0,170,0.3);
+  border-radius:16px;
+  padding:2rem;
+  text-align:center;
+}
+.donate-nudge-title {
+  font-family:var(--font-display); font-size:1.1rem; font-weight:900;
+  background:linear-gradient(90deg,var(--neon-purple),var(--neon-pink));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; margin-bottom:.5rem;
+}
+.donate-nudge-sub {
+  font-family:var(--font-body); font-size:.9rem; color:var(--text-dim);
+  margin-bottom:1.25rem; line-height:1.6;
+}
+.cf-turnstile { margin: 1rem 0; }
+</style>
+</head>
+<body>
+<div class="page-content">
+<div class="contact-page">
+
+  <div class="page-hero" style="text-align:center;">
+    <div class="page-tag">// REACH OUT</div>
+    <h1 class="page-title">Contact Us</h1>
+    <p class="page-sub">We want to hear from you — your voice shapes this campaign.</p>
+  </div>
+
+  <div class="contact-form-card">
+
+    <!-- PERSONAL INFO -->
+    <div class="form-section-label">// Your Info</div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>First Name *</label>
+        <input type="text" id="contact-first" placeholder="First name">
+      </div>
+      <div class="form-field">
+        <label>Last Name *</label>
+        <input type="text" id="contact-last" placeholder="Last name">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Email Address *</label>
+        <input type="email" id="contact-email" placeholder="your@email.com">
+      </div>
+      <div class="form-field">
+        <label>Phone Number</label>
+        <input type="tel" id="contact-phone" placeholder="(555) 000-0000">
+      </div>
+    </div>
+    <div class="form-field">
+      <label>How did you hear about us?</label>
+      <select id="contact-source">
+        <option value="">— Select one —</option>
+        <option>Facebook</option>
+        <option>Instagram</option>
+        <option>Friend or Family</option>
+        <option>Event</option>
+        <option>Yard Sign</option>
+        <option>Website</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <!-- ISSUES -->
+    <div class="form-section-label">// What Matters to You</div>
+    <div class="form-field">
+      <label>Top Most Important Issue</label>
+      <select id="contact-issue1">
+        <option value="">— Select one —</option>
+        <option>Democracy & Voting Rights</option>
+        <option>Affordability & Cost of Living</option>
+        <option>Public Safety</option>
+        <option>Education</option>
+        <option>Healthcare</option>
+        <option>Infrastructure</option>
+        <option>Environment</option>
+        <option>Jobs & Economy</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Second Most Important Issue</label>
+        <select id="contact-issue2">
+          <option value="">— Select one —</option>
+          <option>Democracy & Voting Rights</option>
+          <option>Affordability & Cost of Living</option>
+          <option>Public Safety</option>
+          <option>Education</option>
+          <option>Healthcare</option>
+          <option>Infrastructure</option>
+          <option>Environment</option>
+          <option>Jobs & Economy</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Third Most Important Issue</label>
+        <select id="contact-issue3">
+          <option value="">— Select one —</option>
+          <option>Democracy & Voting Rights</option>
+          <option>Affordability & Cost of Living</option>
+          <option>Public Safety</option>
+          <option>Education</option>
+          <option>Healthcare</option>
+          <option>Infrastructure</option>
+          <option>Environment</option>
+          <option>Jobs & Economy</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="form-section-label">// Your Message</div>
+    <div class="form-field">
+      <label>Please share your feedback</label>
+      <textarea id="contact-feedback" placeholder="Tell Karen what's on your mind..."></textarea>
+    </div>
+
+    <!-- CAMPAIGN -->
+    <div class="form-section-label">// Get Involved</div>
+    <div class="form-field">
+      <label>Would you like to join the campaign?</label>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="join" value="Yes"> Yes!</label>
+        <label class="radio-option"><input type="radio" name="join" value="Maybe"> Maybe</label>
+        <label class="radio-option"><input type="radio" name="join" value="No"> Not right now</label>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Would you like to sponsor an event for Karen?</label>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="sponsor" value="Absolutely"> Absolutely!</label>
+        <label class="radio-option"><input type="radio" name="sponsor" value="Maybe"> Maybe</label>
+        <label class="radio-option"><input type="radio" name="sponsor" value="No"> Not right now</label>
+      </div>
+    </div>
+
+    <!-- CLOUDFLARE TURNSTILE -->
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAADlXJRYWrvbYfwji" data-theme="dark"></div>
+
+    <button onclick="submitContact()" class="btn btn-purple" style="width:100%;justify-content:center;margin-top:.5rem;">
+      ⚡ Send Message
+    </button>
+    <div id="contact-msg"></div>
+  </div>
+
+  <!-- DONATE NUDGE -->
+  <div class="donate-nudge">
+    <div class="donate-nudge-title">💜 While You're Here — Support the Campaign</div>
+    <div class="donate-nudge-sub">Every dollar helps Karen reach more voters in District 29. Even $5 makes a difference.</div>
+    <a href="https://secure.actblue.com/donate/karenreeder" target="_blank" class="btn btn-pink" style="display:inline-flex;">
+      💳 Donate on ActBlue →
+    </a>
+  </div>
+
+  <!-- DIRECT CONTACT -->
+  <div style="text-align:center;margin-top:2rem;display:flex;flex-direction:column;gap:.5rem;">
+    <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);letter-spacing:.1em;">OR REACH US DIRECTLY</div>
+    <a href="mailto:info@votereederxp.com" style="color:var(--neon-blue);font-family:var(--font-ui);font-size:.95rem;text-decoration:none;">📧 info@votereederxp.com</a>
+    <a href="https://www.facebook.com/profile.php?id=61585655412560" target="_blank" style="color:var(--text-dim);font-family:var(--font-ui);font-size:.9rem;text-decoration:none;">📘 Facebook</a>
+    <a href="https://www.instagram.com/electkarenreeder/" target="_blank" style="color:var(--text-dim);font-family:var(--font-ui);font-size:.9rem;text-decoration:none;">📸 Instagram @electkarenreeder</a>
+  </div>
+
+</div>
+</div>
+
+<script>
+const SUPA_URL = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
+const MAKE_CONTACT_WEBHOOK = 'https://hook.us2.make.com/fvr224pc97dxwy3tbb7i4cmt34q7qusi';
+
+async function submitContact() {
+  const first    = document.getElementById('contact-first').value.trim();
+  const last     = document.getElementById('contact-last').value.trim();
+  const email    = document.getElementById('contact-email').value.trim();
+  const phone    = document.getElementById('contact-phone').value.trim();
+  const source   = document.getElementById('contact-source').value;
+  const issue1   = document.getElementById('contact-issue1').value;
+  const issue2   = document.getElementById('contact-issue2').value;
+  const issue3   = document.getElementById('contact-issue3').value;
+  const feedback = document.getElementById('contact-feedback').value.trim();
+  const join     = document.querySelector('input[name="join"]:checked')?.value || '';
+  const sponsor  = document.querySelector('input[name="sponsor"]:checked')?.value || '';
+  const msg      = document.getElementById('contact-msg');
+
+  // Check Turnstile token
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+  if (!first || !last || !email) {
+    showMsg('error', '✗ Please fill in your first name, last name, and email.');
+    return;
+  }
+
+  if (!turnstileToken) {
+    showMsg('error', '✗ Please complete the security check before submitting.');
+    return;
+  }
+
+  const btn = document.querySelector('button[onclick="submitContact()"]');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  const payload = {
+    first_name: first,
+    last_name: last,
+    email,
+    phone: phone || null,
+    source_of_contact: source || null,
+    top_issue: issue1 || null,
+    second_issue: issue2 || null,
+    third_issue: issue3 || null,
+    feedback: feedback || null,
+    join_campaign: join || null,
+    sponsor_event: sponsor || null,
+    submitted_at: new Date().toISOString()
+  };
+
+  try {
+    // Save to Supabase
+    const res = await fetch(`${SUPA_URL}/rest/v1/contact_submissions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_KEY,
+        'Authorization': `Bearer ${SUPA_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.status !== 201 && res.status !== 200) throw new Error('Supabase save failed');
+
+    // Fire Make.com webhook (no await — fire and forget)
+    fetch(MAKE_CONTACT_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+
+    showMsg('success', '✓ Message received! Thank you for reaching out. ⚡');
+
+    // Reset form
+    ['contact-first','contact-last','contact-email','contact-phone','contact-feedback']
+      .forEach(id => document.getElementById(id).value = '');
+    ['contact-source','contact-issue1','contact-issue2','contact-issue3']
+      .forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+    // Reset Turnstile
+    if (window.turnstile) turnstile.reset();
+
+    if (window.awardContactXP) awardContactXP();
+
+  } catch(err) {
+    showMsg('error', '✗ Something went wrong. Please email us directly.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Send Message';
+}
+
+function showMsg(type, text) {
+  const msg = document.getElementById('contact-msg');
+  const isSuccess = type === 'success';
+  msg.style.cssText = `display:block;background:rgba(${isSuccess ? '0,255,136' : '255,68,68'},0.1);border:1px solid rgba(${isSuccess ? '0,255,136' : '255,68,68'},0.3);color:${isSuccess ? '#00ff88' : '#ff4444'};margin-top:1rem;padding:.75rem 1rem;border-radius:8px;font-family:var(--font-ui);font-size:.9rem;text-align:center;`;
+  msg.textContent = text;
+}
+</script>
+
+<script src="xp.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>

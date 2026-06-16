@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn & Earn — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* LESSON LIST */
+.lesson-row {
+  background:var(--bg-card);
+  border:1px solid rgba(0,240,255,0.2);
+  border-radius:12px;
+  padding:1.1rem 1.4rem;
+  display:flex;
+  align-items:center;
+  gap:1.25rem;
+  transition:all .2s;
+  cursor:pointer;
+}
+.lesson-row:hover { border-color:var(--neon-purple); box-shadow:0 0 15px rgba(191,0,255,0.15); }
+.lesson-row.locked { opacity:.5; cursor:not-allowed; border-color:rgba(0,240,255,0.08); }
+.lesson-row.completed { border-color:rgba(0,255,136,0.3); background:rgba(0,255,136,0.04); }
+.lesson-num { font-family:var(--font-display); font-size:1.4rem; width:2.5rem; text-align:center; flex-shrink:0; }
+.lesson-info { flex:1; }
+.lesson-label { font-family:var(--font-ui); font-size:.8rem; color:var(--neon-pink); letter-spacing:.1em; text-transform:uppercase; margin-bottom:.2rem; }
+.lesson-title { font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:.2rem; }
+.lesson-desc { font-size:.95rem; color:var(--text-dim); }
+.lesson-actions { display:flex; align-items:center; gap:.75rem; flex-shrink:0; }
+.lesson-status { font-size:1.2rem; }
+
+/* MODAL */
+#learn-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(2,0,16,0.95); z-index:9999;
+  align-items:flex-start; justify-content:center;
+  backdrop-filter:blur(10px); overflow-y:auto; padding:2rem 1rem;
+}
+.learn-modal-inner {
+  background:rgba(15,8,45,0.97);
+  border:1px solid var(--border-glow);
+  border-radius:16px; padding:2rem;
+  max-width:760px; width:100%;
+  position:relative; margin:auto;
+}
+.modal-close {
+  position:absolute; top:.75rem; right:.9rem;
+  background:none; border:none; color:#aaaacc;
+  font-size:1.4rem; cursor:pointer;
+}
+.modal-lesson-title {
+  font-family:var(--font-display); font-size:.95rem;
+  color:var(--neon-blue); margin-bottom:1rem; letter-spacing:.05em;
+}
+.video-wrap {
+  position:relative; padding-top:56.25%;
+  background:#000; border-radius:8px;
+  overflow:hidden; margin-bottom:1rem;
+}
+.video-wrap iframe {
+  position:absolute; inset:0;
+  width:100%; height:100%; border:0;
+}
+.video-placeholder {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.5); color:var(--text-dim);
+  font-family:var(--font-display); font-size:.85rem; gap:.5rem;
+}
+
+/* TABS */
+.modal-tabs {
+  display:flex; border-bottom:1px solid rgba(0,240,255,0.2);
+  margin-bottom:1.5rem; gap:0;
+}
+.modal-tab {
+  flex:1; padding:.65rem; font-family:var(--font-ui);
+  font-size:1rem; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; background:none; border:none;
+  color:var(--text-dim); cursor:pointer; transition:all .2s;
+  border-bottom:2px solid transparent;
+}
+.modal-tab.active { color:var(--neon-blue); border-bottom-color:var(--neon-blue); }
+.modal-tab:disabled { opacity:.4; cursor:not-allowed; }
+
+/* QUIZ INSIDE MODAL */
+.quiz-opt {
+  background:rgba(15,8,45,0.9);
+  border:1px solid rgba(0,240,255,0.2);
+  color:var(--text-primary);
+  padding:.85rem 1rem; border-radius:8px;
+  font-family:var(--font-ui); font-size:1rem;
+  cursor:pointer; text-align:left; transition:all .15s;
+  width:100%;
+}
+.quiz-opt:hover:not(:disabled) { border-color:var(--neon-blue); }
+.quiz-opts { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-bottom:1.25rem; }
+@media(max-width:480px){ .quiz-opts { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="page-content">
+
+<div class="page-hero">
+  <div class="page-tag">// CIVIC EDUCATION</div>
+  <h1 class="page-title">Learn & Earn</h1>
+  <p class="page-sub">Watch each lesson, pass the quiz, and earn XP. The civics education schools forgot to give you.</p>
+</div>
+
+<!-- XP INFO ROW -->
+<div style="max-width:900px;margin:0 auto;padding:0 2rem 2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+  <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:10px;padding:.75rem 1.5rem;text-align:center;">
+    <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--neon-blue);">+100 XP</div>
+    <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);">Per Video Watched</div>
+  </div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:10px;padding:.75rem 1.5rem;text-align:center;">
+    <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--neon-gold);">+150 XP</div>
+    <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);">Per Quiz Passed (70%+)</div>
+  </div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:10px;padding:.75rem 1.5rem;text-align:center;">
+    <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--neon-pink);">+500 XP</div>
+    <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);">All 10 Lessons Complete</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-inner" style="max-width:900px;">
+    <div style="display:flex;flex-direction:column;gap:1rem;" id="lessons-list"></div>
+  </div>
+</div>
+
+<!-- LEARN MODAL -->
+<div id="learn-modal">
+  <div class="learn-modal-inner">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-lesson-title" id="modal-lesson-title"></div>
+
+    <!-- TABS -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-video" onclick="switchModalTab('video')">▶ Watch Lesson</button>
+      <button class="modal-tab" id="tab-quiz" onclick="switchModalTab('quiz')">🧠 Take Quiz</button>
+    </div>
+
+    <!-- VIDEO TAB -->
+    <div id="modal-video-tab">
+      <div class="video-wrap" id="video-wrap"></div>
+      <p id="video-desc" style="font-size:1rem;color:var(--text-dim);margin-bottom:1rem;"></p>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;">
+        <span class="xp-badge">+100 XP for watching</span>
+        <button class="btn btn-purple" onclick="markWatched()" id="watched-btn" style="font-size:.9rem;padding:.55rem 1.25rem;">✅ Mark as Watched (+100 XP)</button>
+      </div>
+      <p id="video-msg" style="text-align:center;margin-top:.5rem;font-size:.95rem;min-height:1rem;color:#00ff88;"></p>
+    </div>
+
+    <!-- QUIZ TAB -->
+    <div id="modal-quiz-tab" style="display:none;">
+      <!-- Quiz Start -->
+      <div id="quiz-start" style="text-align:center;padding:2rem 0;">
+        <div style="font-size:3rem;margin-bottom:.75rem;">🧠</div>
+        <h3 style="font-family:var(--font-display);font-size:1.2rem;color:var(--neon-blue);margin-bottom:.5rem;">CIVIC KNOWLEDGE CHECK</h3>
+        <p style="color:var(--text-dim);font-size:1rem;margin-bottom:1.5rem;">10 questions. Score 70%+ to earn <span style="color:var(--neon-gold);">+150 XP</span>.</p>
+        <div style="display:flex;gap:2rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+          <div><div style="font-family:var(--font-display);font-size:1.6rem;color:var(--neon-blue);">10</div><div style="font-size:.9rem;color:var(--text-dim);">Questions</div></div>
+          <div><div style="font-family:var(--font-display);font-size:1.6rem;color:var(--neon-gold);">150</div><div style="font-size:.9rem;color:var(--text-dim);">Max XP</div></div>
+          <div><div style="font-family:var(--font-display);font-size:1.6rem;color:var(--neon-pink);">∞</div><div style="font-size:.9rem;color:var(--text-dim);">Replays</div></div>
+        </div>
+        <button class="btn btn-blue" onclick="startQuiz()">▶ START QUIZ</button>
+      </div>
+      <!-- Quiz Questions -->
+      <div id="quiz-screen" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <span style="font-family:var(--font-display);font-size:.85rem;color:var(--text-dim);" id="q-counter">Question 1 / 10</span>
+          <span style="font-family:var(--font-display);font-size:.85rem;color:var(--neon-gold);" id="q-xp">XP: 0</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:4px;height:8px;overflow:hidden;margin-bottom:1.5rem;">
+          <div id="q-progress" style="height:100%;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));border-radius:4px;transition:width .4s ease;width:0%;"></div>
+        </div>
+        <div id="q-text" style="font-size:1.15rem;font-weight:600;margin-bottom:1.5rem;line-height:1.5;"></div>
+        <div id="q-opts" class="quiz-opts"></div>
+        <div id="q-feedback" style="min-height:2.5rem;font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;"></div>
+        <button class="btn btn-blue" id="q-next" style="display:none;" onclick="nextQuestion()">Next →</button>
+      </div>
+      <!-- Quiz Score -->
+      <div id="quiz-score" style="display:none;text-align:center;padding:1.5rem 0;">
+        <div class="section-tag">// MISSION COMPLETE</div>
+        <div id="score-num" style="font-family:var(--font-display);font-size:4rem;color:var(--neon-blue);text-shadow:0 0 30px var(--neon-blue);line-height:1;">0</div>
+        <div style="font-size:1rem;color:var(--text-dim);margin:.5rem 0 .75rem;">XP Earned</div>
+        <div id="rank-reveal" style="font-family:var(--font-display);font-size:1.2rem;color:var(--neon-gold);text-shadow:0 0 12px var(--neon-gold);margin-bottom:.75rem;"></div>
+        <p id="score-msg" style="color:var(--text-dim);font-size:1rem;margin-bottom:1.5rem;"></p>
+        <button class="btn btn-blue" onclick="startQuiz()" style="margin-right:.5rem;">🔁 Try Again</button>
+        <button class="btn btn-outline" onclick="switchModalTab('video')">▶ Rewatch Lesson</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LESSONS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/https://api.allorigins.win/raw?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=95972679';
+
+// FALLBACK lessons if sheet fails to load
+const LESSONS_FALLBACK = [
+  {num:'01',label:'Texas Government',title:'How the Texas Legislature Works',desc:'Understand the structure of Texas state government, how bills become laws, and why your State Rep matters.',ytId:'',locked:false},
+  {num:'02',label:'Voting Rights',title:'Your Right to Vote in Texas',desc:'Everything you need to know about voter registration, ID requirements, and polling in Brazoria County.',ytId:'',locked:false},
+  {num:'03',label:'Local Government',title:'Brazoria County — Who Does What',desc:'Learn how county commissioners, judges, and local officials affect your daily life.',ytId:'',locked:false},
+  {num:'04',label:'Elections 101',title:'How Texas Elections Work',desc:'Primaries, runoffs, general elections — a complete guide to the Texas election calendar.',ytId:'',locked:false},
+  {num:'05',label:'Civic Action',title:'10 Ways to Make a Difference',desc:'Practical actions every Texan can take to participate in democracy beyond just voting.',ytId:'',locked:true},
+  {num:'06',label:'Campaign Finance',title:'Money in Texas Politics',desc:'How campaigns are funded, what the rules are, and why small donations matter.',ytId:'',locked:true},
+  {num:'07',label:'Policy Deep Dive',title:'Healthcare in Texas',desc:'The state of healthcare access and what District 29 residents need to know.',ytId:'',locked:true},
+  {num:'08',label:'Policy Deep Dive',title:'Education Funding in Texas',desc:'How Texas funds public schools, the voucher debate, and what it means for Brazoria County.',ytId:'',locked:true},
+  {num:'09',label:'Community Power',title:'Organizing Your Neighborhood',desc:'Grassroots organizing tactics from door-knocking to community meetings.',ytId:'',locked:true},
+  {num:'10',label:'Election Day',title:'Get Out the Vote — Game Day Guide',desc:'Everything you need for Election Day — polling places, hours, what to bring.',ytId:'',locked:true},
+];
+
+let LESSONS = [];
+
+function parseCSVLessons(text) {
+  const lines = text.trim().split('\n');
+  return lines.slice(1).map(line => {
+    const cols = []; let cur='', inQ=false;
+    for(let i=0;i<line.length;i++){
+      if(line[i]==='"'){inQ=!inQ;}
+      else if(line[i]===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=line[i];}
+    }
+    cols.push(cur.trim());
+    const clean = s => (s||'').replace(/^"|"$/g,'').trim();
+    const num = String(clean(cols[0])).padStart(2,'0');
+    const title = clean(cols[1]);
+    const subtitle = clean(cols[2]);
+    const desc = clean(cols[3]);
+    const points = clean(cols[4]) || '250';
+    const videoLink = clean(cols[5]);
+    // Extract YouTube ID from full URL if present
+    let ytId = '';
+    if(videoLink) {
+      const m = videoLink.match(/(?:v=|youtu\.be\/)([^&\s]+)/);
+      ytId = m ? m[1] : videoLink;
+    }
+    return { num, label:title, title:subtitle||title, desc, ytId, locked:false, points };
+  }).filter(l => l.label);
+}
+
+async function loadLessons() {
+  try {
+    const res = await fetch(LESSONS_CSV);
+    if(!res.ok) throw new Error('Failed');
+    const text = await res.text();
+    LESSONS = parseCSVLessons(text);
+    if(!LESSONS.length) throw new Error('Empty');
+  } catch(err) {
+    console.warn('Sheet load failed, using fallback', err);
+    LESSONS = LESSONS_FALLBACK;
+  }
+  buildLessonList();
+}
+
+const QUESTIONS = [
+  {q:'How many members does the Texas House of Representatives have?',opts:['120','150','181','200'],ans:2,exp:'The Texas House has 181 members — one of the largest state legislatures in the country.'},
+  {q:'What is the minimum age to vote in Texas?',opts:['16','17','18','21'],ans:2,exp:'You must be 18 on Election Day. You can register at 17 if you turn 18 by Election Day.'},
+  {q:'Texas House District 29 is in which county?',opts:['Harris','Fort Bend','Brazoria','Galveston'],ans:2,exp:'District 29 is in Brazoria County, southeast of Houston.'},
+  {q:'How long is a term for a Texas State Representative?',opts:['2 years','4 years','6 years','8 years'],ans:0,exp:'Texas State Representatives serve 2-year terms, elected every even-numbered year.'},
+  {q:'How many days before an election must you register to vote in Texas?',opts:['30 days','21 days','15 days','7 days'],ans:0,exp:'In Texas you must register at least 30 days before Election Day.'},
+  {q:'Which of these is a valid photo ID for voting in Texas?',opts:['Student ID','Library card','Texas Driver License','Utility bill'],ans:2,exp:'A Texas Driver License is one of 7 accepted photo IDs under Texas voter ID law.'},
+  {q:'How often does the Texas Legislature meet in regular session?',opts:['Every year','Every 2 years','Every 3 years','Every 4 years'],ans:1,exp:'The Texas Legislature meets in regular session once every two years, in odd-numbered years.'},
+  {q:'Where can Texans check their voter registration status?',opts:['votetexas.gov','txvotes.com','sos.texas.gov','voterId.tx.gov'],ans:0,exp:'VoteTexas.gov is the official state resource for voter registration and election info.'},
+  {q:'Your local school board is elected at what level?',opts:['Federal','State','County','Local/District'],ans:3,exp:'School boards are local elections — yet they control curriculum, budgets, and policies affecting your kids every day.'},
+  {q:'Karen Reeder is running for which office?',opts:['U.S. Congress','Texas Senate','Texas House — District 29','Brazoria County Commissioner'],ans:2,exp:'Karen Reeder is running for the Texas House of Representatives, District 29.'},
+];
+
+let currentLesson = null;
+let currentQ = 0, xpEarned = 0, answered = false;
+const watched = {};
+
+function buildLessonList() {
+  const list = document.getElementById('lessons-list');
+  list.innerHTML = '';
+  LESSONS.forEach((l,i) => {
+  const el = document.createElement('div');
+  el.className = 'lesson-row' + (l.locked ? ' locked' : '');
+  el.id = 'lesson-row-'+i;
+  el.innerHTML = `
+    <div class="lesson-num" style="color:${l.locked?'rgba(0,240,255,0.2)':'var(--neon-blue)'};">${l.num}</div>
+    <div class="lesson-info">
+      <div class="lesson-label">${l.label}</div>
+      <div class="lesson-title" style="color:${l.locked?'var(--text-dim)':'var(--text-primary)'};">${l.title}</div>
+      <div class="lesson-desc">${l.desc}</div>
+    </div>
+    <div class="lesson-actions">
+      <span class="xp-badge" style="font-size:.8rem;">+250 XP</span>
+      ${l.locked
+        ? '<span class="lesson-status">🔒</span>'
+        : `<button class="btn btn-blue" style="font-size:.82rem;padding:.4rem 1rem;" onclick="openLesson(${i})">▶ Start</button>`}
+    </div>`;
+  if (!l.locked) el.onclick = (e) => { if(e.target.tagName!=='BUTTON') openLesson(i); };
+    list.appendChild(el);
+  });
+}
+
+// Initialize
+loadLessons();
+
+function openLesson(i) {
+  currentLesson = LESSONS[i];
+  document.getElementById('modal-lesson-title').textContent = currentLesson.num + ' — ' + currentLesson.title;
+  document.getElementById('video-desc').textContent = currentLesson.desc;
+  document.getElementById('video-msg').textContent = watched[i] ? '✅ Already watched! Quiz unlocked.' : '';
+  document.getElementById('watched-btn').textContent = watched[i] ? '✅ Watched!' : '✅ Mark as Watched (+100 XP)';
+  document.getElementById('watched-btn').disabled = !!watched[i];
+
+  // Load video
+  const wrap = document.getElementById('video-wrap');
+  if (currentLesson.ytId) {
+    wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${currentLesson.ytId}?rel=0" allowfullscreen></iframe>`;
+  } else {
+    wrap.innerHTML = `<div class="video-placeholder"><span style="font-size:2.5rem;">▶</span><span>Video coming soon</span><span style="font-size:.75rem;opacity:.5;">YouTube ID to be added</span></div>`;
+  }
+
+  // Reset quiz
+  switchModalTab('video');
+  resetQuiz();
+
+  document.getElementById('learn-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  currentLesson._index = i;
+}
+
+function closeModal() {
+  document.getElementById('learn-modal').style.display = 'none';
+  document.getElementById('video-wrap').innerHTML = '';
+  document.body.style.overflow = 'auto';
+}
+
+function markWatched() {
+  const i = currentLesson._index;
+  watched[i] = true;
+  document.getElementById('video-msg').textContent = '✅ +100 XP earned!';
+  document.getElementById('watched-btn').textContent = '✅ Watched!';
+  document.getElementById('watched-btn').disabled = true;
+  // Highlight row as completed
+  const row = document.getElementById('lesson-row-'+i);
+  if(row) row.classList.add('completed');
+  // Unlock quiz tab
+  document.getElementById('tab-quiz').disabled = false;
+  // Award XP
+  if (window.awardVideoXP) {
+    awardVideoXP(currentLesson.title).then(result => {
+      if (result && result.success) {
+        document.getElementById('video-msg').textContent = `✅ +100 XP earned! Total XP: ${result.new_total}`;
+      }
+    });
+  }
+}
+
+function switchModalTab(tab) {
+  const isVideo = tab === 'video';
+  document.getElementById('modal-video-tab').style.display = isVideo ? 'block' : 'none';
+  document.getElementById('modal-quiz-tab').style.display = isVideo ? 'none' : 'block';
+  document.getElementById('tab-video').classList.toggle('active', isVideo);
+  document.getElementById('tab-quiz').classList.toggle('active', !isVideo);
+}
+
+function resetQuiz() {
+  currentQ = 0; xpEarned = 0; answered = false;
+  document.getElementById('quiz-start').style.display = 'block';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('quiz-score').style.display = 'none';
+}
+
+function startQuiz() {
+  currentQ = 0; xpEarned = 0;
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-score').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const q = QUESTIONS[currentQ];
+  document.getElementById('q-counter').textContent = `Question ${currentQ+1} / ${QUESTIONS.length}`;
+  document.getElementById('q-xp').textContent = `XP: ${xpEarned}`;
+  document.getElementById('q-progress').style.width = (currentQ/QUESTIONS.length*100)+'%';
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-feedback').innerHTML = '';
+  document.getElementById('q-next').style.display = 'none';
+  const opts = document.getElementById('q-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((o,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = o;
+    btn.onclick = () => answerQ(i, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function answerQ(i, btn) {
+  if (answered) return; answered = true;
+  const q = QUESTIONS[currentQ];
+  document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+  const fb = document.getElementById('q-feedback');
+  if (i === q.ans) {
+    btn.style.background='rgba(0,255,136,0.15)'; btn.style.borderColor='#00ff88'; btn.style.color='#00ff88';
+    xpEarned += 15;
+    fb.innerHTML = `<span style="color:#00ff88">✅ Correct!</span> ${q.exp}`;
+  } else {
+    btn.style.background='rgba(255,0,170,0.15)'; btn.style.borderColor='var(--neon-pink)'; btn.style.color='var(--neon-pink)';
+    document.querySelectorAll('.quiz-opt')[q.ans].style.background='rgba(0,255,136,0.15)';
+    document.querySelectorAll('.quiz-opt')[q.ans].style.borderColor='#00ff88';
+    document.querySelectorAll('.quiz-opt')[q.ans].style.color='#00ff88';
+    fb.innerHTML = `<span style="color:var(--neon-pink)">❌ Not quite —</span> ${q.exp}`;
+  }
+  document.getElementById('q-xp').textContent = `XP: ${xpEarned}`;
+  document.getElementById('q-next').style.display = 'block';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= QUESTIONS.length) showScore(); else showQuestion();
+}
+
+function showScore() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('quiz-score').style.display = 'block';
+  const totalXP = xpEarned + 100; // video + quiz
+  document.getElementById('score-num').textContent = totalXP;
+  const pct = xpEarned / 150;
+  let rank, msg;
+  if (pct >= 1.0)      { rank='🏆 PERFECT SCORE!'; msg='Outstanding civic knowledge! You earned full XP.'; }
+  else if (pct >= 0.7) { rank='⭐ PASSED!'; msg='Great job! You earned your quiz XP.'; }
+  else if (pct >= 0.4) { rank='🔵 ALMOST!'; msg='Score 70%+ to earn quiz XP. Try again!'; }
+  else                 { rank='📚 KEEP LEARNING'; msg='Rewatch the lesson and try again!'; }
+  document.getElementById('rank-reveal').textContent = rank;
+  document.getElementById('score-msg').textContent = msg;
+
+  // Award quiz XP if passed (70%+)
+  if (pct >= 0.7 && window.awardQuizXP) {
+    awardQuizXP(currentLesson.title);
+  }
+}
+
+document.getElementById('learn-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+
+</div>
+<script src="xp.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>

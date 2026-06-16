@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,240,255,0.015) 2px,rgba(0,240,255,0.015) 4px); pointer-events:none; z-index:1; }
+.blog-page { max-width:1280px; margin:0 auto; padding:1.5rem 2rem 3rem; }
+.blog-header { text-align:center; margin-bottom:3rem; }
+.blog-header .page-tag { font-family:var(--font-ui); font-size:.9rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--neon-pink); text-shadow:0 0 15px var(--neon-pink); margin-bottom:.75rem; }
+.blog-header h1 { font-family:var(--font-display); font-size:clamp(2rem,5vw,3.5rem); font-weight:900; background:linear-gradient(135deg,#fff 0%,var(--neon-blue) 50%,var(--neon-pink) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:.75rem; }
+.blog-header p { color:var(--text-dim); font-size:1.1rem; }
+.substack-link { display:inline-block; margin-top:.75rem; font-family:var(--font-display); font-size:.75rem; letter-spacing:.1em; color:var(--neon-gold); border:1px solid rgba(255,215,0,0.4); border-radius:6px; padding:.4rem 1rem; text-decoration:none; transition:all .2s; }
+.substack-link:hover { background:rgba(255,215,0,0.1); }
+.featured-post { display:grid; grid-template-columns:1.2fr 1fr; gap:0; border:2px solid var(--neon-blue); border-radius:16px; overflow:hidden; background:#ffffff; margin-bottom:3rem; box-shadow:0 0 40px rgba(0,240,255,0.2); cursor:pointer; transition:all .3s; min-height:460px; }
+.featured-post:hover { border-color:var(--neon-pink); box-shadow:0 0 50px rgba(255,0,170,0.3); }
+@media(max-width:768px){ .featured-post{ grid-template-columns:1fr; } }
+.featured-img { width:100%; height:100%; min-height:460px; object-fit:cover; display:block; }
+.featured-body { padding:2.5rem; display:flex; flex-direction:column; justify-content:center; background:#ffffff; }
+.featured-label { display:inline-block; background:var(--neon-pink); color:#fff; font-family:var(--font-display); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; padding:.3rem .8rem; border-radius:4px; margin-bottom:1rem; }
+.featured-title { font-family:var(--font-display); font-size:clamp(1.4rem,2.5vw,2rem); font-weight:900; color:#020010; line-height:1.2; margin-bottom:1rem; }
+.featured-excerpt { font-size:1rem; color:#444466; line-height:1.6; margin-bottom:1.5rem; flex:1; }
+.featured-date { font-family:Rajdhani,sans-serif; font-size:.85rem; color:#bf00ff; font-weight:700; text-transform:uppercase; margin-bottom:1.5rem; }
+.featured-cta { font-family:var(--font-display); font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:var(--neon-blue); border:none; padding:.75rem 1.75rem; border-radius:6px; cursor:pointer; transition:all .2s; width:fit-content; box-shadow:0 0 15px rgba(0,240,255,0.4); }
+.featured-cta:hover { background:var(--neon-pink); }
+.prev-section { margin-bottom:4rem; }
+.prev-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; padding-bottom:.75rem; border-bottom:1px solid var(--border-glow); }
+.prev-label { font-family:var(--font-display); font-size:.85rem; color:var(--neon-blue); letter-spacing:.15em; text-transform:uppercase; }
+.scroll-arrows { display:flex; gap:.5rem; }
+.scroll-btn { background:rgba(0,240,255,0.1); border:1px solid var(--neon-blue); color:var(--neon-blue); width:36px; height:36px; border-radius:6px; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.scroll-btn:hover { background:var(--neon-blue); color:var(--bg-deep); }
+.scroll-track { display:flex; gap:1.5rem; overflow-x:auto; scroll-behavior:smooth; padding-bottom:1rem; scrollbar-width:none; }
+.scroll-track::-webkit-scrollbar { display:none; }
+.prev-card { flex:0 0 280px; background:#ffffff; border:2px solid var(--neon-blue); border-radius:12px; overflow:hidden; cursor:pointer; transition:all .3s; }
+.prev-card:hover { border-color:var(--neon-pink); box-shadow:0 0 30px rgba(255,0,170,0.35); transform:translateY(-4px); }
+.prev-card-img { width:100%; height:160px; object-fit:cover; display:block; border-bottom:2px solid var(--neon-blue); }
+.prev-card-body { padding:1.1rem; }
+.prev-card-date { font-family:Rajdhani,sans-serif; font-size:.75rem; font-weight:700; color:#bf00ff; text-transform:uppercase; letter-spacing:1px; margin-bottom:.35rem; }
+.prev-card-title { font-family:Rajdhani,sans-serif; font-size:1rem; font-weight:700; color:#020010; line-height:1.3; margin-bottom:.5rem; }
+.prev-card-excerpt { font-size:.85rem; color:#555577; line-height:1.5; margin-bottom:.75rem; }
+.prev-card-cta { font-family:var(--font-display); font-size:.7rem; color:#00f0ff; letter-spacing:.1em; text-transform:uppercase; }
+#post-modal { position:fixed; inset:0; background:rgba(2,0,16,0.92); z-index:9999; overflow-y:auto; backdrop-filter:blur(10px); display:none; padding:2rem; }
+.modal-content { width:100%; max-width:760px; background:#ffffff; border:3px solid var(--neon-blue); box-shadow:0 0 40px rgba(0,240,255,0.5); border-radius:16px; padding:3rem; position:relative; color:#1a1a2e; margin:2rem auto; }
+.modal-close-btn { position:absolute; top:1rem; right:1rem; background:var(--bg-deep); border:1px solid var(--neon-pink); color:var(--neon-pink); width:35px; height:35px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.modal-close-btn:hover { background:var(--neon-pink); color:#fff; }
+.modal-date { font-family:Rajdhani,sans-serif; font-size:.9rem; color:#bf00ff; font-weight:700; letter-spacing:1px; margin-bottom:.5rem; text-transform:uppercase; }
+.modal-title { font-family:"Orbitron",monospace; font-size:1.8rem; color:#020010; margin-bottom:1.5rem; line-height:1.2; }
+.modal-body { font-size:1.05rem; line-height:1.75; color:#2b2b40; }
+.modal-body p { margin-bottom:1.25rem; }
+.modal-body img { max-width:100%; border-radius:8px; margin:1rem 0; }
+.btn-wp { display:inline-block; margin-top:2rem; font-family:Rajdhani,sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; padding:.75rem 2rem; background:var(--bg-deep); color:var(--neon-blue); border:2px solid var(--neon-blue); border-radius:6px; text-decoration:none; transition:all .2s; }
+.btn-wp:hover { background:var(--neon-blue); color:var(--bg-deep); }
+</style>
+</head>
+<body>
+<div class="page-content">
+<div class="blog-page">
+  <div class="blog-header">
+    <div class="page-tag">// INTEL LOG</div>
+    <h1>Campaign Dispatch</h1>
+    <p>Stay up to date with core updates from Karen, live logs from the field, and direct news across District 29.</p>
+    <a href="https://votereeder.substack.com" target="_blank" class="substack-link">📬 Subscribe on Substack →</a>
+  </div>
+  <div id="featured-wrap"></div>
+  <div id="prev-wrap"></div>
+</div>
+
+<div id="post-modal">
+  <div class="modal-content">
+    <button class="modal-close-btn" onclick="closePost()">✕</button>
+    <div id="post-content"></div>
+    <div style="text-align:center;">
+      <a id="post-link" href="#" target="_blank" class="btn-wp">Read Full Post on Substack →</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ============================================================
+   TO ADD A NEW POST: Add a new object at the TOP of this array.
+   The FIRST post = Featured. All others = Previous Dispatches.
+   
+   Substack: https://votereeder.substack.com
+   ============================================================ */
+const POSTS = [
+  {
+    title: "Most campaigns ask for your vote. Karen Reeder built you a whole game.",
+    date: "June 14, 2026",
+    link: "https://votereeder.substack.com/p/most-campaigns-ask-for-your-vote",
+    image: "https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fef7ad467-3503-4526-ac93-91fc974d0901_995x663.png",
+    excerpt: "How a candidate for Texas House District 29 reimagined civic engagement — and turned showing up for democracy into something you actually want to do.",
+    body: `<p>When Karen Reeder decided to run for Texas House District 29, she didn't just file paperwork and put up yard signs. She asked a different question: <em>What if showing up for democracy actually felt like something?</em></p>
+<p>The result is VoteReederXP — a first-of-its-kind civic engagement platform that turns real campaign actions into a game. Knock doors, earn XP. Attend a rally, level up. Register a voter, unlock a badge.</p>
+<p>Karen didn't hire a tech firm. She didn't outsource the vision. She sat down, mapped out the entire game design — the ranks, the guilds, the XP system, the missions — and built it from the ground up.</p>
+<p>VoteReederXP isn't a gimmick. It's a belief — that democracy works when people are engaged, that engagement happens when people feel seen, and that feeling seen starts with a campaign that actually shows up for <em>you</em>.</p>
+<p>Karen Reeder is running for District 29. But she's also changing what it means to run.</p>`
+  },
+  {
+    title: "Why I am Running for TX HD 29",
+    date: "June 6, 2026",
+    link: "https://votereeder.substack.com/p/why-i-am-running-for-tx-hd-29",
+    image: "https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff8b2e07e-1fb0-45aa-a4e8-e4489e4d4dd9_5351x3567.jpeg",
+    excerpt: "Every family in Brazoria County deserves a representative who actually shows up. I'm Karen Reeder — a Mechanical Engineer, STEM Advocate, and your neighbor.",
+    body: `<p>Every family in Brazoria County deserves a representative who actually shows up. I'm Karen Reeder — a Mechanical Engineer, STEM Advocate, and your neighbor. I'm running for Texas House District 29 because I believe we finally have a chance for change.</p>
+<p><strong>Here's what I'm fighting for:</strong></p>
+<p><strong>Strong Public Schools</strong> — Every child in Brazoria County deserves a fully funded public education.</p>
+<p><strong>Affordable Healthcare</strong> — Texas has the highest uninsured rate in the nation. I will work to expand access and protect families from medical bankruptcy.</p>
+<p><strong>Working Families First</strong> — Living wages, workers' rights, and small business growth right here in District 29.</p>
+<p><strong>Your Right to Vote</strong> — Every eligible Texan deserves easy access to the ballot.</p>
+<p>Join me. Let's level up our community together. — Karen Reeder</p>`
+  },
+  {
+    title: "Hey, Texas! We Demand Better.",
+    date: "May 25, 2026",
+    link: "https://votereeder.substack.com/p/test",
+    image: "https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F70101edd-67d0-4782-ba07-a98afa8405f6_10800x7200.jpeg",
+    excerpt: "Brazoria's classrooms, neighborhoods, and food security are on the line. No more money to big corporations and the 1%.",
+    body: `<p>It is no hushed secret that the cost of everyday life has skyrocketed. In 2022, 13.44% — 50,000 Texan teachers — stepped down from their job.</p>
+<p>Right now, lawmakers are shifting our taxpayer dollars away from our neighborhood schools to pay for private school tuition vouchers through Senate Bill 2.</p>
+<p>Texas private schools educate 4.5% of Texas students. The other 95.5% go to public schools. Yet 11% of total Texas education funding goes to private schools. That means almost <strong>three times</strong> as many taxpayer dollars are spent on a child in private school than on a child in public school.</p>
+<p>Something needs to change. Karen Reeder has pledged to support every education bill. <strong>Vote Reeder.</strong></p>`
+  }
+];
+
+function openPost(index) {
+  const p = POSTS[index];
+  document.getElementById('post-content').innerHTML = `
+    ${p.image ? `<img src="${p.image}" alt="${p.title}" style="width:100%;border-radius:8px;margin-bottom:1.5rem;">` : ''}
+    <div class="modal-date">📅 ${p.date}</div>
+    <h2 class="modal-title">${p.title}</h2>
+    <div class="modal-body">${p.body}</div>`;
+  document.getElementById('post-link').href = p.link;
+  document.getElementById('post-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePost() {
+  document.getElementById('post-modal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+document.getElementById('post-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePost();
+});
+
+function buildBlog() {
+  const featured = POSTS[0];
+  const previous = POSTS.slice(1);
+
+  document.getElementById('featured-wrap').innerHTML = `
+    <div class="featured-post" onclick="openPost(0)">
+      ${featured.image ? `<img class="featured-img" src="${featured.image}" alt="${featured.title}">` : '<div class="featured-img"></div>'}
+      <div class="featured-body">
+        <span class="featured-label">⚡ Latest Dispatch</span>
+        <div class="featured-date">📅 ${featured.date}</div>
+        <div class="featured-title">${featured.title}</div>
+        <div class="featured-excerpt">${featured.excerpt}</div>
+        <button class="featured-cta">Read Mission Log →</button>
+      </div>
+    </div>`;
+
+  if (previous.length > 0) {
+    const cards = previous.map((p, i) => `
+      <div class="prev-card" onclick="openPost(${i+1})">
+        ${p.image ? `<img class="prev-card-img" src="${p.image}" alt="${p.title}">` : '<div class="prev-card-img" style="background:linear-gradient(135deg,#0a0020,#1a0040);"></div>'}
+        <div class="prev-card-body">
+          <div class="prev-card-date">📅 ${p.date}</div>
+          <div class="prev-card-title">${p.title}</div>
+          <div class="prev-card-excerpt">${p.excerpt}</div>
+          <div class="prev-card-cta">Read Dispatch →</div>
+        </div>
+      </div>`).join('');
+
+    document.getElementById('prev-wrap').innerHTML = `
+      <div class="prev-section">
+        <div class="prev-header">
+          <div class="prev-label">// Previous Dispatches</div>
+          <div class="scroll-arrows">
+            <button class="scroll-btn" onclick="document.getElementById('scroll-track').scrollLeft -= 320">←</button>
+            <button class="scroll-btn" onclick="document.getElementById('scroll-track').scrollLeft += 320">→</button>
+          </div>
+        </div>
+        <div class="scroll-track" id="scroll-track">${cards}</div>
+      </div>`;
+  }
+}
+
+buildBlog();
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

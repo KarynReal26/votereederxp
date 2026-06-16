@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volunteer — VoteReederXP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── HERO ── */
+.vol-hero {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 4rem 2rem;
+}
+.vol-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,20,.92) 0%, rgba(10,0,40,.88) 50%, rgba(0,0,20,.95) 100%);
+  z-index: 1;
+}
+.vol-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+}
+.vol-hero-tag {
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .25em;
+  color: var(--neon-pink);
+  margin-bottom: 1rem;
+}
+.vol-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+}
+.vol-hero-message {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--text-dim);
+  line-height: 1.8;
+  max-width: 650px;
+  margin: 0 auto 2.5rem;
+}
+.vol-hero-message strong { color: var(--text-primary); }
+.vol-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: .1em;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1.1rem 2.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 0 30px rgba(0,240,255,0.3);
+  transition: all .2s;
+  animation: pulse-cta 2s infinite;
+}
+.vol-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(0,240,255,0.5);
+}
+@keyframes pulse-cta {
+  0%, 100% { box-shadow: 0 0 30px rgba(0,240,255,0.3); }
+  50% { box-shadow: 0 0 50px rgba(0,240,255,0.6); }
+}
+
+/* ── TRACKER ── */
+.vol-tracker {
+  background: var(--bg-card);
+  border: 1px solid var(--neon-blue);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+.vol-tracker-count {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: var(--neon-blue);
+  text-shadow: 0 0 30px var(--neon-blue);
+  line-height: 1;
+}
+
+/* ── PHOTOS GRID ── */
+.vol-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+.vol-photo-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0,240,255,0.2);
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--bg-card);
+}
+.vol-photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .3s;
+}
+.vol-photo-card:hover img { transform: scale(1.05); }
+.vol-photo-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,.8));
+  padding: 1rem .75rem .75rem;
+  font-family: var(--font-ui);
+  font-size: .8rem;
+  color: rgba(255,255,255,.8);
+}
+
+/* ── ROLES ── */
+.vol-roles { margin-bottom: 3rem; }
+.vol-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.vol-role-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  transition: border-color .2s, transform .2s;
+}
+.vol-role-card:hover {
+  border-color: var(--neon-blue);
+  transform: translateY(-2px);
+}
+.vol-role-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+.vol-role-title {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  color: var(--neon-blue);
+  margin-bottom: .35rem;
+}
+.vol-role-desc {
+  font-family: var(--font-body);
+  font-size: .9rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: .75rem;
+}
+
+/* ── BOTTOM CTA ── */
+.vol-bottom-cta {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(191,0,255,0.05));
+  border: 1px solid rgba(0,240,255,0.2);
+  border-radius: 16px;
+  margin-bottom: 3rem;
+}
+.vol-bottom-cta h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+.vol-bottom-cta p {
+  font-family: var(--font-body);
+  color: var(--text-dim);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+<div class="page-content">
+
+  <!-- HERO -->
+  <div class="vol-hero">
+    <div class="vol-hero-bg"></div>
+    <div class="vol-hero-content">
+      <div class="vol-hero-tag">// JOIN THE MOVEMENT</div>
+      <h1 class="vol-hero-title">This Is Your Moment to Change History</h1>
+      <p class="vol-hero-message">
+        Democracy doesn't happen on its own — it happens because <strong>people like you show up.</strong>
+        Karen Reeder is running to bring real change to Texas House District 29, and every door knocked,
+        every call made, every vote registered is a step toward the future we deserve.
+        <br><br>
+        <strong>You have the power. This is your chance to use it.</strong>
+      </p>
+      <a href="register.html" class="vol-cta-btn">
+        ⚡ I'm Ready to Volunteer →
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-inner">
+
+      <!-- TRACKER -->
+      <div class="vol-tracker">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,240,255,0.05),transparent);pointer-events:none;"></div>
+        <div class="vol-tracker-count" id="vol-count">...</div>
+        <div style="font-family:var(--font-ui);font-size:1rem;color:var(--text-dim);margin:.25rem 0 1rem;letter-spacing:.05em;">
+          volunteers enrolled out of <span id="vol-goal">1,000</span> goal
+        </div>
+        <div style="max-width:500px;margin:0 auto .75rem;">
+          <div style="background:rgba(255,255,255,0.06);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(0,240,255,0.2);">
+            <div id="vol-bar" style="height:100%;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));box-shadow:0 0 15px var(--neon-purple);border-radius:6px;transition:width 1.5s ease;width:0%;"></div>
+          </div>
+        </div>
+        <div style="font-family:var(--font-display);font-size:.9rem;color:var(--neon-gold);" id="vol-pct">Loading...</div>
+      </div>
+
+      <!-- PHOTOS -->
+      <div class="section-header">
+        <div class="section-tag">// THE TEAM IN ACTION</div>
+        <h2 class="section-title">Look at What We're Building Together</h2>
+        <p class="section-sub">Real people, real impact — this is what democracy looks like when we show up.</p>
+      </div>
+
+      <div class="vol-photos">
+        <div class="vol-photo-card">
+          <img src="images/team1.jpg" alt="Campaign volunteers" onerror="this.parentElement.style.background='linear-gradient(135deg,rgba(0,240,255,0.1),rgba(191,0,255,0.1))';this.style.display='none'">
+          <div class="vol-photo-caption">Team Reeder hitting the doors in District 29</div>
+        </div>
+        <div class="vol-photo-card">
+          <img src="images/team2.jpg" alt="Campaign event" onerror="this.parentElement.style.background='linear-gradient(135deg,rgba(191,0,255,0.1),rgba(255,0,170,0.1))';this.style.display='none'">
+          <div class="vol-photo-caption">Community event — every voice matters</div>
+        </div>
+        <div class="vol-photo-card">
+          <img src="images/team3.jpg" alt="Volunteers together" onerror="this.parentElement.style.background='linear-gradient(135deg,rgba(255,215,0,0.1),rgba(0,240,255,0.1))';this.style.display='none'">
+          <div class="vol-photo-caption">This is what change looks like</div>
+        </div>
+      </div>
+
+      <!-- ROLES -->
+      <div class="vol-roles">
+        <div class="section-header">
+          <div class="section-tag">// HOW YOU CAN HELP</div>
+          <h2 class="section-title">Find Your Role</h2>
+          <p class="section-sub">Every skill matters. Every hour counts. Pick what fits your life.</p>
+        </div>
+        <div class="vol-role-grid">
+          <div class="vol-role-card">
+            <div class="vol-role-icon">🚪</div>
+            <div class="vol-role-title">Door Knocker</div>
+            <div class="vol-role-desc">Canvass neighborhoods across District 29. Talk to voters face-to-face. Make real connections.</div>
+            <span class="xp-badge">+100 XP per shift</span>
+          </div>
+          <div class="vol-role-card">
+            <div class="vol-role-icon">☎️</div>
+            <div class="vol-role-title">Phone Banker</div>
+            <div class="vol-role-desc">Make calls from home using our virtual phone bank. Your schedule, your pace.</div>
+            <span class="xp-badge">+100 XP per shift</span>
+          </div>
+          <div class="vol-role-card">
+            <div class="vol-role-icon">📢</div>
+            <div class="vol-role-title">Social Media</div>
+            <div class="vol-role-desc">Share content, engage voters online, and amplify the campaign message to your network.</div>
+            <span class="xp-badge">+50 XP per post</span>
+          </div>
+          <div class="vol-role-card">
+            <div class="vol-role-icon">🗳️</div>
+            <div class="vol-role-title">Voter Reg Drive</div>
+            <div class="vol-role-desc">Help register new voters at community events. This is democracy in its purest form.</div>
+            <span class="xp-badge">+200 XP per event</span>
+          </div>
+          <div class="vol-role-card">
+            <div class="vol-role-icon">📋</div>
+            <div class="vol-role-title">Event Support</div>
+            <div class="vol-role-desc">Help set up and run campaign events, town halls, and rallies across the district.</div>
+            <span class="xp-badge">+150 XP per event</span>
+          </div>
+          <div class="vol-role-card">
+            <div class="vol-role-icon">💰</div>
+            <div class="vol-role-title">Fundraising</div>
+            <div class="vol-role-desc">Help with small-dollar fundraising and donor outreach. Every dollar moves us forward.</div>
+            <span class="xp-badge">+100 XP per shift</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM CTA -->
+      <div class="vol-bottom-cta">
+        <h2>Ready to Make History?</h2>
+        <p>Join hundreds of volunteers across District 29 who are working every day to build the change we need. It takes 5 minutes to sign up. The impact lasts a lifetime.</p>
+        <a href="register.html" class="vol-cta-btn">
+          ⚡ I'm Ready to Volunteer →
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Volunteer counter
+const VOL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=538338089&single=true&output=csv';
+fetch(VOL_CSV)
+  .then(r => r.text())
+  .then(text => {
+    const lines = text.trim().split('\n');
+    const cols = lines[1].split(',');
+    const count = parseInt(cols[1]) || 0;
+    const goal = parseInt(cols[2]) || 1000;
+    document.getElementById('vol-count').textContent = count.toLocaleString();
+    document.getElementById('vol-goal').textContent = goal.toLocaleString();
+    const pct = Math.min((count / goal) * 100, 100).toFixed(1);
+    document.getElementById('vol-bar').style.width = pct + '%';
+    document.getElementById('vol-pct').textContent = pct + '% to goal';
+  })
+  .catch(() => {
+    document.getElementById('vol-count').textContent = '38';
+    document.getElementById('vol-goal').textContent = '1,000';
+    document.getElementById('vol-bar').style.width = '3.8%';
+    document.getElementById('vol-pct').textContent = '3.8% to goal';
+  });
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

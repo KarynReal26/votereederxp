@@ -1,0 +1,2 @@
+/api/events https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=0&single=true&output=csv 200
+/api/blog https://docs.google.com/document/d/e/2PACX-1vTsDpdB5RuhN2Re4VtiF2xBY0C3kf2S1lLgY_LQfLNdpfsld70bh_hXkRehKQ4DJfm6PraSnBhLxv2C/pub 200
