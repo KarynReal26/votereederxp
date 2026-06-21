@@ -186,6 +186,54 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
   .mark-btn{min-height:48px;}
 }
 @media(max-width:600px){.nav-links{display:none;}.boost-badge{display:none;}}
+
+/* ============================================================
+   VoteReederXP DASHBOARD — "CALM PASS"
+   ------------------------------------------------------------
+   HOW TO USE: paste this entire block immediately BEFORE the
+   closing </style> tag in game.html.
+   It is VISUAL-ONLY: overrides colour, glow, and one animation.
+   No HTML, IDs, JavaScript, Supabase wiring, or Gemini's
+   protected fixes (.kcol / .kcol-scroll / .layout / setLayout)
+   are touched. Delete the block to revert instantly.
+   ============================================================ */
+
+/* 1 — STAT TICKER: collapse the five neon values into one quiet tone.
+       (This strip was the loudest thing on the page.) */
+.ti-val,.tc,.tg,.tp,.tpk,.tgr{color:rgba(255,255,255,0.58)!important;text-shadow:none!important;}
+.ti-lbl{color:rgba(255,255,255,0.30)!important;}
+.ti{border-right-color:rgba(255,255,255,0.06)!important;}
+
+/* 2 — Stop the spinning hue-shift on the avatar rings (constant motion = noise)
+       and soften the ring gradient. */
+.av-ring,.prof-av-sq{animation:none!important;background:linear-gradient(140deg,#28405c,#382c5e)!important;}
+
+/* 3 — ONE calm button language. Category is still signalled by the coloured
+       tag + left edge on each card. Gold "Mark Complete" stays the single
+       bright "do-it" action so the eye knows where to go. */
+.t-btn,.chat-send{background:rgba(255,255,255,0.07)!important;color:rgba(255,255,255,0.82)!important;}
+.t-btn:hover,.chat-send:hover{filter:none!important;background:rgba(255,255,255,0.12)!important;}
+.mark-btn{background:#cda23a!important;color:#160f05!important;}
+
+/* 4 — Quiet the bright chrome, glows and accents. Headers stay cyan (just calmer),
+       XP stays gold — so colour still means something. */
+.chat-live{box-shadow:none!important;}
+.sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.22)!important;}
+.sb-title,.chat-title,.sb-count{color:#5fb6c9!important;}
+.sb-count{background:rgba(95,182,201,0.10)!important;border-color:rgba(95,182,201,0.25)!important;}
+.xp-num{color:#d6b746!important;}
+.xp-right{color:rgba(255,255,255,0.50)!important;}
+.xp-fill{background:linear-gradient(90deg,#3c87a0,#6a5a9e)!important;}
+.xm.now{color:#c98aa8!important;}
+.xm.done{color:#5fb6c9!important;}
+.boost-badge{background:rgba(255,255,255,0.04)!important;border-color:rgba(255,255,255,0.10)!important;}
+.boost-val{color:rgba(255,255,255,0.70)!important;}
+.boost-sub{color:rgba(255,255,255,0.40)!important;}
+.bell-dot{background:#b0567f!important;}
+
+/* 5 — Let the secondary panels (badges, chat) recede a touch so the real flow
+       — pick task → board → complete — leads. Profile card stays forward. */
+.badge-card,.chat-card{background:#0f1521!important;border-color:rgba(255,255,255,0.05)!important;}
 </style>
 </head>
 <body>
