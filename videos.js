@@ -21,7 +21,13 @@ async function loadVideos() {
     const lines = text.trim().split('\n').slice(1); // skip header row
     window.siteVideos = {};
     lines.forEach(line => {
-      const cols = line.split(',');
+      const cols = []; let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        if (line[i] === '"') inQ = !inQ;
+        else if (line[i] === ',' && !inQ) { cols.push(cur); cur = ''; }
+        else cur += line[i];
+      }
+      cols.push(cur);
       const page = (cols[4] || '').replace(/^"|"$/g,'').trim(); // column E
       const link = (cols[5] || '').replace(/^"|"$/g,'').trim(); // column F
       if (page) window.siteVideos[page] = extractYouTubeID(link);

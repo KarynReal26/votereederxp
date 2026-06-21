@@ -140,8 +140,7 @@ body>nav{display:none !important;}
 </div>
 
 <script>
-// ── Uses Netlify function proxy to avoid Google Sheets CORS/401 ──
-// Endpoint: /.netlify/functions/events-proxy
+// ── Uses the /api/events Netlify redirect to avoid Google Sheets CORS/401 ──
 // Falls back to direct URL in local dev
 
 const PROXY_URL = '/api/events';  // Netlify _redirects rewrites this to the Google Sheet CSV (same-origin, no CORS)
