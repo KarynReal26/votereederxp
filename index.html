@@ -865,6 +865,98 @@ async function submitNewsletter() {
 }
 </script>
 
+<script>
+/* ── INDEX MISSIONS — live from Google Sheets + add-to-board ── */
+function parseSheetCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).map(line => {
+    const vals = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').trim());
+    return obj;
+  }).filter(row => row.Active === 'YES');
+}
+
+function _escMission(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function _awaitSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
+
+function showMissionToast(message){
+  let t = document.getElementById('mission-toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'mission-toast';
+    t.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:9999;background:#111827;border:1px solid rgba(0,240,255,0.45);color:#fff;font-family:var(--font-ui),sans-serif;font-size:.95rem;font-weight:600;padding:.85rem 1.4rem;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.55);opacity:0;transition:opacity .25s ease,transform .25s ease;max-width:90vw;text-align:center;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = message;
+  requestAnimationFrame(()=>{ t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; });
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 3800);
+}
+
+async function addMissionToBoard(btn){
+  const card = btn.closest('.mission-card');
+  if(!card) return;
+  const taskName = card.dataset.task || (card.querySelector('.mission-title')?.textContent || 'Mission').trim();
+  const xpValue = parseInt(card.dataset.xp || (card.querySelector('.xp-badge')?.textContent || '').replace(/[^0-9]/g,''), 10) || 0;
+  const verificationType = card.dataset.verify || 'Self Report';
+
+  const sb = await _awaitSb();
+  if(!sb){ showMissionToast('Connection not ready — please try again.'); return; }
+
+  // 1. Auth check
+  const { data: { session } } = await sb.auth.getSession();
+  // 3. Not logged in → register
+  if(!session){ window.location.href = '/register2.html'; return; }
+
+  // 2. Logged in → insert task
+  btn.disabled = true;
+  const { error } = await sb.from('user_tasks').insert({
+    user_id: session.user.id,
+    task_name: taskName,
+    xp_value: xpValue,
+    verification: verificationType,
+    status: 'in_progress'
+  });
+  if(error){ console.error('addMissionToBoard failed:', error); showMissionToast('Could not add — please try again.'); btn.disabled = false; return; }
+  showMissionToast('Added to your board! Go to Dashboard to track it.');
+  btn.textContent = '✓ Added';
+}
+
+async function loadIndexMissions(){
+  const grid = document.querySelector('.mission-grid');
+  if(!grid) return;
+  try{
+    const res = await fetch('/.netlify/functions/sheets-proxy?gid=1810466887');
+    if(!res.ok) throw new Error('proxy ' + res.status);
+    const rows = parseSheetCSV(await res.text());
+    if(!rows.length) throw new Error('no active missions');
+    grid.innerHTML = rows.map(r => {
+      const xp = parseInt((r.XP || '').replace(/[^0-9]/g,''), 10) || 0;
+      const name = r.Action || 'Mission';
+      const verify = r.Verification || 'Self Report';
+      return '<div class="mission-card" data-task="'+_escMission(name)+'" data-xp="'+xp+'" data-verify="'+_escMission(verify)+'">'
+        + '<span class="mission-icon">'+_escMission(r.Icon || '🎯')+'</span>'
+        + '<div class="mission-category">'+_escMission(r.Category || '')+'</div>'
+        + '<div class="mission-title">'+_escMission(name)+'</div>'
+        + '<div class="mission-desc">'+_escMission(r.Description || '')+'</div>'
+        + '<div class="mission-reward"><span class="xp-badge">+'+xp+' XP</span>'
+        + '<button class="mission-btn" onclick="addMissionToBoard(this)">Add to Board</button></div>'
+        + '</div>';
+    }).join('');
+  }catch(e){
+    console.warn('Live missions unavailable, keeping static cards:', e);
+    // Fallback: wire the existing static mission buttons to the same handler
+    grid.querySelectorAll('.mission-card .mission-btn').forEach(b => b.setAttribute('onclick','addMissionToBoard(this)'));
+  }
+}
+
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadIndexMissions);
+else loadIndexMissions();
+</script>
+<script src="xp.js"></script>
 <script src="shared.js"></script>
 </body>
 </html>
