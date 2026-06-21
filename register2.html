@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoteReederXP — Join the Grid</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body,input,button,textarea,select{font-family:'Inter',sans-serif;color:#fff;}
+html,body{background:#0a0e1a;height:100%;overflow-x:hidden;}
+.bg{position:fixed;inset:0;z-index:0;background:#0a0e1a;}
+.neb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,100,200,0.12) 0%,transparent 70%);top:-150px;left:-100px;}
+.neb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,0,128,0.08) 0%,transparent 70%);bottom:-100px;right:-80px;}
+.stars{position:absolute;inset:0;}
+.s{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite;}
+@keyframes tw{0%,100%{opacity:.05;}50%{opacity:.7;}}
+@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
+
+/* UNIVERSAL TOPBAR NAVIGATION */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* UNIFIED PORTAL TERMINAL SCREEN */
+.portal-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:80px;z-index:10;}
+.terminal-card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:20px;width:100%;max-width:1050px;padding:32px;display:grid;grid-template-columns:320px 1fr;gap:32px;box-shadow:0 25px 60px rgba(0,0,0,0.75);position:relative;min-height:620px;}
+.panel-header-badge{position:absolute;top:-13px;left:32px;background:linear-gradient(90deg,#00e5ff,#bf00ff);padding:4px 16px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#000;}
+
+/* LEFT HOLOGRAPHIC BLUEPRINT PREVIEW */
+.blueprint-panel{background:rgba(10,24,64,0.2);border:1px dashed rgba(0,229,255,0.25);border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;}
+.large-av-display{width:130px;height:130px;border-radius:24px;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:4px;position:relative;margin-bottom:16px;animation:spin 12s linear infinite;}
+.large-av-inner{width:100%;height:100%;border-radius:20px;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:42px;font-weight:900;color:#3c8cff;overflow:hidden;}
+.large-av-inner img{width:100%;height:100%;object-fit:cover;animation:none;}
+.file-overlay{position:absolute;inset:4px;background:rgba(10,14,26,0.85);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:.2s;cursor:pointer;}
+.large-av-display:hover .file-overlay{opacity:1;}
+.fov-txt{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#00e5ff;}
+
+.hud-tag{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;margin-bottom:4px;color:#fff;word-break:break-all;}
+.hud-faction{font-size:12px;font-weight:700;color:#bf00ff;margin-bottom:12px;}
+.hud-stat-list{width:100%;border-top:1px dashed rgba(255,255,255,0.08);padding-top:14px;display:flex;flex-direction:column;gap:8px;text-align:left;}
+.hud-line{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;}
+.hud-val{font-weight:700;color:#00e5ff;}
+
+/* RIGHT PHASES SLIDE ZONE */
+.slide-zone{position:relative;overflow:hidden;}
+.phase-screen{display:flex;flex-direction:column;gap:20px;transition:0.3s ease-in-out;}
+.phase-screen.hidden{display:none;}
+
+/* FACTION SELECTION MATRIX CARDS */
+.faction-matrix{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
+.faction-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px;cursor:pointer;transition:.2s;display:flex;gap:12px;align-items:center;}
+.faction-card:hover{background:rgba(255,255,255,0.04);transform:translateY(-1px);}
+.faction-card.active{background:rgba(0,229,255,0.04);border-color:#00e5ff;}
+.f-icon{font-size:24px;background:rgba(255,255,255,0.04);width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.f-meta{display:flex;flex-direction:column;gap:2px;}
+.f-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;}
+.f-sub{font-size:11px;color:rgba(255,255,255,0.45);}
+
+/* PRESET PICKER ROW */
+.preset-row{display:flex;gap:8px;margin-top:10px;width:100%;justify-content:center;}
+.preset-node{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.15s;}
+.preset-node:hover, .preset-node.active{background:rgba(191,0,255,0.1);border-color:#bf00ff;transform:scale(1.05);}
+
+/* INPUT COMPONENT BLOCKS */
+.form-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.input-block{display:flex;flex-direction:column;gap:6px;}
+.field-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;}
+.grid-input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;color:#fff;outline:none;transition:.15s;width:100%;}
+.grid-input:focus{border-color:#00e5ff;background:rgba(0,229,255,0.02);}
+
+/* FIREWALL INTEGRITY SHIELD */
+.firewall-wrap{margin-top:4px;}
+.firewall-track{background:rgba(255,255,255,0.06);height:6px;border-radius:10px;overflow:hidden;}
+.firewall-fill{height:100%;width:0%;background:#ff0080;transition:.3s;}
+
+/* BRAND ACCESS TERMINAL BUTTONS */
+.terminal-btn{width:100%;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:8px;padding:15px;cursor:pointer;transition:.2s;text-align:center;margin-top:10px;}
+.btn-primary{background:linear-gradient(90deg,#00e5ff,#bf00ff);color:#000;}
+.btn-primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(0,229,255,0.25);}
+.btn-google{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0;}
+.btn-google:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.2);}
+.google-icon{width:16px;height:16px;}
+
+.divider-row{display:flex;align-items:center;text-align:center;color:rgba(255,255,255,0.2);font-size:11px;text-transform:uppercase;letter-spacing:2px;margin:8px 0;}
+.divider-row::before, .divider-row::after{content:'';flex:1;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 10px;}
+.divider-row:not(:empty)::before{margin-right:.25em;}.divider-row:not(:empty)::after{margin-left:.25em;}
+
+/* REAL AVATAR PICKER — 3-tab grid */
+.av-tabs{display:flex;gap:8px;width:100%;margin-top:6px;margin-bottom:8px;}
+.av-tab{flex:1;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
+.av-tab:hover{color:#fff;border-color:#00e5ff;}
+.av-tab.active{color:#000;background:linear-gradient(90deg,#00e5ff,#bf00ff);border-color:#00e5ff;}
+.av-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;width:100%;max-height:158px;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;}
+.av-opt{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:rgba(255,255,255,0.04);transition:border-color .15s,box-shadow .15s,transform .15s;}
+.av-opt img{width:100%;height:100%;object-fit:cover;display:block;}
+.av-opt:hover{border-color:rgba(0,229,255,0.5);transform:translateY(-1px);}
+.av-opt.active{border-color:#00e5ff;box-shadow:0 0 12px rgba(0,229,255,0.7);}
+
+/* Hide the nav shared.js injects (this page has its own .topbar) */
+body>nav{display:none !important;}
+</style>
+</head>
+<body>
+<div class="bg"><div class="neb1"></div><div class="neb2"></div><div class="stars" id="stars"></div></div>
+
+<!-- TOPBAR NAVIGATION -->
+<div class="topbar">
+  <div class="nav-row"><div class="nav-logo">VoteReederXP</div></div>
+</div>
+
+<!-- MAIN REGISTRATION & PROFILE PORTAL VIEW -->
+<div class="portal-wrap">
+  <div class="terminal-card">
+    <div class="panel-header-badge" id="sb-hud-matrix-title">System Identification</div>
+    
+    <!-- LEFT SIDEBAR: LIVE BLUEPRINT HOLO CARD PREVIEW -->
+    <div class="blueprint-panel">
+      <div class="large-av-display">
+        <div class="large-av-inner" id="sb-hud-avatar">🤖</div>
+        <label class="file-overlay" for="sb-avatar-upload-hook">
+          <span class="fov-txt">Custom Pic</span>
+        </label>
+        <input type="file" id="sb-avatar-upload-hook" accept="image/*" style="display:none;">
+      </div>
+      <div class="hud-tag" id="sb-hud-tag">NEW_USER</div>
+      <div class="hud-faction" id="sb-hud-faction">Faction Unassigned</div>
+      
+      <div class="hud-stat-list">
+        <div class="hud-line">Operational Base <span class="hud-val" id="sb-hud-base">Manvel, TX</span></div>
+        <div class="hud-line">Firewall Security <span class="hud-val" id="sb-hud-security">0%</span></div>
+        <div class="hud-line">Starting Multiplier <span class="hud-val">1.0x XP</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: DUAL ACCESS FORM PORTAL -->
+    <div class="slide-zone">
+      
+      <!-- PHASE 1: CHOOSE REGISTRATION ENTRY TYPE -->
+      <form class="phase-screen" id="phase-registration-form">
+        <div class="input-block">
+          <label class="field-lbl" for="email">Account Email Node</label>
+          <input class="grid-input" type="email" id="email" required placeholder="name@domain.com">
+        </div>
+        
+        <div class="input-block">
+          <label class="field-lbl" for="password">Security Encryption Key (Password)</label>
+          <input class="grid-input" type="password" id="password" required placeholder="••••••••••••" oninput="calculateFirewallIntegrity(this.value)">
+          <div class="firewall-wrap">
+            <div class="firewall-track"><div class="firewall-fill" id="sb-firewall-bar"></div></div>
+          </div>
+        </div>
+
+        <button class="terminal-btn btn-primary" type="submit" id="btn-register-submit">Initialize Onboarding Protocol</button>
+        
+        <div class="divider-row">OR</div>
+        
+        <!-- Google Oauth authentication pointer hook -->
+        <button class="terminal-btn btn-google" type="button" id="btn-google-oauth">
+          <img class="google-icon" src="https://www.gstatic.com/images/branding/product/1x/gsa_android_loupe_72dp.png" alt="Google">
+          Authenticate via Google Network
+        </button>
+      </form>
+
+      <!-- PHASE 2: CHARACTER CUSTOMIZATION MATRIX (Hidden until Phase 1 Resolves) -->
+      <div class="phase-screen hidden" id="phase-customization-matrix">
+        <div class="form-split">
+          <div class="input-block">
+            <label class="field-lbl" for="sb-profile-username">Player Handle / Tag</label>
+            <input class="grid-input" type="text" id="sb-profile-username" placeholder="Enter custom handle..." oninput="syncHudoTag(this.value)">
+          </div>
+          <div class="input-block">
+            <label class="field-lbl" for="sb-profile-bio">Mission Statement (Bio)</label>
+            <input class="grid-input" type="text" id="sb-profile-bio" placeholder="What drives your civic strategy?">
+          </div>
+        </div>
+
+        <div class="form-split">
+          <div class="input-block">
+            <label class="field-lbl" for="sb-profile-city">Operational City</label>
+            <input class="grid-input" type="text" id="sb-profile-city" value="Manvel" oninput="syncHudoLocation()">
+          </div>
+          <div class="input-block">
+            <label class="field-lbl" for="sb-profile-state">Region State</label>
+            <input class="grid-input" type="text" id="sb-profile-state" value="Texas" oninput="syncHudoLocation()">
+          </div>
+        </div>
+
+        <div class="input-block">
+          <label class="field-lbl">Select Guild / Faction Core Alignment</label>
+          <div class="faction-matrix">
+            <div class="faction-card active" onclick="selectFactionCard(this, '⚡ The Treasury', '#bf00ff')">
+              <div class="f-icon">⚡</div>
+              <div class="f-meta"><span class="f-title">The Treasury</span><span class="f-sub">Resource Mobilization & Scale</span></div>
+            </div>
+            <div class="faction-card" onclick="selectFactionCard(this, '🔥 The Momentum', '#ff0080')">
+              <div class="f-icon">🔥</div>
+              <div class="f-meta"><span class="f-title">The Momentum</span><span class="f-sub">Social Acceleration Wave</span></div>
+            </div>
+            <div class="faction-card" onclick="selectFactionCard(this, '🛡️ District Warriors', '#00e5ff')">
+              <div class="f-icon">🛡️</div>
+              <div class="f-meta"><span class="f-title">District Warriors</span><span class="f-sub">Ground Defense & Field Operations</span></div>
+            </div>
+            <div class="faction-card" onclick="selectFactionCard(this, '🏆 Turnout Titans', '#ffd700')">
+              <div class="f-icon">🏆</div>
+              <div class="f-meta"><span class="f-title">Turnout Titans</span><span class="f-sub">Civic Engagement Champions</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-block">
+          <label class="field-lbl">Select Matrix Profile Avatar</label>
+          <div class="av-tabs">
+            <button type="button" class="av-tab active" data-tab="women" onclick="switchAvatarTab('women')">Women</button>
+            <button type="button" class="av-tab" data-tab="men" onclick="switchAvatarTab('men')">Men</button>
+            <button type="button" class="av-tab" data-tab="symbol" onclick="switchAvatarTab('symbol')">Symbolic</button>
+          </div>
+          <div class="av-grid" id="av-grid"></div>
+        </div>
+
+        <button class="terminal-btn btn-primary" type="button" id="sb-profile-launch-trigger">Save Configuration & Deploy to Grid</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Particle Background Generator
+const s=document.getElementById('stars');
+for(let i=0;i<60;i++){const d=document.createElement('div');d.className='s';const sz=Math.random()*1.5+0.3;d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*6+2}s;animation-delay:${Math.random()*8}s;`;s.appendChild(d);}
+
+// Sound Synth Matrix Audio Context
+let audioCtx = null;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
+function playAscendingBeepSweep() {
+  initAudio();
+  let time = audioCtx.currentTime;
+  let notes = [261.63, 329.63, 392.00, 523.25, 659.25, 1046.50];
+  notes.forEach((freq, idx) => {
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.frequency.setValueAtTime(freq, time + (idx * 0.05));
+    gain.gain.setValueAtTime(0.1, time + (idx * 0.05));
+    gain.gain.exponentialRampToValueAtTime(0.001, time + (idx * 0.05) + 0.12);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(time + (idx * 0.05)); osc.stop(time + (idx * 0.05) + 0.15);
+  });
+}
+
+// Firewall Integrity key listener rules loop logic
+function calculateFirewallIntegrity(password) {
+  const bar = document.getElementById('sb-firewall-bar');
+  const label = document.getElementById('sb-hud-security');
+  let strength = Math.min(password.length * 10, 100);
+  
+  bar.style.width = strength + '%';
+  label.textContent = strength + '%';
+  
+  if (strength < 40) bar.style.background = '#ff0080';
+  else if (strength < 80) bar.style.background = '#bf00ff';
+  else bar.style.background = '#00ff88';
+}
+
+// Live HUD Sync listeners hooks functions
+function syncHudoTag(value) {
+  document.getElementById('sb-hud-tag').textContent = value.trim() !== '' ? value.toUpperCase() : 'NEW_USER';
+}
+
+function syncHudoLocation() {
+  const city = document.getElementById('sb-profile-city').value;
+  const state = document.getElementById('sb-profile-state').value;
+  document.getElementById('sb-hud-base').textContent = city + ', ' + state;
+}
+
+function selectFactionCard(card, factionName, colorCode) {
+  document.querySelectorAll('.faction-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  const label = document.getElementById('sb-hud-faction');
+  label.textContent = factionName;
+  label.style.color = colorCode;
+  selectedGuild = factionName.replace(/^[^A-Za-z]+/, '').trim(); // strip leading emoji
+}
+
+// ── REAL AVATAR PICKER (72 images in images/avatars/) ──
+const AV_DIR = 'images/avatars/';
+const AVATARS = {
+  women: [
+    'avatar-01-women-maya.png','avatar-02-women-sofia.png','avatar-03-women-jasmine.png','avatar-04-women-aaliyah.png',
+    'avatar-05-women-cameron.png','avatar-06-women-zuri.png','avatar-07-women-noelle.png','avatar-08-women-karen.png',
+    'avatar-09-women-isabella.png','avatar-10-women-victoria.png','avatar-11-women-lily.png','avatar-12-women-arianna.png',
+    'avatar-13-women-nia.png','avatar-14-women-priya.png','avatar-15-women-sumaya.png','avatar-16-women-amara.png',
+    'avatar-17-women-yuki.png','avatar-18-women-zuri2.png','avatar-19-women-emma.png','avatar-20-women-valeria.png',
+    'avatar-21-women-aisha.png','avatar-22-women-ananya.png','avatar-23-women-haley.png','avatar-24-women-nadia.png'
+  ],
+  men: [
+    'avatar-25-men-jaxon.png','avatar-26-men-arjun.png','avatar-27-men-zayn.png','avatar-28-men-darius.png',
+    'avatar-29-men-kai.png','avatar-30-men-malik.png','avatar-31-men-ethan.png','avatar-32-men-lucas.png',
+    'avatar-33-men-yusuf.png','avatar-34-men-dev.png','avatar-35-men-alex.png','avatar-36-men-kevin.png',
+    'avatar-37-men-tyler.png','avatar-38-men-marcus.png','avatar-39-men-andrew.png','avatar-40-men-ryan.png',
+    'avatar-41-men-jordan.png','avatar-42-men-brandon.png','avatar-43-men-nathan.png','avatar-44-men-zach.png',
+    'avatar-45-men-christian.png','avatar-46-men-jordanl.png','avatar-47-men-shawn.png','avatar-48-men-damien.png'
+  ],
+  symbol: [
+    'avatar-49-symbol-lone-wolf.png','avatar-50-symbol-night-owl.png','avatar-51-symbol-deep-diver.png','avatar-52-symbol-pride-leader.png',
+    'avatar-53-symbol-transformer.png','avatar-54-symbol-quick-wing.png','avatar-55-symbol-ballot-box.png','avatar-56-symbol-petition.png',
+    'avatar-57-symbol-community-circle.png','avatar-58-symbol-peoples-voice.png','avatar-59-symbol-town-hall.png','avatar-60-symbol-civic-shield.png',
+    'avatar-61-symbol-democracy.png','avatar-62-symbol-liberty.png','avatar-63-symbol-freedom.png','avatar-64-symbol-justice.png',
+    'avatar-65-symbol-peoples-voice2.png','avatar-66-symbol-neighborhood.png','avatar-67-symbol-hope.png','avatar-68-symbol-resilience.png',
+    'avatar-69-symbol-wisdom.png','avatar-70-symbol-growth.png','avatar-71-symbol-excellence.png','avatar-72-symbol-progress.png'
+  ]
+};
+let selectedAvatar = null;            // full path: images/avatars/<file>
+let selectedGuild = 'The Treasury';   // default (Treasury card starts active)
+
+function renderAvGrid(tab) {
+  const grid = document.getElementById('av-grid');
+  if (!grid) return;
+  grid.innerHTML = AVATARS[tab].map(f => {
+    const path = AV_DIR + f;
+    const active = selectedAvatar === path ? ' active' : '';
+    return `<div class="av-opt${active}" title="${f}" onclick="selectAvatar('${path}', this)"><img src="${path}" alt="" loading="lazy"></div>`;
+  }).join('');
+}
+function switchAvatarTab(tab) {
+  document.querySelectorAll('.av-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  renderAvGrid(tab);
+}
+function selectAvatar(path, el) {
+  selectedAvatar = path;
+  document.querySelectorAll('.av-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sb-hud-avatar').innerHTML = `<img src="${path}" alt="Avatar">`;
+}
+renderAvGrid('women');
+
+// Wait for shared.js to create window.sb
+function waitForSb() {
+  return new Promise(resolve => {
+    if (window.sb) return resolve(window.sb);
+    let n = 0;
+    const i = setInterval(() => {
+      if (window.sb) { clearInterval(i); resolve(window.sb); }
+      else if (++n > 50) { clearInterval(i); resolve(null); }
+    }, 100);
+  });
+}
+let REGISTERED_USER_ID = null;
+
+// Avatar File Reader Sync Loader Stream logic
+document.getElementById('sb-avatar-upload-hook').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.querySelectorAll('.preset-node').forEach(n => n.classList.remove('active'));
+      document.getElementById('sb-hud-avatar').innerHTML = `<img src="${event.target.result}" alt="Avatar">`;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Phase Transition Form loop interceptor pointer
+document.getElementById('phase-registration-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('btn-register-submit');
+  if (!email || !password) return;
+
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'INITIALIZING...';
+
+  const sb = await waitForSb();
+  if (!sb) {
+    alert('Network not ready — please try again in a moment.');
+    btn.disabled = false; btn.textContent = original; return;
+  }
+
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) {
+    alert('Onboarding failed: ' + error.message);
+    btn.disabled = false; btn.textContent = original; return;
+  }
+
+  REGISTERED_USER_ID = data?.user?.id || null;
+  playAscendingBeepSweep();
+
+  // Slide out Phase 1, reveal Phase 2 customizer
+  document.getElementById('phase-registration-form').classList.add('hidden');
+  document.getElementById('phase-customization-matrix').classList.remove('hidden');
+  document.getElementById('sb-hud-matrix-title').textContent = "Character Customization Matrix";
+});
+
+// Launch Complete Form Trigger pointer handler
+document.getElementById('sb-profile-launch-trigger').addEventListener('click', async function() {
+  const btn = this;
+  const username = document.getElementById('sb-profile-username').value.trim();
+  const city = document.getElementById('sb-profile-city').value.trim();
+  const state = document.getElementById('sb-profile-state').value.trim();
+
+  playAscendingBeepSweep();
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "TRANSMITTING OPERATIONS GRID...";
+  btn.style.opacity = '0.6';
+
+  const sb = await waitForSb();
+  if (!sb || !REGISTERED_USER_ID) {
+    alert('Session not ready — please complete Phase 1 first.');
+    btn.disabled = false; btn.textContent = original; btn.style.opacity = '1'; return;
+  }
+
+  const { error } = await sb.from('profiles').upsert({
+    id: REGISTERED_USER_ID,
+    username,
+    guild: selectedGuild,
+    avatar: selectedAvatar,        // full path: images/avatars/<file>
+    city,
+    state
+  });
+
+  if (error) {
+    alert('Deploy failed: ' + error.message);
+    btn.disabled = false; btn.textContent = original; btn.style.opacity = '1'; return;
+  }
+
+  window.location.href = '/game.html';
+});
+</script>
+<script src="xp.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>
