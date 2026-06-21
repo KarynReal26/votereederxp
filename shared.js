@@ -104,7 +104,7 @@ if (!document.querySelector('.topbar')) {
 <hr>
 <a href="/volunteer.html">Join Campaign</a>
 <a href="/contact.html">Contact Us</a>
-<a class="nm-donate" href="https://secure.actblue.com/donate/karenreeder" target="_blank">💛 Donate</a>`;
+<a class="nm-donate" href="https://secure.actblue.com/donate/votereeder" target="_blank">💛 Donate</a>`;
   document.body.appendChild(menu);
 
   burger.addEventListener('click', function(e){ e.stopPropagation(); menu.classList.toggle('open'); });
