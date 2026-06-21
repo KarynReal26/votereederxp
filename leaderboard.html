@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard — VoteReederXP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#fff;padding-top:64px;margin:0;}
+body>nav{display:none !important;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
+.nav-left{display:flex;align-items:center;gap:32px;}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:24px;}
+.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
+.nl:hover{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.bell{position:relative;cursor:pointer;font-size:20px;}
+.bell-dot{position:absolute;top:-4px;right:-6px;background:#ff0080;color:#fff;font-size:8px;font-weight:900;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.avatar-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
+.av-ring{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
+.av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;overflow:hidden;}
+.av-in img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.av-name{font-size:13px;font-weight:700;color:#fff;}
+.av-rank{font-size:11px;color:#ffd700;}
+@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* ── Page layout ── */
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px;}
+.page-title{font-family:'Orbitron',sans-serif;font-size:30px;font-weight:900;margin:0 0 6px;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-sub{color:rgba(255,255,255,0.45);font-size:14px;margin:0 0 26px;}
+.card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:22px;margin-bottom:24px;}
+.section-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;margin:0 0 16px;display:flex;align-items:center;gap:8px;}
+.section-title .accent{color:#00e5ff;}
+
+/* ── Leaderboard rows ── */
+.lb-row{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:10px;border-left:3px solid transparent;transition:background .15s;}
+.lb-row+.lb-row{margin-top:4px;}
+.lb-row:hover{background:rgba(255,255,255,0.03);}
+.lb-row.me{background:rgba(0,229,255,0.08);border-left:3px solid #00e5ff;}
+.lb-rank{font-family:'Orbitron',sans-serif;font-weight:900;font-size:16px;width:42px;text-align:center;color:rgba(255,255,255,0.55);flex:0 0 auto;}
+.lb-rank.medal{font-size:20px;}
+.lb-av{width:38px;height:38px;border-radius:50%;flex:0 0 auto;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a1840;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:#3c8cff;border:1px solid rgba(255,255,255,0.1);}
+.lb-av img{width:100%;height:100%;object-fit:cover;}
+.lb-main{flex:1 1 auto;min-width:0;}
+.lb-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-guild{font-size:12px;color:rgba(255,255,255,0.45);}
+.lb-xp{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;color:#ffd700;flex:0 0 auto;}
+.lb-xp small{font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-left:3px;}
+.lb-divider{height:1px;background:rgba(255,255,255,0.07);margin:14px 0;}
+.you-label{font-family:'Orbitron',sans-serif;font-size:11px;color:#00e5ff;letter-spacing:1px;margin-bottom:8px;}
+
+/* ── Activity feed ── */
+.feed-item{display:flex;align-items:center;gap:13px;padding:11px 4px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.feed-item:last-child{border-bottom:none;}
+.feed-av{width:34px;height:34px;border-radius:50%;flex:0 0 auto;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a1840;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;border:1px solid rgba(255,255,255,0.1);}
+.feed-av img{width:100%;height:100%;object-fit:cover;}
+.feed-body{flex:1 1 auto;min-width:0;font-size:13px;line-height:1.4;}
+.feed-body b{font-weight:700;color:#fff;}
+.feed-task{color:rgba(255,255,255,0.65);}
+.feed-xp{font-family:'Orbitron',sans-serif;font-weight:700;color:#ffd700;font-size:13px;flex:0 0 auto;}
+.feed-time{font-size:11px;color:rgba(255,255,255,0.4);flex:0 0 auto;white-space:nowrap;}
+
+/* ── Badges ── */
+.badge-grid{display:flex;flex-wrap:wrap;gap:10px;}
+.badge-chip{display:flex;align-items:center;gap:8px;background:rgba(191,0,255,0.08);border:1px solid rgba(191,0,255,0.3);border-radius:20px;padding:5px 12px 5px 6px;font-size:12px;}
+.badge-chip .b-av{width:24px;height:24px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a1840;font-family:'Orbitron',sans-serif;font-size:8px;font-weight:900;color:#3c8cff;flex:0 0 auto;}
+.badge-chip .b-av img{width:100%;height:100%;object-fit:cover;}
+.badge-chip .b-user{font-weight:700;}
+.badge-chip .b-name{color:#bf00ff;font-weight:600;}
+.muted{color:rgba(255,255,255,0.45);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar">
+  <div class="nav-row">
+    <div class="nav-left">
+      <div class="nav-logo">VoteReederXP</div>
+      <div class="nav-links">
+        <span class="nl" onclick="location.href='/game.html'">Dashboard</span>
+        <span class="nl" onclick="location.href='/missions.html'">Missions</span>
+        <span class="nl" onclick="location.href='/events.html'">Events</span>
+        <span class="nl" onclick="location.href='/learn.html'">Learn</span>
+        <span class="nl" onclick="location.href='/blog.html'">Blog</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="bell">🔔<span class="bell-dot" id="notif-count">0</span></div>
+      <div class="avatar-wrap" onclick="location.href='/profile.html'">
+        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+        <div><div class="av-name" id="nav-username">My Account</div><div class="av-rank" id="nav-rank">Advocate</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1 class="page-title">Leaderboard</h1>
+  <p class="page-sub">See who's leading the charge for Reeder — and the latest XP earned across the campaign.</p>
+
+  <!-- 1) TOP 10 -->
+  <div class="card">
+    <div class="section-title"><span class="accent">🏆</span> Top 10 Players</div>
+    <div id="lb-list"><div class="muted">Loading…</div></div>
+    <div id="lb-you"></div>
+  </div>
+
+  <!-- 2) ACTIVITY FEED -->
+  <div class="card">
+    <div class="section-title"><span class="accent">⚡</span> Activity Feed</div>
+    <div id="feed-list"><div class="muted">Loading…</div></div>
+  </div>
+
+  <!-- 3) BADGES (optional, hidden on error) -->
+  <div class="card" id="badge-card" style="display:none;">
+    <div class="section-title"><span class="accent">🎖️</span> Recent Badges</div>
+    <div class="badge-grid" id="badge-grid"></div>
+  </div>
+</div>
+
+<script>
+/* ── Helpers ── */
+function waitForSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(n){const v=Number(n)||0;return v.toLocaleString('en-US');}
+function initials(name){const s=(name||'').trim();if(!s)return '??';const p=s.split(/\s+/);return ((p[0][0]||'')+(p.length>1?(p[1][0]||''):(p[0][1]||''))).toUpperCase();}
+function avatarHtml(avatar,name,cls){
+  if(avatar) return '<div class="'+cls+'"><img src="'+esc(avatar)+'" alt="avatar"></div>';
+  return '<div class="'+cls+'">'+esc(initials(name))+'</div>';
+}
+
+/* relative time helper (used by activity feed) */
+function timeAgo(iso){
+  if(!iso) return '';
+  const then=new Date(iso).getTime();
+  if(isNaN(then)) return '';
+  let s=Math.floor((Date.now()-then)/1000);
+  if(s<0) s=0;
+  if(s<60) return s+'s ago';
+  const m=Math.floor(s/60); if(m<60) return m+'m ago';
+  const h=Math.floor(m/60); if(h<24) return h+'h ago';
+  const d=Math.floor(h/24); if(d<7) return d+'d ago';
+  const w=Math.floor(d/7); if(w<52) return w+'w ago';
+  const y=Math.floor(d/365); return y+'y ago';
+}
+
+const MEDALS=['🥇','🥈','🥉'];
+
+/* ── Section 1: Top 10 + your position ── */
+async function loadLeaderboard(sb,userId){
+  const el=document.getElementById('lb-list');
+  const youEl=document.getElementById('lb-you');
+  const { data, error } = await sb.from('profiles')
+    .select('id,username,avatar,xp_score,guild')
+    .order('xp_score',{ascending:false})
+    .limit(10);
+  if(error){ el.innerHTML='<div class="muted">Could not load leaderboard.</div>'; console.warn('leaderboard error',error); return; }
+  const rows=data||[];
+  let inTop=false;
+  el.innerHTML = rows.map((p,i)=>{
+    const rank=i+1;
+    const me=p.id===userId;
+    if(me) inTop=true;
+    const medal=rank<=3?'<span class="lb-rank medal">'+MEDALS[rank-1]+'</span>':'<span class="lb-rank">#'+rank+'</span>';
+    return '<div class="lb-row'+(me?' me':'')+'">'
+      +medal
+      +avatarHtml(p.avatar,p.username,'lb-av')
+      +'<div class="lb-main"><div class="lb-name">'+esc(p.username||'Player')+(me?' (You)':'')+'</div>'
+      +'<div class="lb-guild">'+esc(p.guild||'No guild')+'</div></div>'
+      +'<div class="lb-xp">'+fmt(p.xp_score)+'<small>XP</small></div>'
+      +'</div>';
+  }).join('') || '<div class="muted">No players yet.</div>';
+
+  // If current user not in top 10, fetch own profile and compute rank
+  if(!inTop && userId){
+    const { data:me, error:meErr } = await sb.from('profiles')
+      .select('id,username,avatar,xp_score,guild')
+      .eq('id',userId).maybeSingle();
+    if(!meErr && me){
+      let rankTxt='—';
+      // count how many have a strictly higher xp_score
+      const { count, error:cErr } = await sb.from('profiles')
+        .select('id',{count:'exact',head:true})
+        .gt('xp_score', me.xp_score||0);
+      if(!cErr && count!=null) rankTxt='#'+(count+1);
+      youEl.innerHTML='<div class="lb-divider"></div>'
+        +'<div class="you-label">YOUR POSITION</div>'
+        +'<div class="lb-row me">'
+        +'<span class="lb-rank">'+rankTxt+'</span>'
+        +avatarHtml(me.avatar,me.username,'lb-av')
+        +'<div class="lb-main"><div class="lb-name">'+esc(me.username||'You')+' (You)</div>'
+        +'<div class="lb-guild">'+esc(me.guild||'No guild')+'</div></div>'
+        +'<div class="lb-xp">'+fmt(me.xp_score)+'<small>XP</small></div>'
+        +'</div>';
+    }
+  }
+}
+
+/* ── Section 2: Activity feed ── */
+async function loadFeed(sb){
+  const el=document.getElementById('feed-list');
+  let resp = await sb.from('user_tasks')
+    .select('*,profiles(username,avatar)')
+    .eq('status','complete')
+    .order('completed_at',{ascending:false,nullsFirst:false})
+    .limit(20);
+  if(resp.error){
+    console.warn('feed completed_at order failed, falling back to created_at',resp.error);
+    resp = await sb.from('user_tasks')
+      .select('*,profiles(username,avatar)')
+      .eq('status','complete')
+      .order('created_at',{ascending:false})
+      .limit(20);
+  }
+  if(resp.error){ el.innerHTML='<div class="muted">Could not load activity.</div>'; console.warn('feed error',resp.error); return; }
+  const rows=resp.data||[];
+  if(!rows.length){ el.innerHTML='<div class="muted">No completed tasks yet.</div>'; return; }
+  el.innerHTML = rows.map(t=>{
+    const prof=t.profiles||{};
+    const name=prof.username||'Player';
+    const when=t.completed_at||t.created_at;
+    return '<div class="feed-item">'
+      +avatarHtml(prof.avatar,name,'feed-av')
+      +'<div class="feed-body"><b>'+esc(name)+'</b> '
+      +'<span class="feed-task">completed “'+esc(t.task_name||'a task')+'”</span></div>'
+      +'<div class="feed-xp">+'+fmt(t.xp_value)+' XP</div>'
+      +'<div class="feed-time">'+esc(timeAgo(when))+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+/* ── Section 3: Recent badges (best-effort) ── */
+function renderBadges(badges){
+  // Normalize various shapes into an array of label strings
+  if(badges==null) return [];
+  if(Array.isArray(badges)) return badges.map(b=>typeof b==='object'&&b?(b.name||b.label||JSON.stringify(b)):String(b));
+  if(typeof badges==='string'){
+    const s=badges.trim();
+    if(!s) return [];
+    try{ const j=JSON.parse(s); return renderBadges(j); }catch(e){}
+    return s.split(',').map(x=>x.trim()).filter(Boolean);
+  }
+  if(typeof badges==='object') return Object.keys(badges);
+  return [String(badges)];
+}
+
+async function loadBadges(sb){
+  try{
+    const { data, error } = await sb.from('profiles')
+      .select('username,avatar,badges')
+      .not('badges','is',null)
+      .limit(10);
+    if(error) throw error;
+    const items=[];
+    (data||[]).forEach(p=>{
+      renderBadges(p.badges).forEach(label=>{
+        if(label) items.push({user:p.username||'Player',avatar:p.avatar,label:label});
+      });
+    });
+    if(!items.length) return; // hide section
+    const grid=document.getElementById('badge-grid');
+    grid.innerHTML=items.slice(0,30).map(it=>
+      '<div class="badge-chip">'
+      +avatarHtml(it.avatar,it.user,'b-av')
+      +'<span class="b-user">'+esc(it.user)+'</span>'
+      +'<span class="b-name">'+esc(it.label)+'</span>'
+      +'</div>'
+    ).join('');
+    document.getElementById('badge-card').style.display='';
+  }catch(e){
+    console.warn('badges unavailable, hiding section',e);
+    // leave hidden
+  }
+}
+
+/* ── Nav avatar/name ── */
+async function fillNav(sb,userId){
+  try{
+    const { data:p } = await sb.from('profiles').select('username,avatar,guild').eq('id',userId).maybeSingle();
+    if(!p) return;
+    if(p.username){ document.getElementById('nav-username').textContent=p.username; }
+    if(p.avatar){
+      document.getElementById('nav-avatar').innerHTML='<img src="'+esc(p.avatar)+'" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
+    }else if(p.username){
+      document.getElementById('nav-avatar').textContent=initials(p.username);
+    }
+  }catch(e){ /* non-critical */ }
+}
+
+/* ── Boot ── */
+(async function(){
+  const sb=await waitForSb();
+  if(!sb){ console.warn('Supabase client not available'); return; }
+  const { data:{ user } } = await sb.auth.getUser();
+  if(!user){ location.href='/index.html'; return; }
+  fillNav(sb,user.id);
+  loadLeaderboard(sb,user.id);
+  loadFeed(sb);
+  loadBadges(sb);
+})();
+</script>
+
+<!-- xp.js and shared.js MUST be last -->
+<script src="xp.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>

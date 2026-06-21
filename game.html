@@ -164,13 +164,26 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
 @keyframes flyInAndBounce{0%{transform:translate(-100vw,-100px) scale(3) rotate(-45deg);opacity:0;}50%{transform:translate(20px,20px) scale(0.8) rotate(10deg);opacity:1;}65%{transform:translate(-10px,-15px) scale(1.1) rotate(-5deg);}80%{transform:translate(4px,5px) scale(0.95) rotate(2deg);}100%{transform:translate(0,0) scale(1) rotate(0deg);}}
 .animate-badge{animation:flyInAndBounce 1.2s cubic-bezier(0.175,0.885,0.32,1.275) forwards !important;position:relative;z-index:9999;}
 /* Mobile */
+.hamburger{display:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:18px;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+.sb-close{display:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:15px;width:30px;height:30px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:399;opacity:0;pointer-events:none;transition:opacity .25s;}
 @media(max-width:900px){
   .layout{position:relative;top:0;height:auto;grid-template-columns:1fr;}
   html,body{overflow-y:auto;height:auto;}
-  .sidebar{height:auto;position:relative;}
   .top-row{grid-template-columns:1fr!important;}
   .kanban{grid-template-columns:1fr!important;}
   .kcol{height:auto;}
+  /* hamburger + off-canvas sidebar overlay */
+  .hamburger{display:flex;}
+  .sb-close{display:flex;}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;height:100vh;width:280px;max-width:85vw;z-index:400;transform:translateX(-100%);transition:transform .25s ease;box-shadow:4px 0 24px rgba(0,0,0,0.55);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{display:block;}
+  .sidebar-backdrop.open{opacity:1;pointer-events:auto;}
+  /* touch-friendly sizing */
+  .kcard{padding:18px;}
+  .t-btn{min-height:48px;}
+  .mark-btn{min-height:48px;}
 }
 @media(max-width:600px){.nav-links{display:none;}.boost-badge{display:none;}}
 </style>
@@ -181,6 +194,7 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
 <div class="topbar" id="topbar">
   <div class="nav-row">
     <div class="nav-left">
+      <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
       <div class="nav-logo">VoteReederXP</div>
       <div class="nav-links">
         <span class="nl a">Dashboard</span>
@@ -224,9 +238,11 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
   </div>
 </div>
 
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
 <div class="layout" id="layout">
   <div class="sidebar">
     <div class="sb-hdr">
+      <button class="sb-close" onclick="toggleSidebar()" aria-label="Close menu">✕</button>
       <span class="sb-title">Available Tasks</span>
       <span class="sb-count" id="task-count">6</span>
     </div>
@@ -470,7 +486,7 @@ async function loadMissions() {
 async function markTaskComplete(taskId, btn) {
   if (btn) { btn.disabled = true; btn.textContent = '✅ Complete!'; btn.style.background = '#00dc78'; }
   playPacManXPSound();
-  const { error } = await window.sb.from('user_tasks').update({ status: 'complete' }).eq('id', taskId);
+  const { error } = await window.sb.from('user_tasks').update({ status: 'complete', completed_at: new Date().toISOString() }).eq('id', taskId);
   if (error) console.error('markTaskComplete failed:', error);
   loadMissions();
 }
@@ -563,6 +579,16 @@ for(let i=0;i<80;i++){const d=document.createElement('div');d.className='s';cons
 /* ── LAYOUT HEIGHT ── */
 function setLayout(){const h=document.getElementById('topbar').offsetHeight;const l=document.getElementById('layout');l.style.top=h+'px';l.style.height=`calc(100vh - ${h}px)`;}
 setLayout();window.addEventListener('resize',setLayout);
+
+/* ── MOBILE SIDEBAR (off-canvas overlay) ── */
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  const bd=document.getElementById('sidebar-backdrop');
+  if(!sb) return;
+  const open=sb.classList.toggle('open');
+  if(bd) bd.classList.toggle('open', open);
+}
+window.toggleSidebar=toggleSidebar;
 
 /* ── UPLOAD ── */
 function doUp(input,sid){const el=document.getElementById(sid);if(!input.files[0])return;el.style.color='#ffd700';el.textContent='⏳ Uploading to Google Drive...';setTimeout(()=>{el.style.color='#00dc78';el.textContent='✅ Uploaded! XP awarded!';playOhYeahValidationSound();},1500);}

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoteReederXP — My Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#fff;padding-top:64px;margin:0;}
+body>nav{display:none !important;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
+.nav-left{display:flex;align-items:center;gap:32px;}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:24px;}
+.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
+.nl:hover{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.bell{position:relative;cursor:pointer;font-size:20px;}
+.bell-dot{position:absolute;top:-4px;right:-6px;background:#ff0080;color:#fff;font-size:8px;font-weight:900;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.avatar-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
+.av-ring{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
+.av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;overflow:hidden;}
+.av-in img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.av-name{font-size:13px;font-weight:700;color:#fff;}
+.av-rank{font-size:11px;color:#ffd700;}
+@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* ── PAGE LAYOUT ── */
+.wrap{max-width:860px;margin:0 auto;padding:32px 20px 80px;}
+.page-title{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;margin:0 0 6px;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.45);margin:0 0 26px;}
+.card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:22px;margin-bottom:18px;}
+.card-title{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:#00e5ff;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;}
+
+/* ── AVATAR CARD ── */
+.avatar-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.avatar-big{width:96px;height:96px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:3px;flex-shrink:0;animation:spin 6s linear infinite;}
+.avatar-big-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:#3c8cff;overflow:hidden;}
+.avatar-big-in img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.avatar-info-name{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+.avatar-info-rank{font-size:13px;color:#ffd700;font-weight:600;}
+
+.btn{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:8px;padding:11px 20px;cursor:pointer;transition:.15s;}
+.btn:hover{filter:brightness(1.12);}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none;}
+.btn-cyan{background:#00e5ff;color:#001018;}
+.btn-purple{background:#bf00ff;color:#fff;}
+.btn-pink{background:#ff0080;color:#fff;}
+.btn-gold{background:#ffd700;color:#1a1400;}
+.btn-ghost{background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.12);}
+
+.picker{margin-top:18px;display:none;}
+.picker.open{display:block;}
+.picker-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.ptab{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);transition:.15s;}
+.ptab.active{background:rgba(0,229,255,0.12);border-color:#00e5ff;color:#00e5ff;}
+.avatar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:10px;max-height:300px;overflow-y:auto;padding:4px;}
+.avatar-grid::-webkit-scrollbar{width:8px;}
+.avatar-grid::-webkit-scrollbar-track{background:rgba(255,255,255,0.03);}
+.avatar-grid::-webkit-scrollbar-thumb{background:#00e5ff;border-radius:4px;}
+.av-opt{width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s;background:#0a1840;}
+.av-opt img{width:100%;height:100%;object-fit:cover;display:block;}
+.av-opt:hover{border-color:rgba(0,229,255,0.4);}
+.av-opt.selected{border-color:#00e5ff;box-shadow:0 0 12px rgba(0,229,255,0.7);}
+.picker-actions{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;}
+
+/* ── INPUTS ── */
+.field-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:12px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;transition:.15s;}
+.field-input:focus{outline:none;border-color:#00e5ff;box-shadow:0 0 0 2px rgba(0,229,255,0.15);}
+.field-label{font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);margin-bottom:7px;display:block;}
+.hint{font-size:11px;color:rgba(255,255,255,0.4);margin-top:7px;}
+.status-line{font-size:13px;font-weight:600;margin-top:9px;min-height:1.2em;}
+.ok{color:#00ff88;}
+.bad{color:#ff4466;}
+.row-end{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;}
+
+/* ── PASSWORD METER ── */
+.pw-reqs{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;}
+.pw-req{font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:8px;transition:.15s;}
+.pw-req::before{content:'○';font-size:13px;color:rgba(255,255,255,0.25);}
+.pw-req.met{color:#00ff88;}
+.pw-req.met::before{content:'●';color:#00ff88;}
+
+/* ── GUILDS ── */
+.guild-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.guild-opt{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:11px;padding:16px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:12px;}
+.guild-opt:hover{border-color:rgba(191,0,255,0.5);}
+.guild-opt.selected{border-color:#bf00ff;box-shadow:0 0 12px rgba(191,0,255,0.5);background:rgba(191,0,255,0.08);}
+.guild-opt.current{border-color:#ffd700;}
+.guild-emoji{font-size:28px;line-height:1;}
+.guild-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;}
+.guild-curtag{font-size:10px;color:#ffd700;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.warn-box{background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.3);border-radius:9px;padding:12px 14px;font-size:13px;color:#ffd27a;margin-bottom:16px;}
+.info-note{font-size:11px;color:rgba(255,255,255,0.4);margin-top:14px;}
+
+/* ── XP HISTORY ── */
+.xp-list{display:flex;flex-direction:column;gap:10px;}
+.xp-item{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:13px 15px;}
+.xp-item-main{flex:1;min-width:0;}
+.xp-item-name{font-size:14px;font-weight:600;margin-bottom:3px;}
+.xp-item-meta{font-size:11px;color:rgba(255,255,255,0.4);}
+.xp-item-val{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff88;white-space:nowrap;}
+.xp-badge{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+.st-complete{background:rgba(0,255,136,0.15);color:#00ff88;}
+.st-in_progress{background:rgba(0,229,255,0.15);color:#00e5ff;}
+.st-pending{background:rgba(255,215,0,0.15);color:#ffd700;}
+.empty{font-size:13px;color:rgba(255,255,255,0.4);text-align:center;padding:24px;}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar">
+  <div class="nav-row">
+    <div class="nav-left">
+      <div class="nav-logo">VoteReederXP</div>
+      <div class="nav-links">
+        <span class="nl" onclick="location.href='/game.html'">Dashboard</span>
+        <span class="nl" onclick="location.href='/missions.html'">Missions</span>
+        <span class="nl" onclick="location.href='/events.html'">Events</span>
+        <span class="nl" onclick="location.href='/learn.html'">Learn</span>
+        <span class="nl" onclick="location.href='/blog.html'">Blog</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="bell">🔔<span class="bell-dot" id="notif-count">0</span></div>
+      <div class="avatar-wrap" onclick="location.href='/profile.html'">
+        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+        <div><div class="av-name" id="nav-username">My Account</div><div class="av-rank" id="nav-rank">Advocate</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1 class="page-title">My Account</h1>
+  <p class="page-sub">Customize your civic identity, secure your account, and track your XP.</p>
+
+  <!-- 1) AVATAR -->
+  <div class="card">
+    <h2 class="card-title">Avatar</h2>
+    <div class="avatar-row">
+      <div class="avatar-big"><div class="avatar-big-in" id="big-avatar">…</div></div>
+      <div>
+        <div class="avatar-info-name" id="big-name">—</div>
+        <div class="avatar-info-rank" id="big-rank">—</div>
+      </div>
+      <button class="btn btn-cyan" id="toggle-picker" style="margin-left:auto;" onclick="togglePicker()">Change Avatar</button>
+    </div>
+
+    <div class="picker" id="picker">
+      <div class="picker-tabs">
+        <div class="ptab active" data-tab="women" onclick="selectTab('women')">Women</div>
+        <div class="ptab" data-tab="men" onclick="selectTab('men')">Men</div>
+        <div class="ptab" data-tab="symbol" onclick="selectTab('symbol')">Symbolic</div>
+      </div>
+      <div class="avatar-grid" id="avatar-grid"></div>
+      <div class="picker-actions">
+        <button class="btn btn-gold" id="save-avatar" onclick="saveAvatar()" disabled>Save Avatar</button>
+        <span class="status-line" id="avatar-status"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2) USERNAME -->
+  <div class="card">
+    <h2 class="card-title">Username</h2>
+    <label class="field-label">Public username (alias — do not use your real name)</label>
+    <input type="text" class="field-input" id="username-input" maxlength="30" placeholder="e.g. TexasTechVoter" oninput="onUsernameInput()">
+    <div class="status-line" id="username-status"></div>
+    <div class="row-end">
+      <button class="btn btn-cyan" id="save-username" onclick="saveUsername()" disabled>Save Username</button>
+    </div>
+  </div>
+
+  <!-- 3) PASSWORD -->
+  <div class="card">
+    <h2 class="card-title">Password</h2>
+    <label class="field-label">New password</label>
+    <input type="password" class="field-input" id="password-input" placeholder="Create a strong password" oninput="onPasswordInput()">
+    <ul class="pw-reqs">
+      <li class="pw-req" id="pw-length">At least 8 characters</li>
+      <li class="pw-req" id="pw-upper">One uppercase letter</li>
+      <li class="pw-req" id="pw-lower">One lowercase letter</li>
+      <li class="pw-req" id="pw-number">One number</li>
+      <li class="pw-req" id="pw-special">One special character</li>
+    </ul>
+    <div class="status-line" id="password-status"></div>
+    <div class="row-end">
+      <button class="btn btn-pink" id="save-password" onclick="savePassword()" disabled>Update Password</button>
+    </div>
+  </div>
+
+  <!-- 4) GUILD -->
+  <div class="card">
+    <h2 class="card-title">Guild</h2>
+    <div id="guild-warn" class="warn-box" style="display:none;"></div>
+    <div class="guild-grid" id="guild-grid"></div>
+    <div class="row-end">
+      <button class="btn btn-purple" id="save-guild" onclick="saveGuild()" disabled>Save Guild</button>
+      <span class="status-line" id="guild-status"></span>
+    </div>
+    <div class="info-note">Note: 300 XP / Organizer rank is required to join a guild. You can change guilds once every 30 days.</div>
+  </div>
+
+  <!-- 5) XP HISTORY -->
+  <div class="card">
+    <h2 class="card-title">XP History</h2>
+    <div class="xp-list" id="xp-list"><div class="empty">Loading your activity…</div></div>
+  </div>
+</div>
+
+<script src="xp.js"></script>
+<script src="shared.js"></script>
+<script>
+// ── Avatar catalog ────────────────────────────────────────
+const AVATARS = {
+  women: ['avatar-01-women-maya.png','avatar-02-women-sofia.png','avatar-03-women-jasmine.png','avatar-04-women-aaliyah.png','avatar-05-women-cameron.png','avatar-06-women-zuri.png','avatar-07-women-noelle.png','avatar-08-women-karen.png','avatar-09-women-isabella.png','avatar-10-women-victoria.png','avatar-11-women-lily.png','avatar-12-women-arianna.png','avatar-13-women-nia.png','avatar-14-women-priya.png','avatar-15-women-sumaya.png','avatar-16-women-amara.png','avatar-17-women-yuki.png','avatar-18-women-zuri2.png','avatar-19-women-emma.png','avatar-20-women-valeria.png','avatar-21-women-aisha.png','avatar-22-women-ananya.png','avatar-23-women-haley.png','avatar-24-women-nadia.png'],
+  men: ['avatar-25-men-jaxon.png','avatar-26-men-arjun.png','avatar-27-men-zayn.png','avatar-28-men-darius.png','avatar-29-men-kai.png','avatar-30-men-malik.png','avatar-31-men-ethan.png','avatar-32-men-lucas.png','avatar-33-men-yusuf.png','avatar-34-men-dev.png','avatar-35-men-alex.png','avatar-36-men-kevin.png','avatar-37-men-tyler.png','avatar-38-men-marcus.png','avatar-39-men-andrew.png','avatar-40-men-ryan.png','avatar-41-men-jordan.png','avatar-42-men-brandon.png','avatar-43-men-nathan.png','avatar-44-men-zach.png','avatar-45-men-christian.png','avatar-46-men-jordanl.png','avatar-47-men-shawn.png','avatar-48-men-damien.png'],
+  symbol: ['avatar-49-symbol-lone-wolf.png','avatar-50-symbol-night-owl.png','avatar-51-symbol-deep-diver.png','avatar-52-symbol-pride-leader.png','avatar-53-symbol-transformer.png','avatar-54-symbol-quick-wing.png','avatar-55-symbol-ballot-box.png','avatar-56-symbol-petition.png','avatar-57-symbol-community-circle.png','avatar-58-symbol-peoples-voice.png','avatar-59-symbol-town-hall.png','avatar-60-symbol-civic-shield.png','avatar-61-symbol-democracy.png','avatar-62-symbol-liberty.png','avatar-63-symbol-freedom.png','avatar-64-symbol-justice.png','avatar-65-symbol-peoples-voice2.png','avatar-66-symbol-neighborhood.png','avatar-67-symbol-hope.png','avatar-68-symbol-resilience.png','avatar-69-symbol-wisdom.png','avatar-70-symbol-growth.png','avatar-71-symbol-excellence.png','avatar-72-symbol-progress.png']
+};
+const AVATAR_DIR = 'images/avatars/';
+
+const GUILDS = [
+  { name:'District Warriors', emoji:'🔥' },
+  { name:'Turnout Titans',    emoji:'🌊' },
+  { name:'The Momentum',      emoji:'⚡' },
+  { name:'The Signal',        emoji:'📡' },
+  { name:'The Miners',        emoji:'⛏️' },
+  { name:'The Architects',    emoji:'🏛️' },
+  { name:'The Treasury',      emoji:'💎' }
+];
+
+// ── State ─────────────────────────────────────────────────
+let sb = null;
+let user = null;
+let profile = null;
+let chosenAvatar = null;     // chosen filename (no dir)
+let currentTab = 'women';
+let chosenGuild = null;      // chosen guild name
+let guildLocked = false;     // 30-day rule blocks switching
+let usernameTimer = null;
+
+// ── Helpers ───────────────────────────────────────────────
+function waitForSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
+
+function initials(name){
+  if(!name) return 'KR';
+  const parts = String(name).trim().split(/\s+/);
+  if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function relativeTime(value){
+  if(!value) return '';
+  const then = new Date(value).getTime();
+  if(isNaN(then)) return '';
+  let diff = Math.floor((Date.now() - then) / 1000);
+  if(diff < 0) diff = 0;
+  if(diff < 60) return 'just now';
+  const mins = Math.floor(diff/60);
+  if(mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins/60);
+  if(hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs/24);
+  if(days < 30) return days + 'd ago';
+  const months = Math.floor(days/30);
+  if(months < 12) return months + 'mo ago';
+  return Math.floor(months/12) + 'y ago';
+}
+
+// ── Avatar display ────────────────────────────────────────
+function renderBigAvatar(path, name){
+  const el = document.getElementById('big-avatar');
+  if(path){ el.innerHTML = '<img src="' + escapeHtml(path) + '" alt="avatar">'; }
+  else { el.textContent = initials(name); }
+}
+function setNavAvatar(path, name){
+  const el = document.getElementById('nav-avatar');
+  if(path){ el.innerHTML = '<img src="' + escapeHtml(path) + '" alt="avatar">'; }
+  else { el.textContent = initials(name); }
+}
+
+// ── Avatar picker ─────────────────────────────────────────
+function togglePicker(){
+  const p = document.getElementById('picker');
+  const open = p.classList.toggle('open');
+  document.getElementById('toggle-picker').textContent = open ? 'Close' : 'Change Avatar';
+  if(open && !chosenAvatar){
+    // preselect current avatar if it belongs to a tab
+    if(profile && profile.avatar){
+      const file = profile.avatar.split('/').pop();
+      for(const tab in AVATARS){ if(AVATARS[tab].includes(file)){ currentTab = tab; chosenAvatar = file; break; } }
+    }
+    selectTab(currentTab);
+  }
+}
+
+function selectTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  const grid = document.getElementById('avatar-grid');
+  grid.innerHTML = AVATARS[tab].map(file => {
+    const sel = (file === chosenAvatar) ? ' selected' : '';
+    return '<div class="av-opt' + sel + '" data-file="' + file + '" onclick="pickAvatar(\'' + file + '\')">' +
+           '<img src="' + AVATAR_DIR + file + '" alt="' + file + '" loading="lazy"></div>';
+  }).join('');
+}
+
+function pickAvatar(file){
+  chosenAvatar = file;
+  document.querySelectorAll('.av-opt').forEach(o => o.classList.toggle('selected', o.dataset.file === file));
+  // live preview on the big avatar
+  renderBigAvatar(AVATAR_DIR + file, profile && profile.username);
+  document.getElementById('save-avatar').disabled = false;
+}
+
+async function saveAvatar(){
+  if(!chosenAvatar) return;
+  const status = document.getElementById('avatar-status');
+  const btn = document.getElementById('save-avatar');
+  const fullPath = AVATAR_DIR + chosenAvatar;
+  btn.disabled = true; status.className = 'status-line'; status.textContent = 'Saving…';
+  try {
+    const { error } = await sb.from('profiles').update({ avatar: fullPath }).eq('id', user.id);
+    if(error) throw error;
+    if(profile) profile.avatar = fullPath;
+    renderBigAvatar(fullPath, profile && profile.username);
+    setNavAvatar(fullPath, profile && profile.username);
+    status.className = 'status-line ok'; status.textContent = '✓ Avatar saved!';
+  } catch(err){
+    status.className = 'status-line bad'; status.textContent = '✗ ' + err.message;
+    btn.disabled = false;
+  }
+}
+
+// ── Username ──────────────────────────────────────────────
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,}$/;
+
+function onUsernameInput(){
+  const val = document.getElementById('username-input').value.trim();
+  const status = document.getElementById('username-status');
+  const saveBtn = document.getElementById('save-username');
+  saveBtn.disabled = true;
+  clearTimeout(usernameTimer);
+
+  if(val === (profile && profile.username)){
+    status.className = 'status-line'; status.textContent = '';
+    return;
+  }
+  if(!USERNAME_RE.test(val)){
+    status.className = 'status-line bad';
+    status.textContent = '✗ 3+ characters, letters/numbers/underscores only';
+    return;
+  }
+  status.className = 'status-line'; status.textContent = 'Checking availability…';
+  usernameTimer = setTimeout(() => checkUsername(val), 400);
+}
+
+async function checkUsername(val){
+  const status = document.getElementById('username-status');
+  const saveBtn = document.getElementById('save-username');
+  try {
+    const { data, error } = await sb.from('profiles').select('id,username').eq('username', val);
+    if(error) throw error;
+    const taken = (data || []).some(row => row.id !== user.id);
+    // make sure input hasn't changed since the request fired
+    if(document.getElementById('username-input').value.trim() !== val) return;
+    if(taken){
+      status.className = 'status-line bad'; status.textContent = '✗ Taken';
+      saveBtn.disabled = true;
+    } else {
+      status.className = 'status-line ok'; status.textContent = '✓ Available';
+      saveBtn.disabled = false;
+    }
+  } catch(err){
+    status.className = 'status-line bad'; status.textContent = '✗ ' + err.message;
+    saveBtn.disabled = true;
+  }
+}
+
+async function saveUsername(){
+  const val = document.getElementById('username-input').value.trim();
+  const status = document.getElementById('username-status');
+  const btn = document.getElementById('save-username');
+  if(!USERNAME_RE.test(val)) return;
+  btn.disabled = true; status.className = 'status-line'; status.textContent = 'Saving…';
+  try {
+    const { error } = await sb.from('profiles').update({ username: val }).eq('id', user.id);
+    if(error) throw error;
+    if(profile) profile.username = val;
+    document.getElementById('nav-username').textContent = val;
+    document.getElementById('big-name').textContent = val;
+    if(!profile || !profile.avatar){ renderBigAvatar(null, val); setNavAvatar(null, val); }
+    status.className = 'status-line ok'; status.textContent = '✓ Username saved!';
+  } catch(err){
+    status.className = 'status-line bad'; status.textContent = '✗ ' + err.message;
+    btn.disabled = false;
+  }
+}
+
+// ── Password ──────────────────────────────────────────────
+function passwordChecks(pw){
+  return {
+    length: pw.length >= 8,
+    upper: /[A-Z]/.test(pw),
+    lower: /[a-z]/.test(pw),
+    number: /[0-9]/.test(pw),
+    special: /[^a-zA-Z0-9]/.test(pw)
+  };
+}
+
+function onPasswordInput(){
+  const pw = document.getElementById('password-input').value;
+  const c = passwordChecks(pw);
+  document.getElementById('pw-length').classList.toggle('met', c.length);
+  document.getElementById('pw-upper').classList.toggle('met', c.upper);
+  document.getElementById('pw-lower').classList.toggle('met', c.lower);
+  document.getElementById('pw-number').classList.toggle('met', c.number);
+  document.getElementById('pw-special').classList.toggle('met', c.special);
+  const all = c.length && c.upper && c.lower && c.number && c.special;
+  document.getElementById('save-password').disabled = !all;
+  const status = document.getElementById('password-status');
+  if(!status.classList.contains('ok')){ status.className = 'status-line'; status.textContent = ''; }
+}
+
+async function savePassword(){
+  const pw = document.getElementById('password-input').value;
+  const c = passwordChecks(pw);
+  const all = c.length && c.upper && c.lower && c.number && c.special;
+  const status = document.getElementById('password-status');
+  const btn = document.getElementById('save-password');
+  if(!all) return;
+  btn.disabled = true; status.className = 'status-line'; status.textContent = 'Updating…';
+  try {
+    const { error } = await sb.auth.updateUser({ password: pw });
+    if(error) throw error;
+    status.className = 'status-line ok'; status.textContent = '✓ Password updated!';
+    document.getElementById('password-input').value = '';
+    onPasswordInput();
+    status.className = 'status-line ok'; status.textContent = '✓ Password updated!';
+  } catch(err){
+    status.className = 'status-line bad'; status.textContent = '✗ ' + err.message;
+    btn.disabled = false;
+  }
+}
+
+// ── Guilds ────────────────────────────────────────────────
+function renderGuilds(){
+  const grid = document.getElementById('guild-grid');
+  const currentGuild = profile && profile.guild;
+  grid.innerHTML = GUILDS.map(g => {
+    const isCurrent = g.name === currentGuild;
+    const isChosen = g.name === chosenGuild;
+    let cls = 'guild-opt';
+    if(isChosen) cls += ' selected';
+    if(isCurrent) cls += ' current';
+    return '<div class="' + cls + '" data-guild="' + escapeHtml(g.name) + '" onclick="pickGuild(\'' + g.name.replace(/'/g,"\\'") + '\')">' +
+           '<span class="guild-emoji">' + g.emoji + '</span>' +
+           '<div><div class="guild-name">' + escapeHtml(g.name) + '</div>' +
+           (isCurrent ? '<div class="guild-curtag">Current</div>' : '') + '</div></div>';
+  }).join('');
+}
+
+function pickGuild(name){
+  if(guildLocked && name !== (profile && profile.guild)){
+    const status = document.getElementById('guild-status');
+    status.className = 'status-line bad';
+    status.textContent = '✗ You changed guilds recently — locked for now.';
+    return;
+  }
+  chosenGuild = name;
+  document.querySelectorAll('.guild-opt').forEach(o => o.classList.toggle('selected', o.dataset.guild === name));
+  document.getElementById('save-guild').disabled = (name === (profile && profile.guild));
+}
+
+function setupGuildLock(){
+  const status = document.getElementById('guild-status');
+  status.textContent = '';
+  const warn = document.getElementById('guild-warn');
+  guildLocked = false;
+  if(profile && profile.guild && profile.guild_joined_at){
+    const joined = new Date(profile.guild_joined_at).getTime();
+    const unlockMs = joined + 30 * 24 * 60 * 60 * 1000;
+    if(!isNaN(joined) && Date.now() < unlockMs){
+      guildLocked = true;
+      const unlockDate = new Date(unlockMs).toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+      warn.style.display = 'block';
+      warn.textContent = '⏳ You switched guilds recently — you can change guilds again on ' + unlockDate + '.';
+    } else {
+      warn.style.display = 'none';
+    }
+  } else {
+    warn.style.display = 'none';
+  }
+}
+
+async function saveGuild(){
+  const status = document.getElementById('guild-status');
+  const btn = document.getElementById('save-guild');
+  if(!chosenGuild) return;
+  if(guildLocked && chosenGuild !== (profile && profile.guild)){
+    status.className = 'status-line bad'; status.textContent = '✗ Guild change is locked for now.';
+    return;
+  }
+  btn.disabled = true; status.className = 'status-line'; status.textContent = 'Saving…';
+  const nowIso = new Date().toISOString();
+  try {
+    const { error } = await sb.from('profiles').update({ guild: chosenGuild, guild_joined_at: nowIso }).eq('id', user.id);
+    if(error) throw error;
+    if(profile){ profile.guild = chosenGuild; profile.guild_joined_at = nowIso; }
+    status.className = 'status-line ok'; status.textContent = '✓ Guild saved!';
+    setupGuildLock();
+    renderGuilds();
+  } catch(err){
+    status.className = 'status-line bad'; status.textContent = '✗ ' + err.message;
+    btn.disabled = false;
+  }
+}
+
+// ── XP history ────────────────────────────────────────────
+function renderXpHistory(rows){
+  const list = document.getElementById('xp-list');
+  if(!rows || !rows.length){
+    list.innerHTML = '<div class="empty">No activity yet. Complete a mission to start earning XP!</div>';
+    return;
+  }
+  list.innerHTML = rows.map(r => {
+    const when = relativeTime(r.completed_at || r.created_at);
+    const statusClass = 'st-' + (r.status || 'pending');
+    const statusLabel = (r.status || 'pending').replace('_', ' ');
+    return '<div class="xp-item">' +
+      '<div class="xp-item-main">' +
+        '<div class="xp-item-name">' + escapeHtml(r.task_name || 'Task') + '</div>' +
+        '<div class="xp-item-meta">' + (when ? when : '') + '</div>' +
+      '</div>' +
+      '<span class="xp-badge ' + statusClass + '">' + escapeHtml(statusLabel) + '</span>' +
+      '<span class="xp-item-val">+' + (r.xp_value || 0) + ' XP</span>' +
+    '</div>';
+  }).join('');
+}
+
+async function loadXpHistory(){
+  let rows = null;
+  try {
+    const { data, error } = await sb.from('user_tasks').select('*').eq('user_id', user.id)
+      .order('completed_at', { ascending: false, nullsFirst: false });
+    if(error) throw error;
+    rows = data;
+  } catch(err){
+    console.warn('completed_at ordering failed, falling back to created_at:', err && err.message);
+    try {
+      const { data, error } = await sb.from('user_tasks').select('*').eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if(error) throw error;
+      rows = data;
+    } catch(err2){
+      console.warn('XP history load failed:', err2 && err2.message);
+      document.getElementById('xp-list').innerHTML = '<div class="empty">Could not load XP history.</div>';
+      return;
+    }
+  }
+  renderXpHistory(rows);
+}
+
+// ── Boot ──────────────────────────────────────────────────
+(async function init(){
+  sb = await waitForSb();
+  if(!sb){ location.href = '/index.html'; return; }
+  const { data: { user: u } } = await sb.auth.getUser();
+  if(!u){ location.href = '/index.html'; return; }
+  user = u;
+
+  // Fetch profile once
+  try {
+    const { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
+    if(error) throw error;
+    profile = data || {};
+  } catch(err){
+    console.warn('Profile load failed:', err && err.message);
+    profile = {};
+  }
+
+  const name = profile.username || (user.user_metadata && user.user_metadata.username) || 'My Account';
+  const rank = profile.rank || 'Advocate';
+  const avatar = profile.avatar || null;
+
+  // Populate nav
+  document.getElementById('nav-username').textContent = name;
+  document.getElementById('nav-rank').textContent = rank;
+  setNavAvatar(avatar, name);
+
+  // Populate avatar card
+  document.getElementById('big-name').textContent = name;
+  document.getElementById('big-rank').textContent = rank;
+  renderBigAvatar(avatar, name);
+
+  // Username card
+  document.getElementById('username-input').value = profile.username || '';
+
+  // Guild card
+  chosenGuild = profile.guild || null;
+  setupGuildLock();
+  renderGuilds();
+
+  // XP history
+  loadXpHistory();
+})();
+</script>
+</body>
+</html>
