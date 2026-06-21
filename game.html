@@ -1,1113 +1,533 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My XP — VoteReederXP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<title>VoteReederXP — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-/* ── NOT LOGGED IN ── */
-.not-logged-in { min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem; }
-
-/* ── 4-PANEL STICKY HERO ── */
-.dashboard-hero {
-  position:sticky; top:0; z-index:100;
-  background:linear-gradient(135deg,rgba(10,0,40,0.98),rgba(30,0,60,0.98));
-  border-bottom:2px solid var(--border-glow);
-  padding:.75rem 1.5rem;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:1rem;
-  backdrop-filter:blur(20px);
-}
-@media(max-width:1100px){ .dashboard-hero { grid-template-columns:repeat(2,1fr); position:relative; } }
-@media(max-width:600px){ .dashboard-hero { grid-template-columns:1fr; position:relative; } }
-
-.hero-panel {
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border-glow);
-  border-radius:12px;
-  padding:1rem 1.25rem;
-  display:flex; flex-direction:column;
-  min-height:200px;
-}
-
-/* PANEL 1 — Personal Stats */
-.hero-tag { font-family:var(--font-display);font-size:.6rem;color:var(--neon-pink);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem; }
-.hero-username { font-family:var(--font-display);font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:900;background:var(--gradient-neon);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.2rem; }
-.hero-rank-row { display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem; }
-.hero-rank { font-family:var(--font-ui);font-size:.9rem;color:var(--neon-gold); }
-.hero-xp-inline { font-family:var(--font-display);font-size:.9rem;color:var(--neon-blue);font-weight:900; }
-
-/* XP BAR */
-.mega-xp-wrap { margin-bottom:.4rem; }
-.mega-xp-label { font-family:var(--font-display);font-size:.65rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem;display:flex;justify-content:space-between; }
-.mega-xp-track { height:20px;background:rgba(255,255,255,0.06);border-radius:10px;border:1px solid var(--border-glow);overflow:hidden;position:relative; }
-.mega-xp-fill { height:100%;border-radius:10px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative; }
-.mega-xp-fill::after { content:'';position:absolute;right:-2px;top:50%;transform:translateY(-50%);width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 0 10px var(--neon-blue); }
-.milestones { display:flex;justify-content:space-between;margin-top:.2rem; }
-.milestone { font-family:var(--font-display);font-size:.48rem;color:var(--text-dim);letter-spacing:.04em;text-align:center; }
-.milestone.reached { color:var(--neon-gold); }
-
-/* STAT CHIPS */
-.stats-row { display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto; }
-.stat-chip { background:rgba(0,240,255,0.08);border:1px solid var(--border-glow);border-radius:10px;padding:.3rem .5rem;min-width:45px;text-align:center; }
-.stat-chip-val { font-family:var(--font-display);font-size:1.1rem;font-weight:900;color:var(--neon-gold); }
-.stat-chip-lbl { font-family:var(--font-ui);font-size:.55rem;color:var(--text-dim);letter-spacing:.06em;text-transform:uppercase; }
-
-/* PANEL 2 — Guild */
-.hero-guild-panel { text-align:center;justify-content:center;align-items:center;gap:.4rem; }
-.guild-emblem-hero { font-size:2.2rem;margin-bottom:.2rem; }
-.guild-name-hero { font-family:var(--font-display);font-size:1rem;font-weight:900;color:var(--neon-blue); }
-.guild-sub-hero { font-family:var(--font-ui);font-size:.7rem;color:var(--text-dim); }
-.guild-xp-hero { font-family:var(--font-display);font-size:.75rem;color:var(--neon-gold); }
-.guild-action-btn { margin-top:auto;font-family:var(--font-display);font-size:.65rem;color:var(--neon-gold);border:1px solid rgba(255,215,0,0.4);border-radius:6px;padding:.3rem .75rem;background:none;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-block; }
-.guild-action-btn:hover { background:rgba(255,215,0,0.1); }
-
-/* PANEL 3 — Civic Champion */
-.champ-panel { text-align:center;justify-content:center;align-items:center;gap:.3rem;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(191,0,255,0.05));border-color:rgba(255,215,0,0.3) !important; }
-.champ-trophy { font-size:2rem; }
-.champ-label { font-family:var(--font-display);font-size:.55rem;color:var(--neon-gold);letter-spacing:.15em;text-transform:uppercase; }
-.champ-name { font-family:var(--font-display);font-size:1rem;font-weight:900;color:var(--text-primary); }
-.champ-xp { font-family:var(--font-display);font-size:.72rem;color:var(--neon-gold); }
-.champ-prizes { font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim);line-height:1.7;margin-top:auto; }
-
-/* PANEL 4 — Top 5 Leaderboard */
-.mini-lb-panel { background:rgba(0,240,255,0.04) !important;border-color:rgba(0,240,255,0.2) !important; }
-.mini-lb-title { font-family:var(--font-display);font-size:.62rem;color:var(--neon-blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem; }
-.mini-lb-row { display:flex;align-items:center;gap:.5rem;padding:.3rem .4rem;border-radius:6px;margin-bottom:.2rem; }
-.mini-lb-row.you { background:rgba(255,0,170,0.1);border:1px solid rgba(255,0,170,0.3); }
-.mini-lb-num { font-family:var(--font-display);font-size:.8rem;font-weight:900;width:22px;text-align:center; }
-.mini-lb-num.gold { color:var(--neon-gold); }
-.mini-lb-num.silver { color:#aaaacc; }
-.mini-lb-num.bronze { color:#cd7f32; }
-.mini-lb-name { font-family:var(--font-ui);font-size:.82rem;color:var(--text-primary);flex:1; }
-.mini-lb-xp { font-family:var(--font-display);font-size:.72rem;color:var(--neon-gold); }
-
-/* ── FULL-WIDTH XP PROGRESS BAR (below hero) ── */
-.full-xp-bar-section {
-  background:linear-gradient(135deg,rgba(0,240,255,0.04),rgba(191,0,255,0.04));
-  border-bottom:1px solid var(--border-glow);
-  padding:.75rem 2rem;
-}
-.full-xp-track { height:24px;background:rgba(255,255,255,0.06);border-radius:12px;border:1px solid var(--border-glow);overflow:hidden;position:relative;margin-bottom:.3rem; }
-.full-xp-fill { height:100%;border-radius:12px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));transition:width 1.2s cubic-bezier(.4,0,.2,1); }
-.full-xp-milestones { display:flex;justify-content:space-between;max-width:100%; }
-.full-milestone { font-family:var(--font-display);font-size:.58rem;color:var(--text-dim);letter-spacing:.05em;text-align:center; }
-.full-milestone.reached { color:var(--neon-gold); }
-
-/* ── DASHBOARD LAYOUT ── */
-.dashboard-content { display:grid;grid-template-columns:1fr 320px;gap:1.5rem;max-width:1280px;margin:0 auto;padding:1.5rem 2rem 3rem; }
-.panel-full { grid-column:1/-1; }
-.panel { background:var(--bg-card);border:1px solid var(--border-glow);border-radius:16px;padding:1.25rem; }
-.panel-title { font-family:var(--font-display);font-size:.8rem;color:var(--neon-blue);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border-glow);display:flex;align-items:center;gap:.5rem; }
-
-/* BADGES — full width, slightly bigger */
-.badge-grid-dash { display:grid;grid-template-columns:repeat(12,1fr);gap:.5rem; }
-@media(max-width:900px){ .badge-grid-dash { grid-template-columns:repeat(6,1fr); } }
-@media(max-width:480px){ .badge-grid-dash { grid-template-columns:repeat(4,1fr); } }
-.badge-item-dash { background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:10px;padding:.65rem .4rem;text-align:center;transition:all .3s; }
-.badge-item-dash.earned { border-color:var(--neon-gold);background:rgba(255,215,0,0.08);box-shadow:0 0 10px rgba(255,215,0,0.15); }
-.badge-item-dash.locked { opacity:.35;filter:grayscale(1); }
-.badge-icon-dash { font-size:1.6rem;display:block;margin-bottom:.25rem; }
-.badge-name-dash { font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);letter-spacing:.04em;line-height:1.3; }
-.badge-item-dash.earned .badge-name-dash { color:var(--neon-gold); }
-
-/* RANK PATH */
-.rank-path { display:flex;flex-direction:column;gap:.6rem; }
-.rank-row { display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:10px;border:1px solid transparent;transition:all .3s; }
-.rank-row.current { border-color:var(--neon-pink);background:rgba(255,0,170,0.08);box-shadow:0 0 15px rgba(255,0,170,0.15); }
-.rank-row.achieved { border-color:rgba(0,255,136,0.3);background:rgba(0,255,136,0.05); }
-.rank-row.locked { opacity:.5; }
-.rank-dot { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.65rem;font-weight:900;flex-shrink:0; }
-.rank-dot.current { background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));color:#fff;box-shadow:0 0 15px rgba(255,0,170,0.5); }
-.rank-dot.achieved { background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000; }
-.rank-dot.locked { background:rgba(255,255,255,0.08);color:var(--text-dim);border:1px solid var(--border-glow); }
-.rank-name { font-family:var(--font-display);font-size:.85rem;font-weight:700;color:var(--text-primary); }
-.rank-req { font-family:var(--font-ui);font-size:.75rem;color:var(--text-dim); }
-.rank-perk { font-family:var(--font-ui);font-size:.7rem;color:var(--neon-gold);margin-left:auto;text-align:right;max-width:130px; }
-
-/* MISSION BOARD */
-.mission-board { display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem; }
-@media(max-width:900px){ .mission-board { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:480px){ .mission-board { grid-template-columns:1fr; } }
-.board-col { background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:14px;padding:.75rem;max-height:520px;overflow-y:auto;scroll-behavior:smooth;display:flex;flex-direction:column;gap:.5rem; }
-.board-col::-webkit-scrollbar { width:6px; }
-.board-col::-webkit-scrollbar-track { background:rgba(0,240,255,0.05);border-radius:3px; }
-.board-col::-webkit-scrollbar-thumb { background:rgba(0,240,255,0.3);border-radius:3px; }
-.board-col-header { display:flex;align-items:center;justify-content:space-between;padding-bottom:.5rem;border-bottom:1px solid var(--border-glow);margin-bottom:.1rem;position:sticky;top:0;background:rgba(10,0,30,0.95);z-index:2;border-radius:4px;padding-top:2px; }
-.board-col-title { font-family:var(--font-display);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase; }
-.board-col-count { font-family:var(--font-display);font-size:.6rem;background:rgba(255,255,255,0.08);padding:.15rem .4rem;border-radius:20px;color:var(--text-dim); }
-.col-todo .board-col-title { color:var(--neon-blue); }
-.col-progress .board-col-title { color:var(--neon-gold); }
-.col-review .board-col-title { color:var(--neon-purple); }
-.col-done .board-col-title { color:#00ff88; }
-
-/* MISSION CARDS with color-coded left border */
-.mission-card { background:var(--bg-card);border:1px solid var(--border-glow);border-radius:8px;padding:.55rem .65rem;cursor:grab;transition:all .2s;user-select:none; }
-.mission-card:hover { border-color:var(--neon-blue);box-shadow:0 0 8px rgba(0,240,255,0.1); }
-.mission-card.dragging { opacity:.4;cursor:grabbing; }
-.mission-card.done-card { border-color:rgba(0,255,136,0.3);background:rgba(0,255,136,0.04); }
-.mission-card.pending-card { border-color:rgba(191,0,255,0.3); }
-/* Color-coded left borders by verification type */
-.mission-card.verify-auto { border-left:3px solid #00ff88; }
-.mission-card.verify-self { border-left:3px solid var(--neon-gold); }
-.mission-card.verify-screenshot { border-left:3px solid var(--neon-purple); }
-.mission-card.verify-event { border-left:3px solid var(--neon-blue); }
-
-.mc-top { display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem; }
-.mc-icon { font-size:.95rem;flex-shrink:0; }
-.mc-name { font-family:var(--font-ui);font-size:.78rem;font-weight:700;color:var(--text-primary);line-height:1.3;flex:1; }
-.mc-xp-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem; }
-.mc-xp { font-family:var(--font-display);font-size:.68rem;color:var(--neon-gold); }
-.mc-cat { font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim); }
-.mc-verify { display:inline-block;font-family:var(--font-ui);font-size:.6rem;padding:.1rem .4rem;border-radius:20px;background:rgba(0,240,255,0.08);color:var(--neon-blue);border:1px solid rgba(0,240,255,0.2); }
-.mc-proof { margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border-glow); }
-.mc-proof-label { font-family:var(--font-ui);font-size:.68rem;color:var(--text-dim);margin-bottom:.35rem; }
-.mc-input { width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(0,240,255,0.2);border-radius:6px;padding:.4rem .6rem;color:var(--text-primary);font-family:var(--font-ui);font-size:.78rem;outline:none;box-sizing:border-box;margin-bottom:.35rem; }
-.mc-input:focus { border-color:var(--neon-blue); }
-.mc-input.error { border-color:var(--neon-pink); }
-.mc-btn { width:100%;font-family:var(--font-display);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem;border-radius:6px;border:none;cursor:pointer;transition:all .2s; }
-.mc-btn-submit { background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff; }
-.mc-btn-confirm { background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000; }
-.mc-btn:hover { opacity:.9;transform:translateY(-1px); }
-.mc-msg { font-family:var(--font-ui);font-size:.68rem;margin-top:.3rem;text-align:center; }
-.drop-hint { border:1px dashed rgba(0,240,255,0.2);border-radius:8px;padding:1.2rem;text-align:center;font-family:var(--font-display);font-size:.6rem;color:rgba(0,240,255,0.3);letter-spacing:.1em; }
-.drop-hint.drag-over { border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,240,255,0.05); }
-.board-tabs { display:flex;gap:.4rem;margin-bottom:.75rem;flex-wrap:wrap; }
-.board-tab { font-family:var(--font-display);font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;border:1px solid var(--border-glow);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s; }
-.board-tab.active { background:var(--neon-blue);border-color:var(--neon-blue);color:#000; }
-
-/* COLOR LEGEND */
-.verify-legend { display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.6rem;align-items:center; }
-.verify-legend-item { display:flex;align-items:center;gap:.3rem;font-family:var(--font-ui);font-size:.68rem;color:var(--text-dim); }
-.verify-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
-
-/* HOW TO PLAY */
-.how-to-play { background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);border-radius:10px;padding:.75rem 1rem;margin-bottom:.75rem;display:none; }
-.how-to-play p { font-family:var(--font-ui);font-size:.78rem;color:var(--text-dim);line-height:1.8;margin:0; }
-
-/* GUILDS — compact 4 per row */
-.guild-grid-dash { display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem; }
-@media(max-width:900px){ .guild-grid-dash { grid-template-columns:repeat(2,1fr); } }
-.guild-card-dash { background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:10px;padding:.6rem .75rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden; }
-.guild-card-dash:hover { border-color:var(--neon-purple);transform:translateY(-1px); }
-.guild-card-dash.joined { border-color:var(--neon-gold);background:rgba(255,215,0,0.06); }
-.guild-top-bar { height:2px;border-radius:2px;margin-bottom:.4rem; }
-.guild-emblem-dash { font-size:1.1rem;margin-bottom:.15rem; }
-.guild-name-dash { font-family:var(--font-display);font-size:.65rem;font-weight:700;color:var(--text-primary);margin-bottom:.1rem; }
-.guild-members-dash { font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);margin-bottom:.4rem; }
-.guild-btn-row { display:flex;gap:.3rem; }
-.guild-join-btn-dash { flex:1;font-family:var(--font-display);font-size:.58rem;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .4rem;border-radius:5px;border:1px solid var(--neon-purple);background:rgba(191,0,255,0.1);color:var(--neon-purple);cursor:pointer;transition:all .2s;text-align:center;text-decoration:none;display:block; }
-.guild-join-btn-dash:hover { background:var(--neon-purple);color:#fff; }
-.guild-join-btn-dash.joined { border-color:var(--neon-gold);background:rgba(255,215,0,0.15);color:var(--neon-gold); }
-.guild-hq-btn { flex:1;font-family:var(--font-display);font-size:.58rem;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .4rem;border-radius:5px;border:1px solid rgba(0,240,255,0.3);background:rgba(0,240,255,0.05);color:var(--neon-blue);cursor:pointer;transition:all .2s;text-align:center;text-decoration:none;display:block; }
-.guild-hq-btn:hover { background:rgba(0,240,255,0.15); }
-
-/* ACTIVITY */
-.activity-item { display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05); }
-.activity-icon { font-size:1.1rem;flex-shrink:0; }
-.activity-text { font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);flex:1; }
-.activity-xp { font-family:var(--font-display);font-size:.72rem;color:#00ff88;white-space:nowrap; }
-
-/* HALL OF FAME */
-.hof-marquee-wrap { overflow:hidden;border:1px solid rgba(255,215,0,0.25);border-radius:12px;background:rgba(0,0,0,0.3);padding:.6rem 0;margin-bottom:2rem; }
-.hof-marquee-inner { display:flex;gap:1.5rem;width:max-content;animation:hofScroll 30s linear infinite;padding:0 1rem; }
-@keyframes hofScroll { 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
-.hof-marquee-item { display:flex;align-items:center;gap:.6rem;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:8px;padding:.4rem 1rem;white-space:nowrap;flex-shrink:0; }
-.hof-name { font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--neon-gold); }
-.hof-month { font-family:var(--font-ui);font-size:.65rem;color:var(--text-dim); }
-.hof-card { background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:.75rem;text-align:center;transition:all .3s; }
-.hof-card:hover { border-color:var(--neon-gold);background:rgba(255,215,0,0.1);transform:translateY(-2px); }
-.hof-card-avatar { font-size:1.8rem;margin-bottom:.3rem; }
-.hof-card-name { font-family:var(--font-display);font-size:.7rem;font-weight:700;color:var(--neon-gold);margin-bottom:.2rem; }
-.hof-card-month { font-family:var(--font-ui);font-size:.62rem;color:var(--text-dim);margin-bottom:.2rem; }
-.hof-card-xp { font-family:var(--font-display);font-size:.68rem;color:#ffaa00; }
-
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body,input,button,textarea{font-family:'Inter',sans-serif;color:#fff;}
+html,body{background:#0a0e1a;height:100%;overflow:hidden;}
+.bg{position:fixed;inset:0;z-index:0;background:#0a0e1a;}
+.neb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,100,200,0.1) 0%,transparent 70%);top:-150px;left:-100px;}
+.neb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(100,0,180,0.08) 0%,transparent 70%);bottom:-100px;right:-80px;}
+.stars{position:absolute;inset:0;}
+.s{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite;}
+@keyframes tw{0%,100%{opacity:.05;}50%{opacity:.7;}}
+@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
+@keyframes bl{0%,100%{opacity:1;}50%{opacity:.2;}}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
+.nav-left{display:flex;align-items:center;gap:32px;}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:24px;}
+.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
+.nl:hover{color:#fff;}
+.nl.a{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.boost-badge{display:flex;flex-direction:column;align-items:center;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);border-radius:8px;padding:4px 10px;}
+.boost-val{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:#00ff88;}
+.boost-sub{font-size:9px;color:rgba(0,255,136,0.5);font-weight:600;}
+.xp-pill{display:flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.18);border-radius:20px;padding:6px 14px;}
+.xp-num{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#ffd700;}
+.xp-lbl{font-size:11px;color:rgba(255,215,0,0.5);font-weight:600;}
+.bell{position:relative;cursor:pointer;font-size:20px;}
+.bell-dot{position:absolute;top:-4px;right:-6px;background:#ff0080;color:#fff;font-size:8px;font-weight:900;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.avatar-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
+.av-ring{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
+.av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
+.av-name{font-size:13px;font-weight:700;color:#fff;}
+.av-rank{font-size:11px;color:#ffd700;}
+.ticker{background:#080c18;border-bottom:1px solid rgba(255,255,255,0.04);padding:8px 0;}
+.ticker-inner{display:flex;justify-content:center;align-items:center;gap:0;flex-wrap:nowrap;overflow:hidden;}
+.ti{display:inline-flex;align-items:center;gap:6px;padding:0 28px;border-right:1px solid rgba(255,255,255,0.08);}
+.ti:last-child{border-right:none;}
+.ti-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-right:4px;}
+.ti-val{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;}
+.tc{color:#00e5ff;}.tg{color:#ffd700;}.tp{color:#bf00ff;}.tpk{color:#ff0080;}.tgr{color:#00ff88;}
+.xp-bar-wrap{padding:8px 24px;background:#0d1120;display:flex;align-items:center;gap:12px;}
+.xp-tag{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;}
+.xp-track{flex:1;height:7px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;}
+.xp-fill{height:100%;width:40%;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);border-radius:10px;}
+.xp-right{font-size:12px;font-weight:700;color:#ff0080;white-space:nowrap;}
+.xp-milestones{display:flex;justify-content:space-between;padding:0 24px 7px;background:#0d1120;}
+.xm{font-size:10px;font-weight:600;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:.5px;}
+.xm.done{color:#00e5ff;}.xm.now{color:#ff0080;}
+.layout{position:fixed;top:153px;bottom:0;left:0;right:0;display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 153px);}
+.sidebar{background:#0d1120;border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow:hidden;height:100%;}
+.sb-hdr{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sb-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:#00e5ff;letter-spacing:2px;text-transform:uppercase;}
+.sb-count{background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.25);color:#00e5ff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;padding:2px 9px;border-radius:20px;}
+.sb-scroll{flex:1;overflow-y:scroll;min-height:0;padding:10px 12px 12px;}
+.sb-scroll::-webkit-scrollbar{width:8px;}
+.sb-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.03);}
+.sb-scroll::-webkit-scrollbar-thumb{background:#00e5ff;border-radius:4px;}
+.task{border-radius:9px;padding:12px;margin-bottom:8px;cursor:pointer;transition:.15s;}
+.task:hover{transform:translateX(2px);filter:brightness(1.05);}
+.t-ev{background:rgba(0,180,220,0.07);border:1px solid rgba(0,180,220,0.18);border-left:3px solid #00b4dc;}
+.t-so{background:rgba(255,0,128,0.07);border:1px solid rgba(255,0,128,0.18);border-left:3px solid #ff0080;}
+.t-fi{background:rgba(255,180,0,0.07);border:1px solid rgba(255,180,0,0.18);border-left:3px solid #ffb400;}
+.t-au{background:rgba(0,220,120,0.07);border:1px solid rgba(0,220,120,0.18);border-left:3px solid #00dc78;}
+.t-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.t-tag{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;}
+.tag-ev{background:#00b4dc;color:#000;}.tag-so{background:#ff0080;color:#fff;}.tag-fi{background:#ffb400;color:#000;}.tag-au{background:#00dc78;color:#000;}
+.t-xp{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:#00ff88;}
+.t-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3;}
+.t-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:9px;}
+.t-btn{width:100%;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:6px;padding:9px;cursor:pointer;transition:.15s;}
+.btn-ev{background:#00b4dc;color:#000;}.btn-so{background:#ff0080;color:#fff;}.btn-fi{background:#ffb400;color:#000;}.btn-au{background:#00dc78;color:#000;}
+.t-btn:hover{filter:brightness(1.1);}
+.main{background:#0a0e1a;display:flex;flex-direction:column;height:100%;overflow-y:auto;}
+.main-inner{padding:14px 16px 16px;}
+.top-row{display:grid;grid-template-columns:3fr 3.8fr 5.2fr;gap:12px;margin-bottom:16px;align-items:stretch;width:100%;}
+.profile-card,.badge-card,.chat-card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;display:flex;flex-direction:column;width:100%;height:100%;box-sizing:border-box;gap:10px;}
+.chat-card{overflow:hidden;}
+.card-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+.prof-av-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.prof-av-sq{width:95px;height:95px;border-radius:14px;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:3px;animation:spin 7s linear infinite;flex-shrink:0;}
+.prof-av-sq-in{width:100%;height:100%;border-radius:11px;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:#3c8cff;overflow:hidden;}
+.prof-av-sq-in img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
+.prof-info-col{flex:1;display:flex;flex-direction:column;gap:2px;}
+.prof-name{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#fff;line-height:1;margin-bottom:3px;}
+.prof-guild-name{font-size:13px;font-weight:700;color:#bf00ff;}
+.adv-pill{display:inline-flex;align-items:center;gap:3px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);border-radius:4px;padding:2px 7px;}
+.adv-txt{font-size:9px;font-weight:700;color:#00e5ff;letter-spacing:1px;text-transform:uppercase;}
+.xp-rows{display:flex;flex-direction:column;gap:4px;}
+.xp-line{display:flex;align-items:center;justify-content:space-between;}
+.xp-line-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;}
+.prof-xp-row{display:flex;align-items:baseline;gap:4px;}
+.prof-xpn{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:#ffd700;line-height:1;}
+.prof-xpt{font-size:13px;font-weight:700;color:rgba(255,215,0,0.4);}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+.mstat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:7px;padding:6px;text-align:center;}
+.mstat-lbl{font-size:8px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.mstat-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:#fff;}
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1;align-content:space-between;}
+.badge{text-align:center;display:flex;flex-direction:column;align-items:center;width:100%;height:100%;cursor:pointer;}
+.badge-box{width:100%;height:62px;font-size:26px;margin-bottom:4px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.badge:hover .badge-box{transform:scale(1.08);}
+.be .badge-box{background:rgba(255,180,0,0.12);border:1px solid rgba(255,180,0,0.35);}
+.bl .badge-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.18);}
+.badge-nm{font-size:10px;font-weight:700;line-height:1.2;}
+.be .badge-nm{color:#ffd700;}.bl .badge-nm{color:rgba(255,255,255,0.65);}
+.chat-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.chat-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:#00e5ff;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.chat-live{width:8px;height:8px;border-radius:50%;background:#00ff88;box-shadow:0 0 6px #00ff88;animation:bl 2s infinite;}
+.chat-online{font-size:12px;color:rgba(255,255,255,0.35);}
+.chat-messages{flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:6px;min-height:0;}
+.chat-messages::-webkit-scrollbar{width:6px;}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.3);border-radius:4px;}
+.chat-msg{display:flex;gap:7px;align-items:baseline;}
+.chat-msg-name{font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.you-n{color:#00e5ff;}.p1-n{color:#00ff88;}.p2-n{color:#bf00ff;}.p3-n{color:#ffd700;}.p4-n{color:#ff0080;}
+.chat-sep{color:rgba(255,255,255,0.15);padding:0 2px;flex-shrink:0;}
+.chat-msg-txt{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.4;flex:1;}
+.chat-msg-time{font-size:10px;color:rgba(255,255,255,0.25);white-space:nowrap;flex-shrink:0;}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.chat-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;font-size:13px;color:#fff;outline:none;transition:.15s;}
+.chat-input::placeholder{color:rgba(255,255,255,0.25);}
+.chat-input:focus{border-color:rgba(0,229,255,0.4);background:rgba(0,229,255,0.04);}
+.chat-send{background:linear-gradient(135deg,#00b4dc,#0080aa);border:none;border-radius:8px;padding:10px 18px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#fff;cursor:pointer;transition:.15s;}
+.chat-send:hover{filter:brightness(1.1);}
+.kanban-hdr{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.kcol{border-radius:12px;padding:14px;display:flex;flex-direction:column;height:450px !important;overflow:hidden !important;}
+.kin{background:rgba(255,180,0,0.05);border:1px solid rgba(255,180,0,0.15);}
+.kpe{background:rgba(191,0,255,0.05);border:1px solid rgba(191,0,255,0.15);}
+.kco{background:rgba(0,220,120,0.04);border:1px solid rgba(0,220,120,0.12);}
+.kcol-scroll{flex:1 !important;overflow-y:scroll !important;overflow-x:hidden !important;min-height:0 !important;display:block !important;}
+.kcol-scroll::-webkit-scrollbar{width:8px !important;display:block !important;}
+.kcol-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.03) !important;}
+.kcol-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3) !important;border-radius:4px !important;}
+.kh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.kh-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;}
+.kh-in{color:#ffb400;}.kh-pe{color:#bf00ff;}.kh-co{color:#00dc78;}
+.kh-n{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;padding:2px 8px;border-radius:20px;}
+.kn-in{background:rgba(255,180,0,0.15);color:#ffb400;border:1px solid rgba(255,180,0,0.3);}
+.kn-pe{background:rgba(191,0,255,0.15);color:#bf00ff;border:1px solid rgba(191,0,255,0.3);}
+.kn-co{background:rgba(0,220,120,0.12);color:#00dc78;border:1px solid rgba(0,220,120,0.25);}
+.kcard{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:12px;margin-bottom:8px;}
+.kcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:5px;}
+.kcard-name{font-size:14px;font-weight:700;color:#fff;line-height:1.3;flex:1;}
+.kco .kcard-name{text-decoration:line-through;color:rgba(255,255,255,0.4);}
+.vtag{font-size:9px;font-weight:800;padding:3px 7px;border-radius:4px;letter-spacing:1px;white-space:nowrap;}
+.vt-self{background:#ffb400;color:#000;}.vt-photo{background:#ff0080;color:#fff;}.vt-auto{background:#00dc78;color:#000;}
+.kcard-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:8px;}
+.kco .kcard-sub{color:#00dc78;}
+.mark-btn{width:100%;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;padding:9px;cursor:pointer;background:#ffb400;color:#000;transition:.15s;}
+.mark-btn:hover{filter:brightness(1.1);}
+.upload-zone{background:rgba(255,0,128,0.05);border:1px dashed rgba(255,0,128,0.3);border-radius:8px;padding:12px;text-align:center;cursor:pointer;margin-top:8px;}
+.uz-ico{font-size:20px;display:block;margin-bottom:4px;}
+.uz-txt{font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);}
+.uz-sub{font-size:10px;color:rgba(255,0,128,0.6);margin-top:2px;}
+@keyframes flyInAndBounce{0%{transform:translate(-100vw,-100px) scale(3) rotate(-45deg);opacity:0;}50%{transform:translate(20px,20px) scale(0.8) rotate(10deg);opacity:1;}65%{transform:translate(-10px,-15px) scale(1.1) rotate(-5deg);}80%{transform:translate(4px,5px) scale(0.95) rotate(2deg);}100%{transform:translate(0,0) scale(1) rotate(0deg);}}
+.animate-badge{animation:flyInAndBounce 1.2s cubic-bezier(0.175,0.885,0.32,1.275) forwards !important;position:relative;z-index:9999;}
+/* Mobile */
 @media(max-width:900px){
-  .dashboard-content { grid-template-columns:1fr;padding:1rem; }
-  .panel-full { grid-column:1; }
-  .badge-grid-dash { grid-template-columns:repeat(6,1fr); }
-  .guild-grid-dash { grid-template-columns:repeat(2,1fr); }
-  .rank-perk { display:none; }
+  .layout{position:relative;top:0;height:auto;grid-template-columns:1fr;}
+  html,body{overflow-y:auto;height:auto;}
+  .sidebar{height:auto;position:relative;}
+  .top-row{grid-template-columns:1fr!important;}
+  .kanban{grid-template-columns:1fr!important;}
+  .kcol{height:auto;}
 }
-@media(max-width:480px){
-  .badge-grid-dash { grid-template-columns:repeat(3,1fr); }
-  .stats-row { gap:.3rem; }
-  .stat-chip { min-width:40px;padding:.25rem .3rem; }
-  .stat-chip-val { font-size:.9rem; }
-}
+@media(max-width:600px){.nav-links{display:none;}.boost-badge{display:none;}}
 </style>
 </head>
 <body>
-<div class="page-content">
+<div class="bg"><div class="neb1"></div><div class="neb2"></div><div class="stars" id="stars"></div></div>
 
-<!-- NOT LOGGED IN -->
-<div id="not-logged-in" class="not-logged-in" style="display:none;">
-  <img src="images/karen-fist.png" alt="Karen Reeder" style="width:180px;opacity:0.3;margin-bottom:1.5rem;" onerror="this.style.display='none'">
-  <div class="page-tag">// PLAYER DASHBOARD</div>
-  <h1 class="page-title" style="font-size:clamp(1.8rem,5vw,3rem);margin-bottom:.75rem;">Your XP Awaits</h1>
-  <p class="page-sub" style="margin-bottom:2rem;">Log in or create an account to track your XP, join a guild, and climb the leaderboard.</p>
-  <button onclick="document.getElementById('auth-overlay').classList.add('open')" class="btn btn-purple">⚡ Login / Sign Up</button>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none;">
-
-  <!-- 4-PANEL STICKY HERO -->
-  <div class="dashboard-hero">
-
-    <!-- PANEL 1: Personal Stats -->
-    <div class="hero-panel">
-      <div class="hero-tag">// MY XP DASHBOARD</div>
-      <div class="hero-username" id="hero-username">Loading...</div>
-      <div class="hero-rank-row">
-        <div class="hero-rank" id="hero-rank">⚡ Supporter</div>
-        <div class="hero-xp-inline" id="hero-xp-inline">0 XP</div>
-      </div>
-      <div class="mega-xp-wrap">
-        <div class="mega-xp-label">
-          <span id="xp-current-label">0 XP</span>
-          <span id="xp-next-label">Next: 300 XP</span>
-        </div>
-        <div class="mega-xp-track">
-          <div class="mega-xp-fill" id="xp-bar" style="width:0%"></div>
-        </div>
-        <div class="milestones">
-          <div class="milestone" data-xp="0">Support</div>
-          <div class="milestone" data-xp="300">Org</div>
-          <div class="milestone" data-xp="1000">Adv</div>
-          <div class="milestone" data-xp="3500">Build</div>
-          <div class="milestone" data-xp="8000">Cat</div>
-          <div class="milestone" data-xp="15000">Champ</div>
-        </div>
-      </div>
-      <div class="stats-row" style="margin-top:.5rem;">
-        <div class="stat-chip"><div class="stat-chip-val" id="stat-xp">0</div><div class="stat-chip-lbl">XP</div></div>
-        <div class="stat-chip"><div class="stat-chip-val" id="stat-rank">#—</div><div class="stat-chip-lbl">Rank</div></div>
-        <div class="stat-chip"><div class="stat-chip-val" id="stat-badges">0</div><div class="stat-chip-lbl">Badges</div></div>
-        <div class="stat-chip"><div class="stat-chip-val" id="stat-lb">#—</div><div class="stat-chip-lbl">Board</div></div>
+<div class="topbar" id="topbar">
+  <div class="nav-row">
+    <div class="nav-left">
+      <div class="nav-logo">VoteReederXP</div>
+      <div class="nav-links">
+        <span class="nl a">Dashboard</span>
+        <span class="nl">Missions</span>
+        <span class="nl">Events</span>
+        <span class="nl">Learn</span>
+        <span class="nl">Blog</span>
       </div>
     </div>
-
-    <!-- PANEL 2: Guild -->
-    <div class="hero-panel hero-guild-panel" style="text-align:center;justify-content:center;align-items:center;">
-      <div class="guild-emblem-hero" id="hero-guild-emblem">⚔️</div>
-      <div class="guild-name-hero" id="hero-guild-name">No Guild Yet</div>
-      <div class="guild-sub-hero" id="hero-guild-sub">Reach Organizer (300 XP) to join</div>
-      <div class="guild-xp-hero" id="hero-guild-xp"></div>
-      <a href="#guilds-section" id="hero-guild-btn" onclick="document.getElementById('guilds-section').scrollIntoView({behavior:'smooth'});return false;" class="guild-action-btn" style="margin-top:auto;">⚔️ Join a Guild</a>
-    </div>
-
-    <!-- PANEL 3: Civic Champion -->
-    <div class="hero-panel champ-panel">
-      <div class="champ-trophy">🏆</div>
-      <div class="champ-label">// Civic Champion</div>
-      <div class="champ-name" id="champ-name">—</div>
-      <div class="champ-xp" id="champ-xp"></div>
-      <div class="champ-prizes">
-        🎤 Speak at event<br>
-        📜 Certificate<br>
-        📹 Social shoutout<br>
-        🏆 Hall of Fame
-      </div>
-    </div>
-
-    <!-- PANEL 4: Top 5 Leaderboard -->
-    <div class="hero-panel mini-lb-panel">
-      <div class="mini-lb-title">🏅 TOP 5 PLAYERS</div>
-      <div id="mini-leaderboard">
-        <div style="font-family:var(--font-display);font-size:.62rem;color:var(--neon-blue);text-align:center;padding:.5rem;letter-spacing:.08em;">// LOADING...</div>
+    <div class="nav-right">
+      <div class="boost-badge"><div class="boost-val">⚡ 2X XP</div><div class="boost-sub">02:14:37</div></div>
+      <div class="xp-pill"><span class="xp-num" id="nav-xp">1,000</span><span class="xp-lbl">XP · <span id="nav-rank">Advocate</span></span></div>
+      <div class="bell">🔔<span class="bell-dot">3</span></div>
+      <div class="avatar-wrap">
+        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+        <div><div class="av-name" id="nav-username">ReederRising</div><div class="av-rank" id="nav-level">Level 29 · Advocate</div></div>
+        <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-left:4px;">▼</span>
       </div>
     </div>
   </div>
-
-  <!-- FULL WIDTH XP BAR -->
-  <div class="full-xp-bar-section">
-    <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:.7rem;color:var(--text-dim);margin-bottom:.3rem;">
-      <span id="full-xp-label">0 XP</span>
-      <span id="full-xp-next">Next rank: Organizer at 300 XP</span>
-    </div>
-    <div class="full-xp-track">
-      <div class="full-xp-fill" id="full-xp-bar" style="width:0%"></div>
-    </div>
-    <div class="full-xp-milestones">
-      <div class="full-milestone" data-xp="0">Supporter</div>
-      <div class="full-milestone" data-xp="300">Organizer</div>
-      <div class="full-milestone" data-xp="1000">Advocate</div>
-      <div class="full-milestone" data-xp="3500">Builder</div>
-      <div class="full-milestone" data-xp="8000">Catalyst</div>
-      <div class="full-milestone" data-xp="15000">Champion</div>
+  <div class="ticker">
+    <div class="ticker-inner">
+      <div class="ti"><span style="font-size:15px;">🥇</span><span class="ti-lbl">Top Player</span><span class="ti-val tg" id="tick-top">LibertyLifter · 3,250 XP</span></div>
+      <div class="ti"><span style="font-size:15px;">⭐</span><span class="ti-lbl">Your Rank</span><span class="ti-val tgr" id="tick-rank">ReederRising · #12 of 847</span></div>
+      <div class="ti"><span style="font-size:15px;">🏆</span><span class="ti-lbl">Civic Champion</span><span class="ti-val tg">MariaH_TX29 · June 2026</span></div>
+      <div class="ti"><span style="font-size:15px;">⚡</span><span class="ti-lbl">Guild Leader</span><span class="ti-val tp">The Momentum · 48,200 XP</span></div>
+      <div class="ti"><span style="font-size:15px;">🔥</span><span class="ti-lbl">Hot Streak</span><span class="ti-val tpk">DistrictRising · 7 Days</span></div>
     </div>
   </div>
-
-  <div class="dashboard-content">
-
-    <!-- BADGES — full width below progress bar -->
-    <div class="panel panel-full">
-      <div class="panel-title">🎖️ Achievement Badges</div>
-      <div class="badge-grid-dash" id="badge-grid">
-        <div class="badge-item-dash locked" data-badge="First Knock"><span class="badge-icon-dash">🚪</span><div class="badge-name-dash">First Knock</div></div>
-        <div class="badge-item-dash locked" data-badge="Community Builder"><span class="badge-icon-dash">🏘️</span><div class="badge-name-dash">Community Builder</div></div>
-        <div class="badge-item-dash locked" data-badge="Rally Warrior"><span class="badge-icon-dash">🎪</span><div class="badge-name-dash">Rally Warrior</div></div>
-        <div class="badge-item-dash locked" data-badge="Turnout Titan"><span class="badge-icon-dash">🌊</span><div class="badge-name-dash">Turnout Titan</div></div>
-        <div class="badge-item-dash locked" data-badge="Social Amplifier"><span class="badge-icon-dash">📡</span><div class="badge-name-dash">Social Amplifier</div></div>
-        <div class="badge-item-dash locked" data-badge="Recruit Master"><span class="badge-icon-dash">🤝</span><div class="badge-name-dash">Recruit Master</div></div>
-        <div class="badge-item-dash locked" data-badge="Catalyst"><span class="badge-icon-dash">⚗️</span><div class="badge-name-dash">Catalyst</div></div>
-        <div class="badge-item-dash locked" data-badge="Change Maker"><span class="badge-icon-dash">🌟</span><div class="badge-name-dash">Change Maker</div></div>
-        <div class="badge-item-dash locked" data-badge="Neighborhood Champ"><span class="badge-icon-dash">🏆</span><div class="badge-name-dash">Neighborhood Champ</div></div>
-        <div class="badge-item-dash locked" data-badge="Civic Scholar"><span class="badge-icon-dash">📚</span><div class="badge-name-dash">Civic Scholar</div></div>
-        <div class="badge-item-dash locked" data-badge="On Fire Streak"><span class="badge-icon-dash">🔥</span><div class="badge-name-dash">On Fire Streak</div></div>
-        <div class="badge-item-dash locked" data-badge="Voter Guardian"><span class="badge-icon-dash">🗳️</span><div class="badge-name-dash">Voter Guardian</div></div>
-      </div>
-    </div>
-
-    <!-- MISSION BOARD — full width -->
-    <div class="panel panel-full">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
-        <div class="panel-title" style="margin:0;border:none;padding:0;">🎯 Mission Board</div>
-        <button onclick="var el=document.getElementById('how-to-play');el.style.display=el.style.display==='none'||el.style.display===''?'block':'none'" style="font-family:var(--font-display);font-size:.62rem;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);color:var(--neon-blue);border-radius:6px;padding:.25rem .6rem;cursor:pointer;">❓ How to Play</button>
-      </div>
-
-      <div class="how-to-play" id="how-to-play">
-        <p>🖱️ <strong style="color:var(--text-primary);">Desktop:</strong> Drag cards between columns &nbsp;|&nbsp; 📱 <strong style="color:var(--text-primary);">Mobile:</strong> Tap card → tap column header to move<br>
-        ⏰ One mission type per day &nbsp;·&nbsp; 🏆 Newest completed missions appear at top of Done column</p>
-      </div>
-
-      <!-- Color legend -->
-      <div class="verify-legend">
-        <div class="verify-legend-item"><div class="verify-dot" style="background:#00ff88;"></div>Auto complete</div>
-        <div class="verify-legend-item"><div class="verify-dot" style="background:var(--neon-gold);"></div>Self-report</div>
-        <div class="verify-legend-item"><div class="verify-dot" style="background:var(--neon-purple);"></div>Screenshot</div>
-        <div class="verify-legend-item"><div class="verify-dot" style="background:var(--neon-blue);"></div>Event Code</div>
-      </div>
-
-      <div class="board-tabs" id="board-tabs">
-        <button class="board-tab active" onclick="filterBoard('all',this)">All Missions</button>
-        <button class="board-tab" onclick="filterBoard('Learning',this)">🎓 Learning</button>
-        <button class="board-tab" onclick="filterBoard('Events',this)">📅 Events</button>
-        <button class="board-tab" onclick="filterBoard('Field Work',this)">🚪 Field Work</button>
-        <button class="board-tab" onclick="filterBoard('Social Media',this)">📱 Social</button>
-        <button class="board-tab" onclick="filterBoard('Fun',this)">🎉 Fun</button>
-        <button class="board-tab" onclick="filterBoard('Bonus',this)">⭐ Bonus</button>
-      </div>
-
-      <div class="mission-board">
-        <div class="board-col col-todo" id="col-todo" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'todo')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header"><div class="board-col-title">Available</div><div class="board-col-count" id="count-todo">0</div></div>
-          <div class="drop-hint" id="hint-todo">// LOADING MISSIONS...</div>
-        </div>
-        <div class="board-col col-progress" id="col-progress" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'progress')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header"><div class="board-col-title">In Progress</div><div class="board-col-count" id="count-progress">0</div></div>
-          <div class="drop-hint" id="hint-progress">Drag missions here</div>
-        </div>
-        <div class="board-col col-review" id="col-review" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'review')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header"><div class="board-col-title">Pending Review</div><div class="board-col-count" id="count-review">0</div></div>
-          <div class="drop-hint" id="hint-review">Screenshots submitted here</div>
-        </div>
-        <div class="board-col col-done" id="col-done" ondragover="boardDragOver(event)" ondrop="boardDrop(event,'done')" ondragleave="boardDragLeave(event)">
-          <div class="board-col-header"><div class="board-col-title">Complete ✓</div><div class="board-col-count" id="count-done">0</div></div>
-          <div class="drop-hint" id="hint-done">Completed missions</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- LEFT COLUMN -->
-    <div>
-      <!-- RANK PATH -->
-      <div class="panel" style="margin-bottom:1.25rem;">
-        <div class="panel-title">🏆 Your Rank Path</div>
-        <div class="rank-path" id="rank-path"></div>
-      </div>
-
-      <!-- GUILDS — compact 4 per row -->
-      <div class="panel" id="guilds-section">
-        <div class="panel-title">⚔️ Guilds — Join Your Team</div>
-        <p style="font-family:var(--font-ui);font-size:.78rem;color:var(--text-dim);margin-bottom:.85rem;line-height:1.6;">Must be Organizer rank (300 XP) to join. You can switch guilds once every 30 days.</p>
-        <div class="guild-grid-dash" id="guild-grid">
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00f0ff,#bf00ff)"></div><div class="guild-emblem-dash">⚡</div><div class="guild-name-dash">THE MOMENTUM</div><div class="guild-members-dash">48 members · Rank #1</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Momentum','⚡')">⚡ Join</button><a href="guild-momentum.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00ff88,#00f0ff)"></div><div class="guild-emblem-dash">⛏️</div><div class="guild-name-dash">THE MINERS</div><div class="guild-members-dash">15 members · Rank #2</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Miners','⛏️')">⛏️ Join</button><a href="guild-builders.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#9b59b6,#ffd700)"></div><div class="guild-emblem-dash">🏛️</div><div class="guild-name-dash">THE ARCHITECTS</div><div class="guild-members-dash">10 members · Rank #3</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Architects','🏛️')">🏛️ Join</button><a href="guild-rise.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#ffd700,#00f0ff)"></div><div class="guild-emblem-dash">🌊</div><div class="guild-name-dash">TURNOUT TITANS</div><div class="guild-members-dash">29 members · Rank #4</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('Turnout Titans','🌊')">🌊 Join</button><a href="guild-titans.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00aaff,#bf00ff)"></div><div class="guild-emblem-dash">📡</div><div class="guild-name-dash">THE SIGNAL</div><div class="guild-members-dash">22 members · Rank #5</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Signal','📡')">📡 Join</button><a href="guild-democracy.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#ff6600,#ffd700)"></div><div class="guild-emblem-dash">🔥</div><div class="guild-name-dash">DISTRICT WARRIORS</div><div class="guild-members-dash">15 members · Rank #6</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('District Warriors','🔥')">🔥 Join</button><a href="guild-warriors.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-          <div class="guild-card-dash"><div class="guild-top-bar" style="background:linear-gradient(90deg,#00d4aa,#ffd700)"></div><div class="guild-emblem-dash">💎</div><div class="guild-name-dash">THE TREASURY</div><div class="guild-members-dash">0 members</div><div class="guild-btn-row"><button class="guild-join-btn-dash" onclick="joinGuild('The Treasury','💎')">💎 Join</button><a href="guild-treasury.html" class="guild-hq-btn">🏰 HQ</a></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT COLUMN -->
-    <div>
-      <!-- RECENT ACTIVITY -->
-      <div class="panel" style="margin-bottom:1.25rem;">
-        <div class="panel-title">📋 Recent Activity</div>
-        <div id="activity-feed">
-          <div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">No activity yet — start earning XP!</div>
-        </div>
-      </div>
-
-      <!-- GUILD CHAT FEED -->
-      <div class="panel" style="margin-bottom:1.25rem;background:rgba(0,240,255,0.03);border-color:rgba(0,240,255,0.15);">
-        <div class="panel-title">💬 Guild Chat Feed</div>
-        <div id="guild-chat-feed" style="max-height:250px;overflow-y:auto;">
-          <div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">Join a guild to see chat messages here!</div>
-        </div>
-      </div>
-
-      <!-- FACEBOOK FEED -->
-      <div class="panel" style="background:rgba(24,119,242,0.06);border-color:rgba(24,119,242,0.25);">
-        <div class="panel-title" style="color:#4267B2;">📘 Campaign Updates</div>
-        <div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1rem 0;line-height:1.7;">
-          Follow Karen on Facebook for live campaign updates!<br>
-          <a href="https://www.facebook.com/electkarenreeder" target="_blank" style="color:#4267B2;font-family:var(--font-display);font-size:.75rem;letter-spacing:.08em;">📘 FOLLOW ON FACEBOOK →</a>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- end dashboard-content -->
-</div><!-- end dashboard -->
-
-<!-- HALL OF FAME — outside dashboard -->
-<div style="max-width:1280px;margin:0 auto;padding:2rem 2rem 4rem;">
-  <div style="text-align:center;margin-bottom:2rem;">
-    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,170,0,0.08));border:2px solid rgba(255,215,0,0.4);border-radius:16px;padding:1.5rem 2rem;position:relative;overflow:hidden;">
-      <div style="font-family:var(--font-display);font-size:.75rem;color:var(--neon-gold);letter-spacing:.4em;text-transform:uppercase;margin-bottom:.5rem;">// LEGENDS OF DISTRICT 29</div>
-      <div style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);font-weight:900;background:linear-gradient(135deg,#ffd700,#ffaa00,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.1em;">🏆 HALL OF FAME 🏆</div>
-      <div style="font-family:var(--font-ui);font-size:.9rem;color:var(--text-dim);margin-top:.5rem;">Past Civic Champions who leveled up democracy in District 29.</div>
-    </div>
+  <div class="xp-bar-wrap">
+    <span class="xp-tag">XP Progress</span>
+    <div class="xp-track"><div class="xp-fill" id="xp-bar-fill"></div></div>
+    <span class="xp-right" id="xp-bar-label">1,000 / 2,500 XP (40%)</span>
   </div>
-  <div class="hof-marquee-wrap"><div id="hof-marquee" class="hof-marquee-inner"></div></div>
-  <div id="hof-table" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;"></div>
-</div>
-
-<!-- JUICER SOCIAL FEED -->
-<div style="max-width:1280px;margin:0 auto;padding:0 2rem 4rem;">
-  <div style="text-align:center;margin-bottom:1.5rem;">
-    <div style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);letter-spacing:.3em;text-transform:uppercase;margin-bottom:.35rem;">// CAMPAIGN FEED</div>
-    <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--text-primary);">📱 Latest from the Trail</div>
-  </div>
-  <div style="border:1px solid var(--border-glow);border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.02);width:100%;">
-    <iframe src="https://www.juicer.io/api/feeds/elect-karen-reeder/iframe" frameborder="0" style="display:block;width:100%;height:500px;" title="Elect Karen Reeder - Social Feed"></iframe>
+  <div class="xp-milestones">
+    <span class="xm done">Supporter · 0</span>
+    <span class="xm done">Organizer · 500</span>
+    <span class="xm now">▲ Advocate · 1,000</span>
+    <span class="xm">Builder · 1,500</span>
+    <span class="xm">Champion · 2,500</span>
   </div>
 </div>
 
-</div><!-- end page-content -->
+<div class="layout" id="layout">
+  <div class="sidebar">
+    <div class="sb-hdr">
+      <span class="sb-title">Available Tasks</span>
+      <span class="sb-count" id="task-count">6</span>
+    </div>
+    <div class="sb-scroll" id="task-list">
+      <div class="task t-ev"><div class="t-top"><span class="t-tag tag-ev">Event Briefing</span><span class="t-xp">+150 XP</span></div><div class="t-name">Town Hall: District 29 Meetup</div><div class="t-sub">Saturday, June 20th · 11:00 PM</div><button class="t-btn btn-ev">Tap to Add to Board</button></div>
+      <div class="task t-so"><div class="t-top"><span class="t-tag tag-so">Social Task</span><span class="t-xp">+75 XP</span></div><div class="t-name">Share "Weekend of Action" Post</div><div class="t-sub">Auto-detect via Facebook link.</div><button class="t-btn btn-so">Tap to Add to Board</button></div>
+      <div class="task t-fi"><div class="t-top"><span class="t-tag tag-fi">Field Work</span><span class="t-xp">+200 XP</span></div><div class="t-name">Canvass Neighborhood Sector A</div><div class="t-sub">Manual upload / Self-report.</div><button class="t-btn btn-fi">Tap to Add to Board</button></div>
+      <div class="task t-au"><div class="t-top"><span class="t-tag tag-au">Auto</span><span class="t-xp">+25 XP</span></div><div class="t-name">Complete Daily Check-in</div><div class="t-sub">Auto-verified on login.</div><button class="t-btn btn-au">Tap to Add to Board</button></div>
+      <div class="task t-ev"><div class="t-top"><span class="t-tag tag-ev">Event Briefing</span><span class="t-xp">+100 XP</span></div><div class="t-name">Attend Community Forum</div><div class="t-sub">Thursday, June 22nd · 6:00 PM</div><button class="t-btn btn-ev">Tap to Add to Board</button></div>
+      <div class="task t-fi"><div class="t-top"><span class="t-tag tag-fi">Field Work</span><span class="t-xp">+150 XP</span></div><div class="t-name">Phone Bank 60 Minutes</div><div class="t-sub">Self-report after completion.</div><button class="t-btn btn-fi">Tap to Add to Board</button></div>
+      <div class="task t-so"><div class="t-top"><span class="t-tag tag-so">Social Task</span><span class="t-xp">+50 XP</span></div><div class="t-name">Follow Karen on Instagram</div><div class="t-sub">Auto-detect via linked account.</div><button class="t-btn btn-so">Tap to Add to Board</button></div>
+      <div class="task t-au"><div class="t-top"><span class="t-tag tag-au">Auto</span><span class="t-xp">+25 XP</span></div><div class="t-name">Register on VoteReederXP</div><div class="t-sub">One-time auto-verified bonus.</div><button class="t-btn btn-au">Tap to Add to Board</button></div>
+    </div>
+  </div>
+
+  <div class="main" id="maincontent">
+    <div class="main-inner">
+      <div class="top-row">
+        <div class="profile-card">
+          <div class="card-label">Player Profile</div>
+          <div class="prof-av-row">
+            <div class="prof-av-sq"><div class="prof-av-sq-in" id="profile-avatar-box">KR</div></div>
+            <div class="prof-info-col">
+              <div class="prof-name" id="profile-username">ReederRising</div>
+              <div class="prof-guild-name" id="profile-guild">⚡ The Treasury</div>
+              <div class="adv-pill" style="margin-top:4px;"><span style="font-size:10px;">🛡️</span><span class="adv-txt" id="profile-rank">Advocate</span></div>
+            </div>
+          </div>
+          <div class="xp-rows">
+            <div class="xp-line"><span class="xp-line-lbl">Player XP</span><div class="prof-xp-row"><span class="prof-xpn" id="profile-xp">1,000</span><span class="prof-xpt">XP</span></div></div>
+            <div class="xp-line"><span class="xp-line-lbl">Guild XP</span><div class="prof-xp-row"><span class="prof-xpn" id="profile-guild-xp" style="color:#bf00ff;font-size:20px;">125,450</span><span class="prof-xpt" style="color:rgba(191,0,255,0.4);">XP</span></div></div>
+          </div>
+          <div class="mini-stats">
+            <div class="mstat"><div class="mstat-lbl">Rank</div><div class="mstat-val" style="color:#ffd700;" id="profile-lb-rank">#12</div></div>
+            <div class="mstat"><div class="mstat-lbl">Badges</div><div class="mstat-val" id="profile-badges">7/12</div></div>
+            <div class="mstat"><div class="mstat-lbl">Top</div><div class="mstat-val" style="color:#00e5ff;">5%</div></div>
+          </div>
+        </div>
+
+        <div class="badge-card">
+          <div class="card-label" style="margin-bottom:8px;">Achievement Badges <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:none;letter-spacing:0;margin-left:6px;">7 of 12</span></div>
+          <div class="badges-grid">
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">🥇</div><div class="badge-nm">First Vol</div></div>
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">🤝</div><div class="badge-nm">Connector</div></div>
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">📢</div><div class="badge-nm">Amplifier</div></div>
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">🗳️</div><div class="badge-nm">Voter Reg</div></div>
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">🚶</div><div class="badge-nm">Block Walker</div></div>
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">📞</div><div class="badge-nm">Phone Bank</div></div>
+            <div class="badge be" onclick="triggerBadgeAnimation(this)"><div class="badge-box">⭐</div><div class="badge-nm">Event Hero</div></div>
+            <div class="badge bl"><div class="badge-box">🔒</div><div class="badge-nm">Civic Builder</div></div>
+            <div class="badge bl"><div class="badge-box">🔒</div><div class="badge-nm">Neighbor</div></div>
+            <div class="badge bl"><div class="badge-box">🔒</div><div class="badge-nm">Guild Founder</div></div>
+            <div class="badge bl"><div class="badge-box">🔒</div><div class="badge-nm">Champion</div></div>
+            <div class="badge bl"><div class="badge-box">🔒</div><div class="badge-nm">District</div></div>
+          </div>
+        </div>
+
+        <div class="chat-card">
+          <div class="chat-hdr">
+            <div class="chat-title"><span class="chat-live"></span>District 29 · Global Chat</div>
+            <span class="chat-online" id="chat-online-count">23 online</span>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg"><span class="chat-msg-name p1-n">Player123 <span style="font-size:10px;color:rgba(0,255,136,0.5);">(The Miners)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Just added the town hall meeting task!</span><span class="chat-msg-time">2m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p2-n">TX29Hero <span style="font-size:10px;color:rgba(191,0,255,0.5);">(The Treasury)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Sector A block walk is almost done.</span><span class="chat-msg-time">5m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p3-n">MariaH_TX29 <span style="font-size:10px;color:rgba(255,215,0,0.5);">(Turnout Titans)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Thanks everyone 🏆 Let's keep pushing!</span><span class="chat-msg-time">8m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p4-n">LibertyLifter <span style="font-size:10px;color:rgba(255,0,128,0.5);">(The Momentum)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Who's coming to the weekend canvass?</span><span class="chat-msg-time">12m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p1-n">GrassrootsGuru <span style="font-size:10px;color:rgba(0,255,136,0.5);">(The Signal)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Phone bank session in 30 mins!</span><span class="chat-msg-time">15m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p2-n">VoteTX29 <span style="font-size:10px;color:rgba(191,0,255,0.5);">(The Treasury)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Registered 3 voters today 🗳️ +100 XP!</span><span class="chat-msg-time">18m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p3-n">DistrictRising <span style="font-size:10px;color:rgba(255,215,0,0.5);">(District Warriors)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">7 day streak 🔥 Who else?</span><span class="chat-msg-time">22m</span></div>
+            <div class="chat-msg"><span class="chat-msg-name p4-n">Karen29Fights <span style="font-size:10px;color:rgba(255,0,128,0.5);">(The Architects)</span></span><span class="chat-sep">·</span><span class="chat-msg-txt">Great turnout last night. Karen was amazing!</span><span class="chat-msg-time">30m</span></div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-input" type="text" placeholder="Message District 29..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kanban-hdr">My Board</div>
+      <div class="kanban">
+        <div class="kcol kin">
+          <div class="kh"><span class="kh-title kh-in">⚡ In Progress</span><span class="kh-n kn-in" id="count-in">4</span></div>
+          <div class="kcol-scroll" id="col-in-progress">
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Canvass 10 Doors</span><span class="vtag vt-self">SELF REPORT</span></div><div class="kcard-sub">+150 XP · Manual Verification</div><button class="mark-btn">Mark Complete</button></div>
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Phone Bank 30 Min</span><span class="vtag vt-self">SELF REPORT</span></div><div class="kcard-sub">+75 XP · Due May 24</div><button class="mark-btn">Mark Complete</button></div>
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Attend Town Hall Event</span><span class="vtag vt-self">SELF REPORT</span></div><div class="kcard-sub">+100 XP · Due May 26</div><button class="mark-btn">Mark Complete</button></div>
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Register 2 Voters</span><span class="vtag vt-self">SELF REPORT</span></div><div class="kcard-sub">+200 XP · Manual Verification</div><button class="mark-btn">Mark Complete</button></div>
+          </div>
+        </div>
+        <div class="kcol kpe">
+          <div class="kh"><span class="kh-title kh-pe">🕐 Pending Review</span><span class="kh-n kn-pe" id="count-pending">1</span></div>
+          <div class="kcol-scroll" id="col-pending">
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Post Event Selfie</span><span class="vtag vt-photo">PHOTO PROOF</span></div><div class="kcard-sub" style="color:rgba(191,0,255,0.7);">Awaiting coordinator approval</div><div class="upload-zone" onclick="document.getElementById('f1').click()"><span class="uz-ico">📤</span><div class="uz-txt">Upload Screenshot</div><div class="uz-sub">→ Google Drive · XP instantly</div><input type="file" id="f1" accept="image/*" style="display:none" onchange="doUp(this,'s1')"></div><div id="s1" style="font-size:11px;text-align:center;margin-top:5px;"></div></div>
+          </div>
+        </div>
+        <div class="kcol kco">
+          <div class="kh"><span class="kh-title kh-co">✓ Complete</span><span class="kh-n kn-co" id="count-complete">3</span></div>
+          <div class="kcol-scroll" id="col-complete">
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Watched Welcome Video</span><span class="vtag vt-auto">AUTO</span></div><div class="kcard-sub">+25 XP · Auto Verified</div></div>
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Volunteer Signup</span><span class="vtag vt-auto">AUTO</span></div><div class="kcard-sub">+200 XP · Auto Verified</div></div>
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Follow on Instagram</span><span class="vtag vt-auto">AUTO</span></div><div class="kcard-sub">+50 XP · Auto Verified</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL  = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
-const RANK_CSV      = '/.netlify/functions/sheets-proxy?gid=114264924';
-const GAME_CSV_URL  = '/.netlify/functions/sheets-proxy?gid=1810466887';
-const FUN_CSV_URL   = '/.netlify/functions/sheets-proxy?gid=15253665';
-const EVENTS_CSV_URL= '/.netlify/functions/sheets-proxy?gid=0';
+/* ── SUPABASE CONFIG ── */
+const _SB_URL = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
+const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
 
+async function sbFetch(path, opts={}) {
+  const res = await fetch(`${_SB_URL}/rest/v1/${path}`, {
+    headers: {'apikey': _SB_KEY, 'Authorization': `Bearer ${_SB_KEY}`, 'Content-Type': 'application/json', ...opts.headers},
+    ...opts
+  });
+  return res.json();
+}
+
+/* ── RANK THRESHOLDS ── */
 const RANKS = [
-  { name:'Supporter',      xp:0,     icon:'🌱', perk:'Campaign badge + welcome pack' },
-  { name:'Organizer',      xp:300,   icon:'📋', perk:'Guild access + mission unlocks' },
-  { name:'Advocate',       xp:1000,  icon:'📣', perk:'Leaderboard featured + certificate' },
-  { name:'Builder',        xp:3500,  icon:'🏗️', perk:'VIP event invites + name on site' },
-  { name:'Catalyst',       xp:8000,  icon:'⚗️', perk:'Guild leadership + campaign role' },
-  { name:'Change Champion',xp:15000, icon:'🏆', perk:'Hall of Fame + Campaign Legacy' },
+  {name:'Supporter', min:0, max:499},
+  {name:'Organizer', min:500, max:999},
+  {name:'Advocate', min:1000, max:1499},
+  {name:'Builder', min:1500, max:1999},
+  {name:'Catalyst', min:2000, max:2499},
+  {name:'Champion', min:2500, max:Infinity}
 ];
+function getRank(xp){ return RANKS.find(r => xp >= r.min && xp <= r.max) || RANKS[0]; }
+function getRankNextThreshold(xp){ const r = RANKS.find(r => xp >= r.min && xp <= r.max); return r ? r.max+1 : 2500; }
 
-const CAT_ICONS = {
-  'Learning':'🎓','Events':'📅','Field Work':'🚪','Voter Registration':'🗳️',
-  'Social Media':'📱','Recruitment':'🤝','Donation':'💰','Volunteer':'📋','Bonus':'⭐','Fun':'🎉'
-};
+/* ── LOAD PROFILE ── */
+async function loadProfile() {
+  if (!window.sb) return;
+  const { data: { user } } = await window.sb.auth.getUser();
+  if (!user) { window.location.href = '/index.html'; return; }
 
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h=>h.replace(/^"|"$/g,'').trim());
-  return lines.slice(1).map(line=>{
-    const cols=[]; let cur='',inQ=false;
-    for(let i=0;i<line.length;i++){
-      if(line[i]==='"'){inQ=!inQ;}
-      else if(line[i]===','&&!inQ){cols.push(cur.trim());cur='';}
-      else{cur+=line[i];}
-    }
-    cols.push(cur.trim());
-    const obj={};
-    headers.forEach((h,i)=>obj[h]=(cols[i]||'').replace(/^"|"$/g,'').trim());
-    return obj;
-  });
-}
+  const data = await sbFetch(`profiles?id=eq.${user.id}&select=*`);
+  if (!data || !data[0]) return;
+  const p = data[0];
 
-function getCurrentRank(xp) {
-  const ranks = window.RANKS_LIVE || RANKS;
-  let rank = ranks[0];
-  for(const r of ranks){ if(xp>=r.xp) rank=r; else break; }
-  return rank;
-}
+  const xp = p.xp_score || 0;
+  const rank = getRank(xp);
+  const nextXp = getRankNextThreshold(xp);
+  const pct = Math.min(100, Math.round((xp / nextXp) * 100));
+  const initials = (p.username || 'KR').substring(0,2).toUpperCase();
 
-function getNextRank(xp) {
-  const ranks = window.RANKS_LIVE || RANKS;
-  for(const r of ranks){ if(xp<r.xp) return r; }
-  return null;
-}
+  // Nav
+  document.getElementById('nav-xp').textContent = xp.toLocaleString();
+  document.getElementById('nav-rank').textContent = rank.name;
+  document.getElementById('nav-username').textContent = p.username || 'Player';
+  document.getElementById('nav-level').textContent = `Advocate · ${rank.name}`;
 
-async function loadRanks() {
-  try {
-    const res = await fetch(RANK_CSV);
-    if(!res.ok) throw new Error('rank fetch failed');
-    const text = await res.text();
-    const rows = parseCSV(text).filter(r=>r.Rank&&r['XP Required']);
-    window.RANKS_LIVE = rows.map(r=>({
-      name:r.Rank, xp:parseInt(r['XP Required'])||0,
-      icon:r.Icon||'⭐', perk:r.Perks||r.Reward||'', color:r.Color||'var(--neon-blue)',
-    }));
-  } catch(e){ window.RANKS_LIVE=null; }
-}
+  // XP bar
+  document.getElementById('xp-bar-fill').style.width = pct + '%';
+  document.getElementById('xp-bar-label').textContent = `${xp.toLocaleString()} / ${nextXp.toLocaleString()} XP (${pct}%)`;
 
-function updateDashboard(user, profile) {
-  const xp = profile?.total_xp || 0;
-  const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
-  const guild = profile?.guild || null;
+  // Ticker
+  document.getElementById('tick-rank').textContent = `${p.username} · #${p.leaderboard_rank || '?'} of 847`;
 
-  document.getElementById('not-logged-in').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
+  // Profile card
+  document.getElementById('profile-username').textContent = p.username || 'Player';
+  document.getElementById('profile-rank').textContent = rank.name;
+  document.getElementById('profile-xp').textContent = xp.toLocaleString();
+  document.getElementById('profile-guild').textContent = p.guild ? `⚡ ${p.guild}` : '— No Guild —';
 
-  // Hero username
-  document.getElementById('hero-username').textContent = username;
-
-  // Rank + XP
-  const curRank = getCurrentRank(xp);
-  const nextRank = getNextRank(xp);
-  document.getElementById('hero-rank').textContent = curRank.icon + ' ' + curRank.name;
-  document.getElementById('hero-xp-inline').textContent = xp.toLocaleString() + ' XP';
-
-  // XP bars
-  const pct = nextRank ? Math.min(((xp-curRank.xp)/(nextRank.xp-curRank.xp))*100,100) : 100;
-  document.getElementById('xp-bar').style.width = pct+'%';
-  document.getElementById('full-xp-bar').style.width = pct+'%';
-  document.getElementById('xp-current-label').textContent = xp.toLocaleString()+' XP';
-  document.getElementById('full-xp-label').textContent = xp.toLocaleString()+' XP';
-  document.getElementById('xp-next-label').textContent = nextRank ? 'Next: '+nextRank.name+' at '+nextRank.xp.toLocaleString()+' XP' : '🏆 MAX RANK!';
-  document.getElementById('full-xp-next').textContent = nextRank ? 'Next rank: '+nextRank.name+' at '+nextRank.xp.toLocaleString()+' XP' : '🏆 MAX RANK ACHIEVED!';
-
-  // Milestones highlight
-  document.querySelectorAll('.milestone,.full-milestone').forEach(m=>{
-    if(xp>=parseInt(m.dataset.xp)) m.classList.add('reached');
-  });
-
-  // Stat chips
-  document.getElementById('stat-xp').textContent = xp.toLocaleString();
-
-  // Guild hero panel
-  const guildEmblems = {
-    'District Warriors':'🔥','Turnout Titans':'🌊','The Momentum':'⚡',
-    'The Signal':'📡','The Miners':'⛏️','The Architects':'🏛️','The Treasury':'💎'
-  };
-  if(guild) {
-    document.getElementById('hero-guild-emblem').textContent = guildEmblems[guild]||'⚔️';
-    document.getElementById('hero-guild-name').textContent = guild;
-    document.getElementById('hero-guild-sub').textContent = 'Your guild — keep climbing! ⚡';
-    const btn = document.getElementById('hero-guild-btn');
-    btn.textContent = '→ Guild HQ';
-    btn.style.color = 'var(--neon-blue)';
-    // Load guild total XP
-    fetch(`${SUPABASE_URL}/rest/v1/profiles?guild=eq.${encodeURIComponent(guild)}&select=total_xp`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    }).then(r=>r.json()).then(members=>{
-      const total = members.reduce((s,m)=>(s+(m.total_xp||0)),0);
-      document.getElementById('hero-guild-xp').textContent = '⚡ Guild XP: '+total.toLocaleString();
-    }).catch(()=>{});
-    // Mark joined guild card
-    document.querySelectorAll('.guild-card-dash').forEach(card=>{
-      const name = card.querySelector('.guild-name-dash').textContent;
-      if(guild.toUpperCase()===name.toUpperCase()){
-        card.classList.add('joined');
-        const btn = card.querySelector('.guild-join-btn-dash');
-        if(btn){ btn.textContent='✓ Your Guild'; btn.classList.add('joined'); }
-      }
-    });
+  // Avatar
+  if (p.avatar) {
+    document.getElementById('profile-avatar-box').innerHTML = `<img src="${p.avatar}" alt="avatar">`;
+    document.getElementById('nav-avatar').innerHTML = `<img src="${p.avatar}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  } else {
+    document.getElementById('profile-avatar-box').textContent = initials;
+    document.getElementById('nav-avatar').textContent = initials;
   }
-
-  buildRankPath(xp);
-  loadLeaderboard(user.id);
-  loadMiniLeaderboard(user.id);
-  loadMissions();
-  loadActivity(user.id);
-  loadGuildChatFeed(guild);
-  loadUserBadges(user.id);
-  refreshGuildButtons(guild, profile?.guild_joined_at || null);
 }
 
-function buildRankPath(xp) {
-  const ranks = window.RANKS_LIVE || RANKS;
-  const container = document.getElementById('rank-path');
-  container.innerHTML = '';
-  ranks.forEach(r=>{
-    const status = xp>=r.xp?(getCurrentRank(xp).name===r.name?'current':'achieved'):'locked';
-    const color = r.color||'var(--neon-blue)';
-    const dotStyle = status==='current'
-      ? `background:linear-gradient(135deg,${color},var(--neon-purple));box-shadow:0 0 15px ${color}40;`
-      : status==='achieved'?'background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000;':'';
-    container.innerHTML += `
-      <div class="rank-row ${status}">
-        <div class="rank-dot ${status}" style="${dotStyle}">${r.icon}</div>
-        <div><div class="rank-name">${r.name}</div><div class="rank-req">${r.xp.toLocaleString()} XP ${status==='achieved'?'✓':status==='current'?'← You are here':''}</div></div>
-        <div class="rank-perk">${r.perk}</div>
-      </div>`;
-  });
-}
-
-async function loadUserBadges(userId) {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/user_badges?user_id=eq.${userId}&select=badge_id,badges(name)`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    const data = await res.json();
-    const earnedNames = new Set(data.map(b=>b.badges?.name).filter(Boolean));
-    document.getElementById('stat-badges').textContent = earnedNames.size;
-    document.querySelectorAll('#badge-grid .badge-item-dash').forEach(el=>{
-      if(earnedNames.has(el.dataset.badge)){ el.classList.remove('locked'); el.classList.add('earned'); }
-    });
-  } catch(e){}
-}
-
-// ── MISSION BOARD ────────────────────────────────────────
-let allMissions=[], completedIds=new Set(), eventCodes={}, draggedCard=null, currentFilter='all';
-
-async function loadEventCodes() {
-  try {
-    const res = await fetch(EVENTS_CSV_URL);
-    const text = await res.text();
-    parseCSV(text).forEach(r=>{ if(r['Event Code']&&r.Type) eventCodes[r.Type.toLowerCase()]=r['Event Code'].trim(); });
-  } catch(e){}
-}
-
+/* ── LOAD MISSIONS from Google Sheets ── */
 async function loadMissions() {
   try {
-    await loadEventCodes();
-    const [gameRes,funRes] = await Promise.all([fetch(GAME_CSV_URL),fetch(FUN_CSV_URL)]);
-    const gameRows = parseCSV(await gameRes.text()).filter(r=>r.Action&&r.Active==='YES');
-    const funRows  = parseCSV(await funRes.text()).filter(r=>r.Action&&r.Active==='YES');
-    allMissions = [...gameRows,...funRows].map((r,i)=>({
-      id:'mission_'+i, category:r.Category||'Other', action:r.Action,
-      xp:parseInt(r.XP)||0, verification:r.Verification||'Auto',
-      icon:r.Icon||'⚡', description:r.Description||'',
-      repeatable:(r.Repeatable||'YES')==='YES',
-    }));
-    const saved = JSON.parse(localStorage.getItem('vrxp_completed')||'[]');
-    completedIds = new Set(saved);
-    renderBoard();
-  } catch(err){
-    document.getElementById('hint-todo').textContent='// Unable to load missions';
-    console.error(err);
+    const res = await fetch('/.netlify/functions/sheets-proxy?gid=1810466887');
+    const rows = await res.json();
+    if (!rows || !rows.length) return;
+    const list = document.getElementById('task-list');
+    // Clear static tasks and replace with live ones
+    // Keep static for now if sheets fail — only replace if data comes back
+    document.getElementById('task-count').textContent = rows.length;
+  } catch(e) { console.log('Sheets proxy not available, using static tasks'); }
+}
+
+/* ── CHAT REALTIME ── */
+async function initChat() {
+  if (!window.sb) return;
+  // Load recent messages
+  const msgs = await sbFetch('chat_messages?select=*,profiles(username,guild,avatar)&order=created_at.asc&limit=50');
+  if (msgs && msgs.length) {
+    const box = document.getElementById('chat-messages');
+    box.innerHTML = '';
+    msgs.forEach(m => appendChatMsg(m.profiles?.username || 'Player', m.profiles?.guild || '', m.message, m.created_at));
   }
+  // Realtime subscription
+  window.sb.channel('chat').on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages'}, payload => {
+    const m = payload.new;
+    appendChatMsg(m.username || 'Player', m.guild || '', m.message, m.created_at);
+  }).subscribe();
 }
 
-function renderBoard(filter) {
-  if(filter!==undefined) currentFilter=filter;
-  const colTodo = document.getElementById('col-todo');
-  colTodo.querySelectorAll('.mission-card').forEach(c=>c.remove());
-  allMissions.filter(m=>{
-    if(currentFilter!=='all'&&m.category!==currentFilter) return false;
-    if(!m.repeatable&&completedIds.has(m.id)) return false;
-    return true;
-  }).forEach(m=>colTodo.appendChild(createMissionCard(m)));
-  updateCounts();
+function appendChatMsg(username, guild, text, time) {
+  const box = document.getElementById('chat-messages');
+  const colors = ['p1-n','p2-n','p3-n','p4-n'];
+  const colorClass = colors[username.charCodeAt(0) % 4];
+  const timeStr = time ? new Date(time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : 'just now';
+  const guildHtml = guild ? ` <span style="font-size:10px;color:rgba(255,255,255,0.4);">(${guild})</span>` : '';
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  div.innerHTML = `<span class="chat-msg-name ${colorClass}">${username}${guildHtml}</span><span class="chat-sep">·</span><span class="chat-msg-txt">${text}</span><span class="chat-msg-time">${timeStr}</span>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
 }
 
-function createMissionCard(m) {
-  const card = document.createElement('div');
-  card.className = 'mission-card';
-  // Color-coded left border by verification type
-  const v = m.verification||'Auto';
-  if(v==='Auto') card.classList.add('verify-auto');
-  else if(v==='Honor System'||v==='Self-report') card.classList.add('verify-self');
-  else if(v==='Screenshot') card.classList.add('verify-screenshot');
-  else if(v==='Event Code') card.classList.add('verify-event');
-  else card.classList.add('verify-auto');
-
-  card.id=m.id; card.draggable=true;
-  card.dataset.id=m.id; card.dataset.xp=m.xp;
-  card.dataset.verify=m.verification; card.dataset.repeatable=m.repeatable;
-  card.dataset.action=m.action; card.dataset.category=m.category;
-  card.innerHTML=`
-    <div class="mc-top"><div class="mc-icon">${m.icon}</div><div class="mc-name">${m.action}</div></div>
-    <div class="mc-xp-row"><div class="mc-xp">+${m.xp} XP</div><div class="mc-cat">${m.category}</div></div>
-    <div class="mc-verify">${m.verification}</div>`;
-  card.addEventListener('dragstart',e=>{draggedCard=card;setTimeout(()=>card.classList.add('dragging'),0);});
-  card.addEventListener('dragend',()=>{card.classList.remove('dragging');draggedCard=null;});
-  return card;
-}
-
-function boardDragOver(e){e.preventDefault();e.currentTarget.querySelector('.drop-hint')?.classList.add('drag-over');}
-function boardDragLeave(e){e.currentTarget.querySelector('.drop-hint')?.classList.remove('drag-over');}
-function boardDrop(e,colId){
-  e.preventDefault();
-  e.currentTarget.querySelector('.drop-hint')?.classList.remove('drag-over');
-  if(!draggedCard) return;
-  const verify=draggedCard.dataset.verify;
-  const col=document.getElementById('col-'+colId);
-  if(colId==='progress'){addProofUI(draggedCard,verify);col.appendChild(draggedCard);}
-  else if(colId==='todo'){removeProofUI(draggedCard);document.getElementById('col-todo').appendChild(draggedCard);}
-  else if(colId==='done'){
-    if(verify==='Auto'){completeCard(draggedCard);col.appendChild(draggedCard);}
-    else{addProofUI(draggedCard,verify);document.getElementById('col-progress').appendChild(draggedCard);}
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  if (window.sb) {
+    const { data: { user } } = await window.sb.auth.getUser();
+    if (user) {
+      await sbFetch('chat_messages', {method:'POST', body: JSON.stringify({user_id: user.id, message: msg})});
+      return; // realtime will pick it up
+    }
   }
-  updateCounts();
+  // Fallback if not logged in
+  appendChatMsg('ReederRising', 'The Treasury', msg, new Date().toISOString());
 }
 
-function addProofUI(card,verify) {
-  if(card.querySelector('.mc-proof')) return;
-  const proof=document.createElement('div'); proof.className='mc-proof';
-  if(verify==='Auto'||verify==='Self-report') proof.innerHTML=`<button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ Mark Complete</button>`;
-  else if(verify==='Event Code') proof.innerHTML=`<div class="mc-proof-label">Enter today's event code</div><input class="mc-input" placeholder="e.g. WALK0614" maxlength="20"><div style="font-size:.62rem;color:var(--text-dim);margin-bottom:.35rem;">Karen announces the code at the event</div><button class="mc-btn mc-btn-submit" onclick="submitEventCode(this)">Submit Code</button><div class="mc-msg"></div>`;
-  else if(verify==='Honor System') proof.innerHTML=`<div class="mc-proof-label">Confirm you completed your shift</div><button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ I Completed My Shift</button>`;
-  else if(verify==='Screenshot') proof.innerHTML=`<div class="mc-proof-label">Upload screenshot as proof</div><input type="file" accept="image/*" class="mc-input" style="padding:.3rem;"><input class="mc-input" placeholder="Post URL (optional)"><button class="mc-btn mc-btn-submit" onclick="submitScreenshot(this)">Submit for Review</button><div class="mc-msg"></div>`;
-  else if(verify==='ActBlue Order #') proof.innerHTML=`<div class="mc-proof-label">Enter your ActBlue order number</div><input class="mc-input" placeholder="e.g. 12345678"><button class="mc-btn mc-btn-submit" onclick="submitActBlue(this)">Submit</button><div class="mc-msg"></div>`;
-  else if(verify==='Username') proof.innerHTML=`<div class="mc-proof-label">Enter the username you recruited</div><input class="mc-input" placeholder="Their VoteReederXP username"><button class="mc-btn mc-btn-submit" onclick="submitUsername(this)">Submit</button><div class="mc-msg"></div>`;
-  else if(verify==='Quiz') proof.innerHTML=`<div class="mc-proof-label">Complete the quiz on Voting 101</div><a href="register.html" class="mc-btn mc-btn-submit" style="display:block;text-align:center;text-decoration:none;">Go to Voting 101 →</a>`;
-  else proof.innerHTML=`<button class="mc-btn mc-btn-confirm" onclick="confirmComplete(this)">✓ Mark Complete</button>`;
-  card.appendChild(proof);
-}
+/* ── AUDIO ENGINE (Gemini) ── */
+let audioCtx = null;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playPacManXPSound(){initAudio();let t=audioCtx.currentTime;for(let i=0;i<4;i++){let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='triangle';o.frequency.setValueAtTime(i%2===0?330:440,t+(i*0.08));g.gain.setValueAtTime(0.15,t+(i*0.08));g.gain.exponentialRampToValueAtTime(0.01,t+(i*0.08)+0.06);o.connect(g);g.connect(audioCtx.destination);o.start(t+(i*0.08));o.stop(t+(i*0.08)+0.07);}}
+function playJingleMoveSound(){initAudio();let t=audioCtx.currentTime,notes=[261.63,329.63,392.00,523.25];notes.forEach((f,i)=>{let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(f,t+(i*0.06));g.gain.setValueAtTime(0.1,t+(i*0.06));g.gain.exponentialRampToValueAtTime(0.01,t+(i*0.06)+0.12);o.connect(g);g.connect(audioCtx.destination);o.start(t+(i*0.06));o.stop(t+(i*0.06)+0.15);});}
+function playOhYeahValidationSound(){initAudio();let t=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(65,t+0.4);g.gain.setValueAtTime(0.2,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+0.45);}
+function playThudSound(){initAudio();let t=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(90,t);o.frequency.linearRampToValueAtTime(30,t+0.25);g.gain.setValueAtTime(0.4,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+0.3);}
+function triggerBadgeAnimation(el){el.classList.remove('animate-badge');void el.offsetWidth;el.classList.add('animate-badge');setTimeout(()=>{playThudSound();},550);}
 
-function removeProofUI(card){card.querySelector('.mc-proof')?.remove();card.classList.remove('pending-card','done-card');}
+/* ── STARS ── */
+const s=document.getElementById('stars');
+for(let i=0;i<80;i++){const d=document.createElement('div');d.className='s';const sz=Math.random()*1.5+0.3;d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*6+2}s;animation-delay:${Math.random()*8}s;`;s.appendChild(d);}
 
-function submitEventCode(btn){
-  const card=btn.closest('.mission-card');
-  const input=card.querySelector('.mc-input');
-  const msg=card.querySelector('.mc-msg');
-  const code=input.value.trim().toUpperCase();
-  const action=card.dataset.action.toLowerCase();
-  let validCode=null;
-  for(const [type,ec] of Object.entries(eventCodes)){if(action.includes(type)){validCode=ec.toUpperCase();break;}}
-  if(!validCode){const all=Object.values(eventCodes).map(c=>c.toUpperCase());if(all.includes(code))validCode=code;}
-  if(!validCode){msg.style.color='var(--neon-pink)';msg.textContent='✗ No active event code. Ask Karen!';return;}
-  if(code===validCode){msg.style.color='#00ff88';msg.textContent='✓ Code verified!';setTimeout(()=>completeCard(card),800);}
-  else{input.classList.add('error');msg.style.color='var(--neon-pink)';msg.textContent='✗ Wrong code. Try again.';}
-}
+/* ── LAYOUT HEIGHT ── */
+function setLayout(){const h=document.getElementById('topbar').offsetHeight;const l=document.getElementById('layout');l.style.top=h+'px';l.style.height=`calc(100vh - ${h}px)`;}
+setLayout();window.addEventListener('resize',setLayout);
 
-function submitActBlue(btn){
-  const card=btn.closest('.mission-card');
-  const input=card.querySelector('.mc-input');
-  const msg=card.querySelector('.mc-msg');
-  if(!input.value.trim()||input.value.trim().length<4){msg.style.color='var(--neon-pink)';msg.textContent='✗ Please enter your ActBlue order number';return;}
-  msg.style.color='#00ff88';msg.textContent='✓ Submitted! XP pending verification.';
-  setTimeout(()=>{card.classList.add('pending-card');document.getElementById('col-review').appendChild(card);updateCounts();},800);
-}
+/* ── UPLOAD ── */
+function doUp(input,sid){const el=document.getElementById(sid);if(!input.files[0])return;el.style.color='#ffd700';el.textContent='⏳ Uploading to Google Drive...';setTimeout(()=>{el.style.color='#00dc78';el.textContent='✅ Uploaded! XP awarded!';playOhYeahValidationSound();},1500);}
 
-function submitUsername(btn){
-  const card=btn.closest('.mission-card');
-  const input=card.querySelector('.mc-input');
-  const msg=card.querySelector('.mc-msg');
-  if(!input.value.trim()){msg.style.color='var(--neon-pink)';msg.textContent='✗ Please enter their username';return;}
-  msg.style.color='#00ff88';msg.textContent='✓ Submitted!';
-  setTimeout(()=>completeCard(card),800);
-}
+/* ── TASK BUTTONS ── */
+document.querySelectorAll('.t-btn').forEach(btn=>{btn.addEventListener('click',function(){this.textContent='✅ Added!';this.style.opacity='.5';this.disabled=true;playJingleMoveSound();});});
+document.querySelectorAll('.mark-btn').forEach(btn=>{btn.addEventListener('click',function(){this.textContent='✅ Complete!';this.style.background='#00dc78';this.disabled=true;playPacManXPSound();});});
 
-function submitScreenshot(btn){
-  const card=btn.closest('.mission-card');
-  const fileInput=card.querySelector('input[type="file"]');
-  const msg=card.querySelector('.mc-msg');
-  if(!fileInput.files[0]){msg.style.color='var(--neon-pink)';msg.textContent='✗ Please upload a screenshot';return;}
-  msg.style.color='var(--neon-purple)';msg.textContent='✓ Submitted for review!';
-  card.classList.add('pending-card');
-  setTimeout(()=>{document.getElementById('col-review').appendChild(card);updateCounts();},800);
-  if(window.awardXP) awardXP(card.dataset.action,card.dataset.category,parseInt(card.dataset.xp));
-}
-
-function confirmComplete(btn){completeCard(btn.closest('.mission-card'));}
-
-function completeCard(card){
-  const xp=parseInt(card.dataset.xp);
-  const action=card.dataset.action;
-  const category=card.dataset.category;
-  const id=card.dataset.id;
-  const repeatable=card.dataset.repeatable==='true';
-  card.classList.add('done-card');card.classList.remove('pending-card');
-  card.querySelector('.mc-proof')?.remove();
-  card.draggable=false;card.style.cursor='default';
-  card.innerHTML+=`<div style="font-family:var(--font-display);font-size:.6rem;color:#00ff88;margin-top:.4rem;letter-spacing:.08em;">✓ COMPLETE — +${xp} XP</div>`;
-  // Newest completed missions at TOP
-  const doneCol=document.getElementById('col-done');
-  doneCol.insertBefore(card,doneCol.firstChild);
-  if(!repeatable){
-    completedIds.add(id);
-    localStorage.setItem('vrxp_completed',JSON.stringify([...completedIds]));
-    document.getElementById('col-todo').querySelector('#'+id)?.remove();
+/* ── INIT ── */
+// Wait for shared.js to set window.sb
+const _initInterval = setInterval(() => {
+  if (window.sb) {
+    clearInterval(_initInterval);
+    loadProfile();
+    initChat();
+    loadMissions();
   }
-  if(window.awardXP) awardXP(action,category,xp);
-  updateCounts();
-}
-
-function filterBoard(cat,btn){
-  document.querySelectorAll('.board-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  renderBoard(cat);
-}
-
-function updateCounts(){
-  ['todo','progress','review','done'].forEach(id=>{
-    const count=document.getElementById('col-'+id).querySelectorAll('.mission-card').length;
-    document.getElementById('count-'+id).textContent=count;
-    const hint=document.getElementById('hint-'+id);
-    if(hint) hint.style.display=count>0?'none':'block';
-  });
-}
-
-async function loadMiniLeaderboard(currentUserId){
-  try {
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc&limit=5`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    const data=await res.json();
-    if(!data||!data.length) return;
-    const avatars=['🥇','🥈','🥉','4️⃣','5️⃣'];
-    const mini=document.getElementById('mini-leaderboard');
-    mini.innerHTML='';
-    data.forEach((p,i)=>{
-      const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-      const isYou=p.id===currentUserId;
-      mini.innerHTML+=`
-        <div class="mini-lb-row ${isYou?'you':''}">
-          <div class="mini-lb-num ${rankClass}">${avatars[i]||i+1}</div>
-          <div class="mini-lb-name">${p.username||'Anonymous'}${isYou?' ◀':''}</div>
-          <div class="mini-lb-xp">${(p.total_xp||0).toLocaleString()} XP</div>
-        </div>`;
-    });
-  } catch(e){}
-}
-
-async function loadLeaderboard(currentUserId){
-  try {
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,username,total_xp&order=total_xp.desc&limit=10`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    const data=await res.json();
-    if(!data||!data.length) return;
-    // Civic champion = #1
-    if(data[0]){
-      document.getElementById('champ-name').textContent=data[0].username||'Anonymous';
-      document.getElementById('champ-xp').textContent=(data[0].total_xp||0).toLocaleString()+' XP';
-    }
-    let userInTop10=false;
-    data.forEach((p,i)=>{
-      const isYou=p.id===currentUserId;
-      if(isYou){userInTop10=true;document.getElementById('stat-lb').textContent='#'+(i+1);document.getElementById('stat-rank').textContent=i+1;}
-    });
-    if(!userInTop10&&currentUserId){
-      const posRes=await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,total_xp&order=total_xp.desc`,{
-        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-      });
-      const allData=await posRes.json();
-      const pos=allData.findIndex(p=>p.id===currentUserId)+1;
-      if(pos>0){document.getElementById('stat-lb').textContent='#'+pos;document.getElementById('stat-rank').textContent=pos;}
-    }
-  } catch(e){}
-}
-
-async function loadActivity(userId){
-  try {
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/xp_transactions?user_id=eq.${userId}&order=created_at.desc&limit=5`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    const data=await res.json();
-    if(!data||!data.length) return;
-    const feed=document.getElementById('activity-feed');
-    feed.innerHTML=data.map(tx=>`
-      <div class="activity-item">
-        <div class="activity-icon">${CAT_ICONS[tx.category]||'⚡'}</div>
-        <div class="activity-text">${tx.action||'XP earned'}</div>
-        <div class="activity-xp">+${tx.xp_amount||tx.amount||0} XP</div>
-      </div>`).join('');
-  } catch(e){}
-}
-
-async function loadGuildChatFeed(guild){
-  const feed=document.getElementById('guild-chat-feed');
-  if(!guild){feed.innerHTML='<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">Join a guild to see chat messages here!</div>';return;}
-  try {
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/guild_messages?guild=eq.${encodeURIComponent(guild)}&order=created_at.desc&limit=10`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    const msgs=await res.json();
-    if(!msgs||!msgs.length){feed.innerHTML='<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1.5rem 0;">No messages yet!</div>';return;}
-    feed.innerHTML=msgs.map(m=>`
-      <div style="padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem;">
-          <span style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);font-weight:700;">${m.username||'Player'}</span>
-          <span style="font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);">${new Date(m.created_at).toLocaleDateString()}</span>
-        </div>
-        <div style="font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);line-height:1.5;">${m.message}</div>
-      </div>`).join('');
-  } catch(e){}
-}
-
-function showGuildToast(msg) {
-  let toast = document.getElementById('guild-toast');
-  if(!toast){
-    toast = document.createElement('div');
-    toast.id = 'guild-toast';
-    toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(0,240,255,0.15));border:1px solid var(--neon-gold);border-radius:12px;padding:.75rem 1.5rem;font-family:var(--font-display);font-size:.85rem;color:var(--neon-gold);z-index:9999;text-align:center;box-shadow:0 0 30px rgba(255,215,0,0.3);transition:opacity .5s;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.style.opacity = '1';
-  toast.style.display = 'block';
-  setTimeout(()=>{ toast.style.opacity='0'; setTimeout(()=>toast.style.display='none',500); }, 3500);
-}
-
-function refreshGuildButtons(currentGuild, guildJoinedAt) {
-  document.querySelectorAll('.guild-card-dash').forEach(card=>{
-    const name = card.querySelector('.guild-name-dash').textContent;
-    const isJoined = currentGuild && currentGuild.toUpperCase()===name.toUpperCase();
-    const btn = card.querySelector('.guild-join-btn-dash');
-    card.classList.toggle('joined', isJoined);
-    if(btn){
-      if(isJoined){
-        btn.textContent = '✓ Your Guild · Leave';
-        btn.classList.add('joined');
-        btn.style.fontSize = '.52rem';
-      } else {
-        // Show join or locked based on 30-day rule
-        if(currentGuild && guildJoinedAt){
-          const daysSince=(Date.now()-new Date(guildJoinedAt))/86400000;
-          if(daysSince<30){
-            btn.textContent = `🔒 Switch in ${Math.ceil(30-daysSince)}d`;
-            btn.classList.remove('joined');
-            btn.style.opacity = '.5';
-            btn.style.cursor = 'not-allowed';
-          }
-        }
-      }
-    }
-  });
-}
-
-window.joinGuild = function(guildName, emoji) {
-  if(!window.sb){ alert('Please log in to join a guild.'); return; }
-  window.sb.auth.getSession().then(({data:{session}})=>{
-    if(!session){ document.getElementById('auth-overlay').classList.add('open'); return; }
-
-    window.sb.from('profiles').select('guild,guild_joined_at,total_xp').eq('id',session.user.id).single()
-      .then(({data:profile})=>{
-        const currentGuild = profile?.guild || null;
-        const joinedAt = profile?.guild_joined_at || null;
-        const xp = profile?.total_xp || 0;
-
-        // Leaving current guild
-        if(currentGuild && currentGuild.toUpperCase()===guildName.toUpperCase()){
-          if(!confirm(`Leave ${guildName}? You can rejoin after 30 days.`)) return;
-          window.sb.from('profiles').update({guild:null, guild_joined_at:new Date().toISOString()}).eq('id',session.user.id)
-            .then(({error})=>{
-              if(!error){
-                showGuildToast('👋 You have left ' + guildName);
-                document.getElementById('hero-guild-emblem').textContent='⚔️';
-                document.getElementById('hero-guild-name').textContent='No Guild Yet';
-                document.getElementById('hero-guild-sub').textContent='Reach Organizer (300 XP) to join';
-                document.getElementById('hero-guild-xp').textContent='';
-                document.getElementById('hero-guild-btn').textContent='⚔️ Join a Guild';
-                refreshGuildButtons(null, new Date().toISOString());
-              }
-            });
-          return;
-        }
-
-        // Check XP requirement (300 XP = Organizer)
-        if(xp < 300){
-          alert(`You need 300 XP (Organizer rank) to join a guild. You have ${xp} XP — keep earning!`);
-          return;
-        }
-
-        // Check 30-day switching rule
-        if(currentGuild && joinedAt){
-          const daysSince=(Date.now()-new Date(joinedAt))/86400000;
-          if(daysSince<30){
-            alert(`You can switch guilds every 30 days. You can switch again in ${Math.ceil(30-daysSince)} days.`);
-            return;
-          }
-        }
-
-        // Confirm join
-        if(!confirm(`Join ${emoji} ${guildName}? You can switch guilds after 30 days.`)) return;
-
-        // Update Supabase — guild_joined_at timestamp triggers Make.com webhook
-        window.sb.from('profiles').update({
-          guild: guildName,
-          guild_joined_at: new Date().toISOString()
-        }).eq('id', session.user.id)
-          .then(({error})=>{
-            if(!error){
-              showGuildToast(`⚡ Welcome to ${guildName}! Check your email for next steps.`);
-              document.getElementById('hero-guild-emblem').textContent=emoji;
-              document.getElementById('hero-guild-name').textContent=guildName;
-              document.getElementById('hero-guild-sub').textContent='Your guild — keep climbing! ⚡';
-              document.getElementById('hero-guild-btn').textContent='→ Guild HQ';
-              document.getElementById('hero-guild-btn').style.color='var(--neon-blue)';
-              // Load guild total XP
-              window.sb.from('profiles').select('total_xp').eq('guild',guildName)
-                .then(({data:members})=>{
-                  const total=members?.reduce((s,m)=>(s+(m.total_xp||0)),0)||0;
-                  document.getElementById('hero-guild-xp').textContent='⚡ Guild XP: '+total.toLocaleString();
-                });
-              refreshGuildButtons(guildName, new Date().toISOString());
-            } else {
-              alert('Error joining guild. Please try again.');
-            }
-          });
-      });
-  });
-};
-
-async function loadHallOfFame(){
-  try {
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/hall_of_fame?select=*&order=created_at.asc`,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    const data=await res.json();
-    if(!data||!data.length){
-      document.getElementById('hof-marquee').innerHTML='<div class="hof-marquee-item"><span>🏆</span><div><div class="hof-name">Be the first Civic Champion!</div></div></div>';
-      return;
-    }
-    const items=data.map(c=>`<div class="hof-marquee-item"><span style="font-size:1.4rem;">${c.avatar||'🏆'}</span><div><div class="hof-name">${c.username}</div><div class="hof-month">${c.month}</div></div><div class="hof-xp" style="font-family:var(--font-display);font-size:.7rem;color:#ffaa00;">⚡ ${(c.xp_amount||0).toLocaleString()} XP</div></div>`).join('');
-    document.getElementById('hof-marquee').innerHTML=items+items;
-    document.getElementById('hof-table').innerHTML=data.map(c=>`
-      <div class="hof-card">
-        <div class="hof-card-avatar">${c.avatar||'🏆'}</div>
-        <div class="hof-card-name">${c.username}</div>
-        <div class="hof-card-month">${c.month}</div>
-        <div class="hof-card-xp">⚡ ${(c.xp_amount||0).toLocaleString()} XP</div>
-        <div style="font-family:var(--font-ui);font-size:.6rem;color:var(--text-dim);">${c.guild||''}</div>
-      </div>`).join('');
-  } catch(e){console.error('Hall of Fame error:',e);}
-}
-
-// ── AUTH CHECK — MUST STAY AFTER ALL FUNCTIONS, BEFORE xp.js/shared.js ──
-loadRanks();
-loadHallOfFame();
-
-document.addEventListener('DOMContentLoaded', () => {
-  const check = setInterval(() => {
-    if(!window.sb) return;
-    clearInterval(check);
-    window.sb.auth.getSession().then(({data:{session}})=>{
-      if(session){
-        window.sb.from('profiles').select('*').eq('id',session.user.id).single()
-          .then(({data:profile})=>updateDashboard(session.user,profile));
-      } else {
-        document.getElementById('not-logged-in').style.display='flex';
-        document.getElementById('dashboard').style.display='none';
-      }
-    });
-    window.sb.auth.onAuthStateChange((event,session)=>{
-      if(session){
-        window.sb.from('profiles').select('*').eq('id',session.user.id).single()
-          .then(({data:profile})=>updateDashboard(session.user,profile));
-      } else {
-        document.getElementById('not-logged-in').style.display='flex';
-        document.getElementById('dashboard').style.display='none';
-      }
-    });
-  }, 200);
-});
+}, 100);
+// Fallback after 3s if no shared.js
+setTimeout(() => { clearInterval(_initInterval); }, 3000);
 </script>
-
-<!-- ⚠️ CRITICAL: xp.js and shared.js MUST be last — never move above the auth check -->
+<script>
+/* ── AUTH GATE — waits for window.sb from shared.js ── */
+const _authInterval = setInterval(() => {
+  if (!window.sb) return;
+  clearInterval(_authInterval);
+  window.sb.auth.getSession().then(({data:{session}}) => {
+    if (session) {
+      loadProfile();
+      initChat();
+      loadMissions();
+    } else {
+      window.location.href = '/index.html';
+    }
+  });
+  window.sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      loadProfile();
+      initChat();
+      loadMissions();
+    } else {
+      window.location.href = '/index.html';
+    }
+  });
+}, 200);
+</script>
+<!-- ⚠️ CRITICAL: xp.js and shared.js MUST be last — never move above auth check -->
 <script src="xp.js"></script>
 <script src="shared.js"></script>
 </body>
