@@ -365,7 +365,7 @@ body>nav{display:none !important;}
 
 <script>
 // Volunteer counter
-const VOL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=538338089&single=true&output=csv';
+const VOL_CSV = '/.netlify/functions/sheets-proxy?gid=538338089';  // same-origin proxy (avoids Google Sheets CORS)
 fetch(VOL_CSV)
   .then(r => r.text())
   .then(text => {
