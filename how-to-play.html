@@ -10,43 +10,39 @@
 body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#fff;padding-top:64px;}
 body>nav{display:none !important;}
 a{color:inherit;}
-
 /* TOPBAR */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
 .nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
 .nav-left{display:flex;align-items:center;gap:32px;}
 .nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .nav-links{display:flex;gap:24px;}
-.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
+.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.78);cursor:pointer;transition:.15s;}
 .nl:hover{color:#fff;}
 .nl.a{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
 .nav-right{display:flex;align-items:center;gap:14px;}
 .bell{position:relative;cursor:pointer;font-size:20px;}
 .bell-dot{position:absolute;top:-4px;right:-6px;background:#ff0080;color:#fff;font-size:8px;font-weight:900;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .avatar-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
-.av-ring{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
-.av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
+.av-ring{width:34px;height:34px;border-radius:9px;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
+.av-in{width:100%;height:100%;border-radius:7px;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
 .av-name{font-size:13px;font-weight:700;color:#fff;}
 .av-rank{font-size:11px;color:#ffd700;}
 @keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
 @media(max-width:600px){.nav-links{display:none;}}
-
 /* LAYOUT */
 .wrap{max-width:920px;margin:0 auto;padding:40px 20px 90px;}
 .hero{text-align:center;margin-bottom:48px;}
 .hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(28px,6vw,48px);font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;line-height:1.1;}
-.hero p{font-size:17px;color:rgba(255,255,255,0.65);max-width:640px;margin:0 auto;line-height:1.7;}
+.hero p{font-size:17px;color:rgba(255,255,255,0.8);max-width:640px;margin:0 auto;line-height:1.7;}
 .hero .tagline{display:inline-block;margin-top:18px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.35);color:#ffd700;font-weight:700;font-size:14px;padding:8px 18px;border-radius:30px;}
-
 section.card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px 26px;margin-bottom:24px;}
 .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
 .sec-num{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#0a0e1a;background:linear-gradient(135deg,#00e5ff,#bf00ff);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sec-head h2{font-family:'Orbitron',sans-serif;font-size:19px;font-weight:900;}
-.card p{color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:12px;}
+.card p{color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:12px;}
 .card p:last-child{margin-bottom:0;}
 .card strong{color:#fff;}
 .cyan{color:#00e5ff;} .gold{color:#ffd700;} .purple{color:#bf00ff;} .pink{color:#ff0080;} .green{color:#00ff88;}
-
 /* XP TYPE BLOCKS */
 .xp-type{border-left:3px solid var(--c,#00e5ff);background:rgba(255,255,255,0.02);border-radius:0 10px 10px 0;padding:14px 16px;margin-bottom:14px;}
 .xp-type h3{font-size:15px;font-weight:800;margin-bottom:8px;}
@@ -54,197 +50,224 @@ section.card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-r
 .xp-row{display:flex;justify-content:space-between;gap:14px;font-size:14px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.05);}
 .xp-row:first-of-type{border-top:none;}
 .xp-row .xp{font-family:'Orbitron',sans-serif;font-weight:900;color:#00ff88;white-space:nowrap;}
-
 /* RANK LADDER */
 .rank-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);margin-bottom:10px;}
 .rank-emoji{font-size:26px;width:40px;text-align:center;flex-shrink:0;}
 .rank-name{font-family:'Orbitron',sans-serif;font-weight:900;font-size:15px;flex:1;}
 .rank-xp{font-family:'Orbitron',sans-serif;font-weight:900;color:#ffd700;font-size:14px;white-space:nowrap;}
-
 /* GUILD CHIPS */
 .guild-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
 .guild-chip{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;}
 .guild-chip .ge{font-size:24px;}
 .guild-chip b{display:block;font-size:14px;}
-.guild-chip span{font-size:12px;color:rgba(255,255,255,0.5);}
-
+.guild-chip span{font-size:12px;color:rgba(255,255,255,0.78);}
 /* TIPS */
 .tips{list-style:none;display:grid;gap:10px;}
 .tips li{background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.15);border-radius:10px;padding:12px 16px;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.85);}
 .tips li b{color:#00e5ff;}
-
+/* FAQ */
+.faq-item{border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 0;}
+.faq-item:last-child{border-bottom:none;}
+.faq-item h3{font-size:15px;font-weight:800;color:#fff;margin-bottom:6px;}
+.faq-item h3 .q{color:#00e5ff;margin-right:8px;}
+.faq-item p{color:rgba(255,255,255,0.8);line-height:1.65;font-size:14.5px;margin:0;}
 .cta{text-align:center;margin-top:40px;}
+.cta .closer{max-width:620px;margin:0 auto 22px;font-size:16px;line-height:1.7;color:rgba(255,255,255,0.85);}
+.cta .closer strong{color:#fff;}
 .cta a{display:inline-block;font-family:'Orbitron',sans-serif;font-weight:900;font-size:14px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;background:linear-gradient(135deg,#00e5ff,#bf00ff);color:#0a0e1a;padding:15px 34px;border-radius:10px;}
-
-footer{border-top:1px solid rgba(255,255,255,0.07);padding:28px 20px;text-align:center;color:rgba(255,255,255,0.45);font-size:13px;}
+footer{border-top:1px solid rgba(255,255,255,0.07);padding:28px 20px;text-align:center;color:rgba(255,255,255,0.78);font-size:13px;}
 footer a{color:#00e5ff;text-decoration:none;margin:0 8px;}
-footer .disclaimer{margin-top:10px;font-size:11px;color:rgba(255,255,255,0.3);}
+footer .disclaimer{margin-top:10px;font-size:11px;color:rgba(255,255,255,0.75);}
 </style>
 </head>
 <body>
-
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="nav-row">
-    <div class="nav-left">
-      <a href="/index.html" style="text-decoration:none;"><div class="nav-logo">VoteReederXP</div></a>
-      <div class="nav-links">
-        <span class="nl" onclick="location.href='/game.html'">Dashboard</span>
-        <span class="nl" onclick="location.href='/leaderboard.html'">Leaderboard</span>
-        <span class="nl" onclick="location.href='/guilds.html'">Guilds</span>
-        <span class="nl" onclick="location.href='/events.html'">Events</span>
-        <span class="nl" onclick="location.href='/learn.html'">Learn</span>
-        <span class="nl" onclick="location.href='/blog.html'">Blog</span>
-        <span class="nl" onclick="location.href='/about.html'">About</span>
-      </div>
-    </div>
-    <div class="nav-right">
-      <div class="bell">🔔<span class="bell-dot" id="notif-count">0</span></div>
-      <div class="avatar-wrap" onclick="location.href='/profile.html'">
-        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
-        <div><div class="av-name" id="nav-username">My Account</div><div class="av-rank" id="nav-rank">Advocate</div></div>
-      </div>
-    </div>
-  </div>
+<div class="nav-row">
+<div class="nav-left">
+<a href="/index.html" style="text-decoration:none;"><div class="nav-logo">VoteReederXP</div></a>
+<div class="nav-links">
+<span class="nl" onclick="location.href='/game.html'">Dashboard</span>
+<span class="nl" onclick="location.href='/leaderboard.html'">Leaderboard</span>
+<span class="nl" onclick="location.href='/guilds.html'">Guilds</span>
+<span class="nl" onclick="location.href='/events.html'">Events</span>
+<span class="nl" onclick="location.href='/learn.html'">Learn</span>
+<span class="nl" onclick="location.href='/blog.html'">Blog</span>
+<span class="nl" onclick="location.href='/about.html'">About</span>
+</div>
+</div>
+<div class="nav-right">
+<div class="bell">🔔<span class="bell-dot" id="notif-count">0</span></div>
+<div class="avatar-wrap" onclick="location.href='/profile.html'">
+<div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+<div><div class="av-name" id="nav-username">My Account</div><div class="av-rank" id="nav-rank">Advocate</div></div>
+</div>
+</div>
+</div>
 </div>
 
 <div class="wrap">
+<div class="hero">
+<h1>How to Play VoteReederXP</h1>
+<p>This isn't just a game — it's the campaign. Every XP point you earn is a <strong>real action</strong> that helps elect Karen Reeder in Texas House District 29. Knock doors, register voters, learn the issues, and level up from Supporter all the way to Champion. <strong>No experience needed, nothing to download, and it's completely free</strong> — just pick a gamertag and dive in.</p>
+<div class="tagline">⚡ Every XP point = a real action that helps the campaign</div>
+</div>
 
-  <div class="hero">
-    <h1>How to Play VoteReederXP</h1>
-    <p>This isn't just a game — it's the campaign. Every XP point you earn is a <strong>real action</strong> that helps elect Karen Reeder in Texas House District 29. Knock doors, register voters, learn the issues, and level up from Supporter all the way to Champion.</p>
-    <div class="tagline">⚡ Every XP point = a real action that helps the campaign</div>
-  </div>
+<!-- 1 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">1</div><h2>Welcome to VoteReederXP</h2></div>
+<p>VoteReederXP turns volunteering into a game. Create an account, pick your <span class="cyan">avatar</span> and a <strong>gamertag</strong> (no real names — protect your identity!), and start at <strong>0 XP</strong>. From there, you earn XP for the things that actually move a campaign forward.</p>
+<p>As your XP grows you climb <span class="gold">ranks</span>, unlock <span class="purple">guilds</span>, earn <span class="green">badges</span>, and rise up the <span class="pink">leaderboard</span>. The more you do, the more District 29 wins. Let's level up democracy. 🗳️</p>
+<p><strong>Why a game?</strong> Because most campaigns ask you to donate and disappear. We wanted something better — a way for every supporter to <em>see</em> their impact stack up in real time, team up with neighbors, and have a little fun doing the serious work of winning an election. Every point on this board is a real door knocked or voter reached. The leaderboard isn't just for show — it's a live picture of a community organizing to flip District 29 together.</p>
+</section>
 
-  <!-- 1 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">1</div><h2>Welcome to VoteReederXP</h2></div>
-    <p>VoteReederXP turns volunteering into a game. Create an account, pick your <span class="cyan">avatar</span> and a <strong>gamertag</strong> (no real names — protect your identity!), and start at <strong>0 XP</strong>. From there, you earn XP for the things that actually move a campaign forward.</p>
-    <p>As your XP grows you climb <span class="gold">ranks</span>, unlock <span class="purple">guilds</span>, earn <span class="green">badges</span>, and rise up the <span class="pink">leaderboard</span>. The more you do, the more District 29 wins. Let's level up democracy. 🗳️</p>
-  </section>
+<!-- 2 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">2</div><h2>How to Earn XP</h2></div>
+<p>Every mission has a <strong>verification type</strong> that tells you how it gets confirmed. Here are the four types and example missions:</p>
+<div class="xp-type" style="--c:#00dc78;">
+<h3>⚡ Auto <span class="vtag" style="background:rgba(0,220,120,0.15);color:#00dc78;">AUTO</span></h3>
+<div class="xp-row"><span>Watch a full lesson video</span><span class="xp">+100 XP</span></div>
+<div class="xp-row"><span>Pass a lesson or Civic Quest quiz</span><span class="xp">+150 XP</span></div>
+<div class="xp-row"><span>Daily check-in</span><span class="xp">+25 XP</span></div>
+<div class="xp-row"><span>Complete your volunteer signup</span><span class="xp">+200 XP</span></div>
+<div class="xp-row"><span>Finish all 10 lessons</span><span class="xp">+500 XP</span></div>
+</div>
+<div class="xp-type" style="--c:#ffb400;">
+<h3>📝 Self Report <span class="vtag" style="background:rgba(255,180,0,0.15);color:#ffb400;">SELF REPORT</span></h3>
+<div class="xp-row"><span>Knock 10 doors</span><span class="xp">+250 XP</span></div>
+<div class="xp-row"><span>Knock 25 doors</span><span class="xp">+500 XP</span></div>
+<div class="xp-row"><span>Help register a voter</span><span class="xp">+500 XP</span></div>
+<div class="xp-row"><span>Verify you're registered to vote</span><span class="xp">+500 XP</span></div>
+</div>
+<div class="xp-type" style="--c:#bf00ff;">
+<h3>📸 Photo Proof <span class="vtag" style="background:rgba(191,0,255,0.15);color:#bf00ff;">PHOTO PROOF</span></h3>
+<div class="xp-row"><span>Post with #VoteReederXP / tag @electkarenreeder</span><span class="xp">+50 XP</span></div>
+<div class="xp-row"><span>Share a campaign event</span><span class="xp">+75 XP</span></div>
+<div class="xp-row"><span>Post a photo from an event</span><span class="xp">+100 XP</span></div>
+</div>
+<div class="xp-type" style="--c:#00e5ff;">
+<h3>🎟️ Event Code <span class="vtag" style="background:rgba(0,229,255,0.15);color:#00e5ff;">EVENT CODE</span></h3>
+<div class="xp-row"><span>Attend a Phone Bank or Letter Writing</span><span class="xp">+200 XP</span></div>
+<div class="xp-row"><span>Attend a Block Walk or Meet &amp; Greet</span><span class="xp">+300 XP</span></div>
+<div class="xp-row"><span>Attend a Town Hall or Rally</span><span class="xp">+400 XP</span></div>
+</div>
+<p style="margin-top:14px;"><strong class="gold">💡 Bonus XP</strong> stacks up for milestones — like attending 3 different event types, recruiting friends, or going on a posting streak.</p>
+</section>
 
-  <!-- 2 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">2</div><h2>How to Earn XP</h2></div>
-    <p>Every mission has a <strong>verification type</strong> that tells you how it gets confirmed. Here are the four types and example missions:</p>
+<!-- 3 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">3</div><h2>The Rank System</h2></div>
+<p>Your total XP determines your rank. Climb all six — every rank-up comes with a special message from Karen herself. 🎤</p>
+<div class="rank-row"><div class="rank-emoji">🌱</div><div class="rank-name">Supporter</div><div class="rank-xp">0 XP</div></div>
+<div class="rank-row"><div class="rank-emoji">📋</div><div class="rank-name">Organizer</div><div class="rank-xp">500 XP</div></div>
+<div class="rank-row"><div class="rank-emoji">🛡️</div><div class="rank-name">Advocate</div><div class="rank-xp">1,000 XP</div></div>
+<div class="rank-row"><div class="rank-emoji">🔨</div><div class="rank-name">Builder</div><div class="rank-xp">1,500 XP</div></div>
+<div class="rank-row"><div class="rank-emoji">⚡</div><div class="rank-name">Catalyst</div><div class="rank-xp">2,000 XP</div></div>
+<div class="rank-row" style="border-color:rgba(255,215,0,0.4);background:rgba(255,215,0,0.05);"><div class="rank-emoji">🏆</div><div class="rank-name gold">Champion</div><div class="rank-xp">2,500 XP</div></div>
+</section>
 
-    <div class="xp-type" style="--c:#00dc78;">
-      <h3>⚡ Auto <span class="vtag" style="background:rgba(0,220,120,0.15);color:#00dc78;">AUTO</span></h3>
-      <div class="xp-row"><span>Watch a full lesson video</span><span class="xp">+100 XP</span></div>
-      <div class="xp-row"><span>Pass a lesson or Civic Quest quiz</span><span class="xp">+150 XP</span></div>
-      <div class="xp-row"><span>Daily check-in</span><span class="xp">+25 XP</span></div>
-      <div class="xp-row"><span>Complete your volunteer signup</span><span class="xp">+200 XP</span></div>
-      <div class="xp-row"><span>Finish all 10 lessons</span><span class="xp">+500 XP</span></div>
-    </div>
+<!-- 4 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">4</div><h2>Guilds</h2></div>
+<p>Guilds are your <strong>team</strong> — join one to organize with other volunteers, earn <span class="purple">guild XP</span> together (the sum of every member's XP), and compete on the guild leaderboard. Reach <strong>Organizer (500 XP)</strong> to unlock guild membership, then pick your lane. You can switch guilds every <strong>30 days</strong>.</p>
+<div class="guild-list">
+<div class="guild-chip"><span class="ge">⚡</span><div><b>The Treasury</b><span>"Resources win elections."</span></div></div>
+<div class="guild-chip"><span class="ge">🌊</span><div><b>Turnout Titans</b><span>"Every vote counts."</span></div></div>
+<div class="guild-chip"><span class="ge">⚔️</span><div><b>District Warriors</b><span>"Hold the line. Door by door."</span></div></div>
+<div class="guild-chip"><span class="ge">📡</span><div><b>The Signal</b><span>"Control the narrative."</span></div></div>
+<div class="guild-chip"><span class="ge">⛏️</span><div><b>The Miners</b><span>"Every voter has a story."</span></div></div>
+<div class="guild-chip"><span class="ge">🏛️</span><div><b>The Architects</b><span>"Strategy before action."</span></div></div>
+<div class="guild-chip"><span class="ge">🔥</span><div><b>The Momentum</b><span>"Energy is contagious."</span></div></div>
+</div>
+<p style="margin-top:14px;">Head to the <span class="cyan" style="cursor:pointer;" onclick="location.href='/guilds.html'">Guilds page</span> to read each backstory and join.</p>
+</section>
 
-    <div class="xp-type" style="--c:#ffb400;">
-      <h3>📝 Self Report <span class="vtag" style="background:rgba(255,180,0,0.15);color:#ffb400;">SELF REPORT</span></h3>
-      <div class="xp-row"><span>Knock 10 doors</span><span class="xp">+250 XP</span></div>
-      <div class="xp-row"><span>Knock 25 doors</span><span class="xp">+500 XP</span></div>
-      <div class="xp-row"><span>Help register a voter</span><span class="xp">+500 XP</span></div>
-      <div class="xp-row"><span>Verify you're registered to vote</span><span class="xp">+500 XP</span></div>
-    </div>
+<!-- 5 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">5</div><h2>The Kanban Board</h2></div>
+<p>Your dashboard has a <strong>mission board</strong> with three columns. Here's the flow:</p>
+<p><strong class="cyan">1. Add it</strong> — Browse <em>Available Tasks</em> in the sidebar and tap <strong>"Add to Board."</strong> The mission drops into your <span style="color:#ffb400;">⚡ In Progress</span> column.</p>
+<p><strong class="cyan">2. Do it</strong> — Go take the real-world action (knock those doors, attend that event, post that selfie).</p>
+<p><strong class="cyan">3. Complete it</strong> — Tap <strong>"Mark Complete."</strong> Auto &amp; self-report missions award XP instantly and move to <span style="color:#00dc78;">✓ Complete</span>. Photo-proof and event missions land in <span style="color:#bf00ff;">🕐 Pending Review</span> until a coordinator confirms.</p>
+</section>
 
-    <div class="xp-type" style="--c:#bf00ff;">
-      <h3>📸 Photo Proof <span class="vtag" style="background:rgba(191,0,255,0.15);color:#bf00ff;">PHOTO PROOF</span></h3>
-      <div class="xp-row"><span>Post with #VoteReederXP / tag @electkarenreeder</span><span class="xp">+50 XP</span></div>
-      <div class="xp-row"><span>Share a campaign event</span><span class="xp">+75 XP</span></div>
-      <div class="xp-row"><span>Post a photo from an event</span><span class="xp">+100 XP</span></div>
-    </div>
+<!-- 6 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">6</div><h2>Badges</h2></div>
+<p>Badges are bragging rights — earn them by hitting special milestones. There are <strong>12 to collect</strong>, including:</p>
+<p>🚪 <strong>First Knock</strong> (knock your first door) · 📣 <strong>Social Amplifier</strong> (10 #VoteReederXP posts) · 🗳️ <strong>Voter Guardian</strong> (verify your registration) · 🌊 <strong>Turnout Titan</strong> (register 5 voters) · 🤝 <strong>Recruit Master</strong> (recruit 5 volunteers) · 🚶 <strong>Neighborhood Champion</strong> (knock 50 doors) · 🎓 <strong>Civic Scholar</strong> (pass all 10 quizzes) · 🔥 <strong>On Fire Streak</strong> (earn XP 7 days in a row).</p>
+<p>Earned badges light up on your <span class="cyan" style="cursor:pointer;" onclick="location.href='/profile.html'">profile</span> and dashboard.</p>
+</section>
 
-    <div class="xp-type" style="--c:#00e5ff;">
-      <h3>🎟️ Event Code <span class="vtag" style="background:rgba(0,229,255,0.15);color:#00e5ff;">EVENT CODE</span></h3>
-      <div class="xp-row"><span>Attend a Phone Bank or Letter Writing</span><span class="xp">+200 XP</span></div>
-      <div class="xp-row"><span>Attend a Block Walk or Meet &amp; Greet</span><span class="xp">+300 XP</span></div>
-      <div class="xp-row"><span>Attend a Town Hall or Rally</span><span class="xp">+400 XP</span></div>
-    </div>
-    <p style="margin-top:14px;"><strong class="gold">💡 Bonus XP</strong> stacks up for milestones — like attending 3 different event types, recruiting friends, or going on a posting streak.</p>
-  </section>
+<!-- 7 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">7</div><h2>The Leaderboard</h2></div>
+<p>The <span class="pink" style="cursor:pointer;" onclick="location.href='/leaderboard.html'">Leaderboard</span> ranks every player by <strong>total XP</strong> — see the top operatives and find your own position highlighted in cyan. There's also a <strong>Guild Leaderboard</strong> that ranks the 7 guilds by their combined XP.</p>
+<p>🏆 <strong class="gold">Civic Champion of the Month:</strong> whoever earns the most XP in a calendar month (not total — just that month) gets featured in the Hall of Fame, a certificate signed by Karen, and an invite to speak at a campaign event. You must attend at least one event that month to be eligible.</p>
+</section>
 
-  <!-- 3 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">3</div><h2>The Rank System</h2></div>
-    <p>Your total XP determines your rank. Climb all six — every rank-up comes with a special message from Karen herself. 🎤</p>
-    <div class="rank-row"><div class="rank-emoji">🌱</div><div class="rank-name">Supporter</div><div class="rank-xp">0 XP</div></div>
-    <div class="rank-row"><div class="rank-emoji">📋</div><div class="rank-name">Organizer</div><div class="rank-xp">500 XP</div></div>
-    <div class="rank-row"><div class="rank-emoji">🛡️</div><div class="rank-name">Advocate</div><div class="rank-xp">1,000 XP</div></div>
-    <div class="rank-row"><div class="rank-emoji">🔨</div><div class="rank-name">Builder</div><div class="rank-xp">1,500 XP</div></div>
-    <div class="rank-row"><div class="rank-emoji">⚡</div><div class="rank-name">Catalyst</div><div class="rank-xp">2,000 XP</div></div>
-    <div class="rank-row" style="border-color:rgba(255,215,0,0.4);background:rgba(255,215,0,0.05);"><div class="rank-emoji">🏆</div><div class="rank-name gold">Champion</div><div class="rank-xp">2,500 XP</div></div>
-  </section>
+<!-- 8 -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">8</div><h2>Tips to Level Up Fast</h2></div>
+<ul class="tips">
+<li><b>Do a little of everything.</b> The big XP comes from mixing missions — events, voter reg, lessons, and field work all add up fast.</li>
+<li><b>Show up to events.</b> Events are worth +200–400 XP each, plus bonuses for attending different types. Easiest big points on the board.</li>
+<li><b>Finish all 10 lessons.</b> Each video + quiz is +250, and completing all 10 drops a <span class="gold">+500 bonus</span>.</li>
+<li><b>Register voters.</b> +500 XP each, +1,000 bonus for helping register 5 — one of the highest-value actions you can take.</li>
+<li><b>Bring friends.</b> Recruit a volunteer (+300) and have them enter your gamertag — recruiting 5 stacks bonuses.</li>
+<li><b>Post &amp; tag.</b> Use <span class="cyan">#VoteReederXP</span> and tag the campaign for quick, repeatable XP.</li>
+<li><b>Check in daily.</b> A daily check-in keeps your <span class="pink">🔥 streak</span> alive and earns the On Fire badge.</li>
+<li><b>Join a guild.</b> Hit Organizer (500 XP), pick a guild, and climb the team leaderboard together.</li>
+</ul>
+</section>
 
-  <!-- 4 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">4</div><h2>Guilds</h2></div>
-    <p>Guilds are your <strong>team</strong> — join one to organize with other volunteers, earn <span class="purple">guild XP</span> together (the sum of every member's XP), and compete on the guild leaderboard. Reach <strong>Organizer (500 XP)</strong> to unlock guild membership, then pick your lane. You can switch guilds every <strong>30 days</strong>.</p>
-    <div class="guild-list">
-      <div class="guild-chip"><span class="ge">⚡</span><div><b>The Treasury</b><span>"Resources win elections."</span></div></div>
-      <div class="guild-chip"><span class="ge">🌊</span><div><b>Turnout Titans</b><span>"Every vote counts."</span></div></div>
-      <div class="guild-chip"><span class="ge">⚔️</span><div><b>District Warriors</b><span>"Hold the line. Door by door."</span></div></div>
-      <div class="guild-chip"><span class="ge">📡</span><div><b>The Signal</b><span>"Control the narrative."</span></div></div>
-      <div class="guild-chip"><span class="ge">⛏️</span><div><b>The Miners</b><span>"Every voter has a story."</span></div></div>
-      <div class="guild-chip"><span class="ge">🏛️</span><div><b>The Architects</b><span>"Strategy before action."</span></div></div>
-      <div class="guild-chip"><span class="ge">🔥</span><div><b>The Momentum</b><span>"Energy is contagious."</span></div></div>
-    </div>
-    <p style="margin-top:14px;">Head to the <span class="cyan" style="cursor:pointer;" onclick="location.href='/guilds.html'">Guilds page</span> to read each backstory and join.</p>
-  </section>
+<!-- 9 (NEW) -->
+<section class="card">
+<div class="sec-head"><div class="sec-num">9</div><h2>Frequently Asked Questions</h2></div>
+<div class="faq-item">
+<h3><span class="q">Q.</span>Do I need any experience or tech skills?</h3>
+<p>Nope. If you can tap a button and show up, you can play. Start with the easy auto-XP missions — a daily check-in, a lesson video — and build from there at your own pace.</p>
+</div>
+<div class="faq-item">
+<h3><span class="q">Q.</span>Is my information private?</h3>
+<p>Yes. You play under a <strong>gamertag</strong> you choose, never your real name. Your identity stays protected while your impact stays visible on the board.</p>
+</div>
+<div class="faq-item">
+<h3><span class="q">Q.</span>What if I can't make it to events?</h3>
+<p>No problem. Events are worth big XP, but you can climb plenty far with lessons, voter registration, posting, and field work on your own schedule.</p>
+</div>
+<div class="faq-item">
+<h3><span class="q">Q.</span>I marked a mission complete but my XP hasn't shown up — why?</h3>
+<p>Auto and self-report missions pay out instantly. Photo-proof and event missions sit in <span class="purple">🕐 Pending Review</span> until a coordinator confirms them — then your XP lands.</p>
+</div>
+<div class="faq-item">
+<h3><span class="q">Q.</span>How does my friend get credit for joining?</h3>
+<p>Have them enter your gamertag when they sign up. Recruit five and the bonuses stack — it's one of the fastest ways to climb.</p>
+</div>
+<div class="faq-item">
+<h3><span class="q">Q.</span>Does it cost anything?</h3>
+<p>Never. VoteReederXP is free to play — the only thing we ask for is your time and your energy.</p>
+</div>
+</section>
 
-  <!-- 5 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">5</div><h2>The Kanban Board</h2></div>
-    <p>Your dashboard has a <strong>mission board</strong> with three columns. Here's the flow:</p>
-    <p><strong class="cyan">1. Add it</strong> — Browse <em>Available Tasks</em> in the sidebar and tap <strong>"Add to Board."</strong> The mission drops into your <span style="color:#ffb400;">⚡ In Progress</span> column.</p>
-    <p><strong class="cyan">2. Do it</strong> — Go take the real-world action (knock those doors, attend that event, post that selfie).</p>
-    <p><strong class="cyan">3. Complete it</strong> — Tap <strong>"Mark Complete."</strong> Auto &amp; self-report missions award XP instantly and move to <span style="color:#00dc78;">✓ Complete</span>. Photo-proof and event missions land in <span style="color:#bf00ff;">🕐 Pending Review</span> until a coordinator confirms.</p>
-  </section>
-
-  <!-- 6 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">6</div><h2>Badges</h2></div>
-    <p>Badges are bragging rights — earn them by hitting special milestones. There are <strong>12 to collect</strong>, including:</p>
-    <p>🚪 <strong>First Knock</strong> (knock your first door) · 📣 <strong>Social Amplifier</strong> (10 #VoteReederXP posts) · 🗳️ <strong>Voter Guardian</strong> (verify your registration) · 🌊 <strong>Turnout Titan</strong> (register 5 voters) · 🤝 <strong>Recruit Master</strong> (recruit 5 volunteers) · 🚶 <strong>Neighborhood Champion</strong> (knock 50 doors) · 🎓 <strong>Civic Scholar</strong> (pass all 10 quizzes) · 🔥 <strong>On Fire Streak</strong> (earn XP 7 days in a row).</p>
-    <p>Earned badges light up on your <span class="cyan" style="cursor:pointer;" onclick="location.href='/profile.html'">profile</span> and dashboard.</p>
-  </section>
-
-  <!-- 7 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">7</div><h2>The Leaderboard</h2></div>
-    <p>The <span class="pink" style="cursor:pointer;" onclick="location.href='/leaderboard.html'">Leaderboard</span> ranks every player by <strong>total XP</strong> — see the top operatives and find your own position highlighted in cyan. There's also a <strong>Guild Leaderboard</strong> that ranks the 7 guilds by their combined XP.</p>
-    <p>🏆 <strong class="gold">Civic Champion of the Month:</strong> whoever earns the most XP in a calendar month (not total — just that month) gets featured in the Hall of Fame, a certificate signed by Karen, and an invite to speak at a campaign event. You must attend at least one event that month to be eligible.</p>
-  </section>
-
-  <!-- 8 -->
-  <section class="card">
-    <div class="sec-head"><div class="sec-num">8</div><h2>Tips to Level Up Fast</h2></div>
-    <ul class="tips">
-      <li><b>Do a little of everything.</b> The big XP comes from mixing missions — events, voter reg, lessons, and field work all add up fast.</li>
-      <li><b>Show up to events.</b> Events are worth +200–400 XP each, plus bonuses for attending different types. Easiest big points on the board.</li>
-      <li><b>Finish all 10 lessons.</b> Each video + quiz is +250, and completing all 10 drops a <span class="gold">+500 bonus</span>.</li>
-      <li><b>Register voters.</b> +500 XP each, +1,000 bonus for helping register 5 — one of the highest-value actions you can take.</li>
-      <li><b>Bring friends.</b> Recruit a volunteer (+300) and have them enter your gamertag — recruiting 5 stacks bonuses.</li>
-      <li><b>Post &amp; tag.</b> Use <span class="cyan">#VoteReederXP</span> and tag the campaign for quick, repeatable XP.</li>
-      <li><b>Check in daily.</b> A daily check-in keeps your <span class="pink">🔥 streak</span> alive and earns the On Fire badge.</li>
-      <li><b>Join a guild.</b> Hit Organizer (500 XP), pick a guild, and climb the team leaderboard together.</li>
-    </ul>
-  </section>
-
-  <div class="cta">
-    <a href="/register.html">⚡ Create Your Account &amp; Start Earning XP</a>
-  </div>
-
+<div class="cta">
+<p class="closer">However you play — an hour a week or every single day — you're doing the real work of winning an election. <strong>Pick your gamertag, grab your first mission, and let's send Karen to Austin.</strong></p>
+<a href="/register2.html">⚡ Create Your Account &amp; Start Earning XP</a>
+</div>
 </div>
 
 <footer>
-  <div>
-    <a href="/index.html">Home</a> ·
-    <a href="/how-to-play.html">How to Play</a> ·
-    <a href="/guilds.html">Guilds</a> ·
-    <a href="/leaderboard.html">Leaderboard</a> ·
-    <a href="/about.html">About</a> ·
-    <a href="/privacy.html">Privacy</a> ·
-    <a href="/terms.html">Terms</a>
-  </div>
-  <div class="disclaimer">Paid for by Karen Reeder for Texas House District 29.</div>
+<div>
+<a href="/index.html">Home</a> ·
+<a href="/how-to-play.html">How to Play</a> ·
+<a href="/guilds.html">Guilds</a> ·
+<a href="/leaderboard.html">Leaderboard</a> ·
+<a href="/about.html">About</a> ·
+<a href="/privacy.html">Privacy</a> ·
+<a href="/terms.html">Terms</a>
+</div>
+<div class="disclaimer">Paid for by Karen Reeder for Texas House District 29.</div>
 </footer>
 
 <script src="xp.js"></script>

@@ -32,8 +32,8 @@ if (!document.querySelector('.topbar')) {
 .topbar .nav-donate:hover{background:rgba(255,215,0,0.1);}
 .topbar .nav-login{font-size:13px;font-weight:600;color:#00e5ff;text-decoration:none;cursor:pointer;}
 .topbar .avatar-wrap{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:4px;cursor:pointer;}
-.topbar .av-ring{width:32px;height:32px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;}
-.topbar .av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
+.topbar .av-ring{width:32px;height:32px;border-radius:8px;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;}
+.topbar .av-in{width:100%;height:100%;border-radius:7px;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
 @media(max-width:680px){.topbar .nav-links{display:none;}}
 `;
   document.head.appendChild(navStyle);
