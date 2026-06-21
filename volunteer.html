@@ -107,17 +107,23 @@
 /* ── PHOTOS GRID ── */
 .vol-photos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
   margin-bottom: 3rem;
 }
+@media(max-width: 600px) { .vol-photos { grid-template-columns: 1fr; } }
 .vol-photo-card {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(0,240,255,0.2);
   position: relative;
-  aspect-ratio: 4/3;
+  height: 360px;
   background: var(--bg-card);
+  transition: border-color .2s, box-shadow .2s;
+}
+.vol-photo-card:hover {
+  border-color: #00e5ff;
+  box-shadow: 0 0 22px rgba(0,229,255,0.4);
 }
 .vol-photo-card img {
   width: 100%;
@@ -126,14 +132,31 @@
   transition: transform .3s;
 }
 .vol-photo-card:hover img { transform: scale(1.05); }
+.vol-photo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(191,0,255,0.08));
+  font-size: 2.8rem;
+}
+.vol-photo-placeholder span {
+  font-family: var(--font-ui);
+  font-size: .85rem;
+  color: rgba(255,255,255,0.5);
+}
 .vol-photo-caption {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,.8));
   padding: 1rem .75rem .75rem;
   font-family: var(--font-ui);
-  font-size: .8rem;
-  color: rgba(255,255,255,.8);
+  font-size: .85rem;
+  color: rgba(255,255,255,.9);
+  z-index: 2;
 }
 
 /* ── ROLES ── */
@@ -290,16 +313,24 @@ body>nav{display:none !important;}
 
       <div class="vol-photos">
         <div class="vol-photo-card">
-          <img src="images/team1.jpg" alt="Campaign volunteers" onerror="this.parentElement.style.background='linear-gradient(135deg,rgba(0,240,255,0.1),rgba(191,0,255,0.1))';this.style.display='none'">
-          <div class="vol-photo-caption">Team Reeder hitting the doors in District 29</div>
+          <img src="images/photos/volunteer-1.jpg" alt="Volunteers in action" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="vol-photo-placeholder" style="display:none;">📸<span>Photo coming soon</span></div>
+          <div class="vol-photo-caption">Volunteers in action</div>
         </div>
         <div class="vol-photo-card">
-          <img src="images/team2.jpg" alt="Campaign event" onerror="this.parentElement.style.background='linear-gradient(135deg,rgba(191,0,255,0.1),rgba(255,0,170,0.1))';this.style.display='none'">
-          <div class="vol-photo-caption">Community event — every voice matters</div>
+          <img src="images/photos/volunteer-2.jpg" alt="Canvassing District 29" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="vol-photo-placeholder" style="display:none;">📸<span>Photo coming soon</span></div>
+          <div class="vol-photo-caption">Canvassing District 29</div>
         </div>
         <div class="vol-photo-card">
-          <img src="images/team3.jpg" alt="Volunteers together" onerror="this.parentElement.style.background='linear-gradient(135deg,rgba(255,215,0,0.1),rgba(0,240,255,0.1))';this.style.display='none'">
-          <div class="vol-photo-caption">This is what change looks like</div>
+          <img src="images/photos/volunteer-3.jpg" alt="Community outreach" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="vol-photo-placeholder" style="display:none;">📸<span>Photo coming soon</span></div>
+          <div class="vol-photo-caption">Community outreach</div>
+        </div>
+        <div class="vol-photo-card">
+          <img src="images/photos/volunteer-4.jpg" alt="Team Karen Reeder" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="vol-photo-placeholder" style="display:none;">📸<span>Photo coming soon</span></div>
+          <div class="vol-photo-caption">Team Karen Reeder</div>
         </div>
       </div>
 
