@@ -270,20 +270,29 @@ sbScript.onload = () => {
       if (myXpLi) myXpLi.style.display = 'list-item';
       if (rankLi) rankLi.style.display = 'list-item';
 
-      // Load XP + rank
-      try {
-        const { data: profile } = await window.sb
-          .from('profiles')
-          .select('total_xp, rank')
-          .eq('id', session.user.id)
-          .single();
-        if (profile) {
-          const navXp   = document.getElementById('nav-xp-display');
-          const navRank = document.getElementById('nav-rank-display');
-          if (navXp)   navXp.textContent   = '⚡ ' + (profile.total_xp || 0).toLocaleString() + ' XP';
-          if (navRank) navRank.textContent = profile.rank || 'Supporter';
-        }
-      } catch(e) {}
+      // Load XP + rank — DEFERRED out of the auth callback on purpose.
+      // Supabase holds the auth lock for the duration of onAuthStateChange.
+      // awaiting a token-bearing query *inside* this callback deadlocks when a
+      // TOKEN_REFRESHED event fires (i.e. while the user lingers on a page) and
+      // then every later request hangs forever — that was the profile "Save"
+      // button freezing at "Saving…". setTimeout(0) runs it after the lock is
+      // released. (See supabase auth-js: never await sb calls in this callback.)
+      const _uid = session.user.id;
+      setTimeout(async () => {
+        try {
+          const { data: profile } = await window.sb
+            .from('profiles')
+            .select('total_xp, rank')
+            .eq('id', _uid)
+            .single();
+          if (profile) {
+            const navXp   = document.getElementById('nav-xp-display');
+            const navRank = document.getElementById('nav-rank-display');
+            if (navXp)   navXp.textContent   = '⚡ ' + (profile.total_xp || 0).toLocaleString() + ' XP';
+            if (navRank) navRank.textContent = profile.rank || 'Supporter';
+          }
+        } catch(e) {}
+      }, 0);
 
       // Update auth button to show username + logout
       if (authBtn && username) {

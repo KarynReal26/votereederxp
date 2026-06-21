@@ -248,6 +248,16 @@ let usernameTimer = null;
 // ── Helpers ───────────────────────────────────────────────
 function waitForSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
 
+// Race a promise against a timeout so a stalled Supabase request can never
+// leave a Save button stuck on "Saving…" forever. Returns the promise result
+// or throws a friendly timeout error.
+function withTimeout(promise, ms, label){
+  return Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error((label || 'Request') + ' timed out — check your connection and try again.')), ms))
+  ]);
+}
+
 function initials(name){
   if(!name) return 'KR';
   const parts = String(name).trim().split(/\s+/);
@@ -330,9 +340,9 @@ async function saveAvatar(){
   const fullPath = AVATAR_DIR + chosenAvatar;
   btn.disabled = true; status.className = 'status-line'; status.textContent = 'Saving…';
   try {
-    if (!user) { const { data: { user: u } } = await sb.auth.getUser(); user = u; }
+    if (!user) { const { data: { user: u } } = await withTimeout(sb.auth.getUser(), 12000, 'Sign-in check'); user = u; }
     if (!user) throw new Error('Not signed in');
-    const { error } = await sb.from('profiles').update({ avatar: fullPath }).eq('id', user.id);
+    const { error } = await withTimeout(sb.from('profiles').update({ avatar: fullPath }).eq('id', user.id), 12000, 'Save');
     if(error) throw error;
     if(profile) profile.avatar = fullPath;
     renderBigAvatar(fullPath, profile && profile.username);
@@ -399,9 +409,9 @@ async function saveUsername(){
   if(!USERNAME_RE.test(val)) return;
   btn.disabled = true; status.className = 'status-line'; status.textContent = 'Saving…';
   try {
-    if (!user) { const { data: { user: u } } = await sb.auth.getUser(); user = u; }
+    if (!user) { const { data: { user: u } } = await withTimeout(sb.auth.getUser(), 12000, 'Sign-in check'); user = u; }
     if (!user) throw new Error('Not signed in');
-    const { error } = await sb.from('profiles').update({ username: val }).eq('id', user.id);
+    const { error } = await withTimeout(sb.from('profiles').update({ username: val }).eq('id', user.id), 12000, 'Save');
     if(error) throw error;
     if(profile) profile.username = val;
     document.getElementById('nav-username').textContent = val;
@@ -521,9 +531,9 @@ async function saveGuild(){
   btn.disabled = true; status.className = 'status-line'; status.textContent = 'Saving…';
   const nowIso = new Date().toISOString();
   try {
-    if (!user) { const { data: { user: u } } = await sb.auth.getUser(); user = u; }
+    if (!user) { const { data: { user: u } } = await withTimeout(sb.auth.getUser(), 12000, 'Sign-in check'); user = u; }
     if (!user) throw new Error('Not signed in');
-    const { error } = await sb.from('profiles').update({ guild: chosenGuild, guild_joined_at: nowIso }).eq('id', user.id);
+    const { error } = await withTimeout(sb.from('profiles').update({ guild: chosenGuild, guild_joined_at: nowIso }).eq('id', user.id), 12000, 'Save');
     if(error) throw error;
     if(profile){ profile.guild = chosenGuild; profile.guild_joined_at = nowIso; }
     status.className = 'status-line ok'; status.textContent = '✓ Guild saved!';
