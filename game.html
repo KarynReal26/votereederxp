@@ -346,8 +346,16 @@ async function sbFetch(path, opts={}) {
     headers: {'apikey': _SB_KEY, 'Authorization': `Bearer ${_SB_KEY}`, 'Content-Type': 'application/json', ...opts.headers},
     ...opts
   });
-  return res.json();
+  const txt = await res.text();
+  if (!txt) return null;            // 204 / empty body (e.g. PATCH with return=minimal)
+  try { return JSON.parse(txt); } catch { return null; }
 }
+
+function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* Current session/profile cache — populated by loadProfile() */
+let CURRENT_USER = null;
+let CURRENT_PROFILE = null;
 
 /* ── RANK THRESHOLDS ── */
 const RANKS = [
@@ -366,10 +374,12 @@ async function loadProfile() {
   if (!window.sb) return;
   const { data: { user } } = await window.sb.auth.getUser();
   if (!user) { window.location.href = '/index.html'; return; }
+  CURRENT_USER = user;
 
   const data = await sbFetch(`profiles?id=eq.${user.id}&select=*`);
   if (!data || !data[0]) return;
   const p = data[0];
+  CURRENT_PROFILE = p;
 
   const xp = p.xp_score || 0;
   const rank = getRank(xp);
@@ -406,17 +416,84 @@ async function loadProfile() {
   }
 }
 
-/* ── LOAD MISSIONS from Google Sheets ── */
+/* ── LOAD MISSIONS — live kanban from user_tasks ──
+   Expected user_tasks columns: id, user_id (uuid), status
+   ('in_progress' | 'pending' | 'complete'), task_name (text),
+   xp (int), verification (text, optional), created_at (timestamptz) */
+const KCOLS = { in_progress: 'col-in-progress', pending: 'col-pending', complete: 'col-complete' };
+const KCOUNTS = { in_progress: 'count-in', pending: 'count-pending', complete: 'count-complete' };
+
+function verifyMeta(v) {
+  const s = String(v || '').toLowerCase();
+  if (/photo/.test(s)) return { cls: 'vt-photo', label: 'PHOTO PROOF' };
+  if (/auto/.test(s))  return { cls: 'vt-auto',  label: 'AUTO' };
+  return { cls: 'vt-self', label: 'SELF REPORT' };
+}
+
+function renderTaskCard(t, status) {
+  const id   = String(t.id);
+  const name = escapeHtml(t.task_name || 'Task');
+  const xp   = (t.xp != null ? t.xp : 0);
+  const vm   = verifyMeta(t.verification);
+  const top  = `<div class="kcard-top"><span class="kcard-name">${name}</span><span class="vtag ${vm.cls}">${vm.label}</span></div>`;
+  if (status === 'complete') {
+    return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub">+${xp} XP · Complete</div></div>`;
+  }
+  if (status === 'pending') {
+    return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub" style="color:rgba(191,0,255,0.7);">Awaiting coordinator approval</div></div>`;
+  }
+  return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub">+${xp} XP · ${vm.label === 'AUTO' ? 'Auto Verified' : 'Manual Verification'}</div><button class="mark-btn" onclick="markTaskComplete('${id}', this)">Mark Complete</button></div>`;
+}
+
 async function loadMissions() {
-  try {
-    const res = await fetch('/.netlify/functions/sheets-proxy?gid=1810466887');
-    const rows = await res.json();
-    if (!rows || !rows.length) return;
-    const list = document.getElementById('task-list');
-    // Clear static tasks and replace with live ones
-    // Keep static for now if sheets fail — only replace if data comes back
-    document.getElementById('task-count').textContent = rows.length;
-  } catch(e) { console.log('Sheets proxy not available, using static tasks'); }
+  if (!window.sb) return;
+  const user = CURRENT_USER || (await window.sb.auth.getUser()).data.user;
+  if (!user) return;
+  CURRENT_USER = user;
+
+  const tasks = await sbFetch(`user_tasks?user_id=eq.${user.id}&order=created_at.asc`);
+  if (!Array.isArray(tasks)) return;
+
+  const buckets = { in_progress: [], pending: [], complete: [] };
+  tasks.forEach(t => { (buckets[t.status] || buckets.in_progress).push(t); });
+
+  for (const status of Object.keys(KCOLS)) {
+    const col = document.getElementById(KCOLS[status]);
+    if (col) col.innerHTML = buckets[status].map(t => renderTaskCard(t, status)).join('');
+    const badge = document.getElementById(KCOUNTS[status]);
+    if (badge) badge.textContent = buckets[status].length;
+  }
+}
+
+async function markTaskComplete(taskId, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = '✅ Complete!'; btn.style.background = '#00dc78'; }
+  playPacManXPSound();
+  await sbFetch(`user_tasks?id=eq.${encodeURIComponent(taskId)}`, {
+    method: 'PATCH',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ status: 'complete' })
+  });
+  loadMissions();
+}
+
+async function addTaskToBoard(task, btn) {
+  if (btn) { btn.textContent = '✅ Added!'; btn.style.opacity = '.5'; btn.disabled = true; }
+  playJingleMoveSound();
+  const user = CURRENT_USER || (await window.sb.auth.getUser()).data.user;
+  if (!user) return;
+  CURRENT_USER = user;
+  await sbFetch('user_tasks', {
+    method: 'POST',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify({
+      user_id: user.id,
+      status: 'in_progress',
+      task_name: task.task_name,
+      xp: task.xp,
+      verification: task.verification
+    })
+  });
+  loadMissions();
 }
 
 /* ── CHAT REALTIME ── */
@@ -457,7 +534,15 @@ async function sendChat() {
   if (window.sb) {
     const { data: { user } } = await window.sb.auth.getUser();
     if (user) {
-      await sbFetch('chat_messages', {method:'POST', body: JSON.stringify({user_id: user.id, message: msg})});
+      // Use cached profile if available, otherwise fetch username/guild
+      let username = CURRENT_PROFILE?.username;
+      let guild = CURRENT_PROFILE?.guild;
+      if (username == null) {
+        const prof = await sbFetch(`profiles?id=eq.${user.id}&select=username,guild`);
+        username = prof?.[0]?.username || 'Player';
+        guild = prof?.[0]?.guild || null;
+      }
+      await sbFetch('chat_messages', {method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({user_id: user.id, message: msg, username, guild: guild || null})});
       return; // realtime will pick it up
     }
   }
@@ -485,9 +570,19 @@ setLayout();window.addEventListener('resize',setLayout);
 /* ── UPLOAD ── */
 function doUp(input,sid){const el=document.getElementById(sid);if(!input.files[0])return;el.style.color='#ffd700';el.textContent='⏳ Uploading to Google Drive...';setTimeout(()=>{el.style.color='#00dc78';el.textContent='✅ Uploaded! XP awarded!';playOhYeahValidationSound();},1500);}
 
-/* ── TASK BUTTONS ── */
-document.querySelectorAll('.t-btn').forEach(btn=>{btn.addEventListener('click',function(){this.textContent='✅ Added!';this.style.opacity='.5';this.disabled=true;playJingleMoveSound();});});
-document.querySelectorAll('.mark-btn').forEach(btn=>{btn.addEventListener('click',function(){this.textContent='✅ Complete!';this.style.background='#00dc78';this.disabled=true;playPacManXPSound();});});
+/* ── TASK BUTTONS — add a sidebar task to the live board ──
+   Dynamic kanban "Mark Complete" buttons are wired via inline onclick
+   (markTaskComplete) in renderTaskCard, so no static .mark-btn listener. */
+document.querySelectorAll('.t-btn').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    const card = this.closest('.task');
+    const task_name = card?.querySelector('.t-name')?.textContent.trim() || 'Task';
+    const xp = parseInt((card?.querySelector('.t-xp')?.textContent || '').replace(/[^0-9]/g,''), 10) || 0;
+    const tag = (card?.querySelector('.t-tag')?.textContent || '').trim();
+    const verification = /auto|social/i.test(tag) ? 'AUTO' : 'SELF REPORT';
+    addTaskToBoard({ task_name, xp, verification }, this);
+  });
+});
 
 /* ── INIT ── */
 // Wait for shared.js to set window.sb
