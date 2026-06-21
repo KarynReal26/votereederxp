@@ -216,10 +216,10 @@ body>nav{display:none !important;}
     <a href="#missions" class="btn-primary btn-outline">📋 View Missions</a>
   </div>
   <div class="hero-stats">
-    <div class="stat-pill"><span>⚡</span><div><div class="stat-value" id="s-xp">47,250</div><div class="stat-name">Total XP</div></div></div>
-    <div class="stat-pill"><span>🙋</span><div><div class="stat-value" id="s-vol">312</div><div class="stat-name">Active Volunteers</div></div></div>
-    <div class="stat-pill"><span>🚪</span><div><div class="stat-value" id="s-doors">8,914</div><div class="stat-name">Doors Knocked</div></div></div>
-    <div class="stat-pill"><span>🗳️</span><div><div class="stat-value" id="s-voters">2,187</div><div class="stat-name">Voters Reached</div></div></div>
+    <div class="stat-pill"><span>⚡</span><div><div class="stat-value" id="s-xp">0</div><div class="stat-name">XP Earned</div></div></div>
+    <div class="stat-pill"><span>🙋</span><div><div class="stat-value" id="s-vol">0</div><div class="stat-name">Volunteers Joined</div></div></div>
+    <div class="stat-pill"><span>✅</span><div><div class="stat-value" id="s-doors">0</div><div class="stat-name">Missions Completed</div></div></div>
+    <div class="stat-pill"><span>📅</span><div><div class="stat-value" id="s-voters">0</div><div class="stat-name">Days to Election</div></div></div>
   </div>
   <div class="slogan-ticker">
     <div class="ticker-inner">
@@ -706,7 +706,24 @@ function animateCounter(el,target){
   function step(ts){if(!startTime)startTime=ts;const p=Math.min((ts-startTime)/2000,1);const e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*target).toLocaleString();if(p<1)requestAnimationFrame(step);}
   requestAnimationFrame(step);
 }
-const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){animateCounter(document.getElementById('s-xp'),47250);animateCounter(document.getElementById('s-vol'),312);animateCounter(document.getElementById('s-doors'),8914);animateCounter(document.getElementById('s-voters'),2187);observer.disconnect();}});},{threshold:0.3});
+async function loadHeroStats(){
+  const xpEl=document.getElementById('s-xp'), volEl=document.getElementById('s-vol'), misEl=document.getElementById('s-doors'), daysEl=document.getElementById('s-voters');
+  // Days to election — pure calc, always works (no Supabase)
+  const days=Math.max(0,Math.ceil((new Date('2026-11-03') - new Date())/(1000*60*60*24)));
+  if(daysEl) animateCounter(daysEl, days);
+  // Supabase-backed stats — fall back to 0 on any failure
+  let volunteers=0, xpSum=0, missionsDone=0;
+  const sb = await new Promise(r=>{ if(window.sb) return r(window.sb); let n=0; const i=setInterval(()=>{ if(window.sb){clearInterval(i);r(window.sb);} else if(++n>50){clearInterval(i);r(null);} },100); });
+  if(sb){
+    try{ const { count } = await sb.from('profiles').select('*',{count:'exact',head:true}); volunteers=count||0; }catch(e){}
+    try{ const { data } = await sb.from('profiles').select('xp_score'); xpSum=(data||[]).reduce((s,row)=>s+(Number(row.xp_score)||0),0); }catch(e){}
+    try{ const { count } = await sb.from('user_tasks').select('*',{count:'exact',head:true}).eq('status','complete'); missionsDone=count||0; }catch(e){}
+  }
+  if(volEl) animateCounter(volEl, volunteers);
+  if(xpEl)  animateCounter(xpEl, xpSum);
+  if(misEl) animateCounter(misEl, missionsDone);
+}
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){loadHeroStats();observer.disconnect();}});},{threshold:0.3});
 observer.observe(document.querySelector('.hero-stats'));
  
 if(!prefersReducedMotion){
