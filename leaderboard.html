@@ -1,337 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoteReederXP — Global Leaderboards</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VoteReederXP — Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+<!--
+  leaderboard.html (self-contained preview). CLAUDE CODE: wire podium, player
+  table, and guild table to Supabase (stubs at bottom); keep #stars; keep
+  xp.js then shared.js LAST. Has its own .topbar so shared.js skips nav.
+-->
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body,input,button{font-family:'Inter',sans-serif;color:#fff;}
-html,body{background:#0a0e1a;height:100%;overflow:hidden;}
-.bg{position:fixed;inset:0;z-index:0;background:#0a0e1a;}
-.neb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.1) 0%,transparent 70%);top:-150px;left:-100px;}
-.neb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,0,128,0.06) 0%,transparent 70%);bottom:-100px;right:-80px;}
-.stars{position:absolute;inset:0;}
-.s{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite;}
-@keyframes tw{0%,100%{opacity:.05;}50%{opacity:.7;}}
-@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
+  :root{
+    --neon-pink:#ff00aa;--neon-blue:#00f0ff;--neon-purple:#bf00ff;--neon-gold:#ffcf3f;
+    --silver:#cfd6e6;--bronze:#e08a4b;
+    --bg-deep:#05010f;--bg-card:rgba(18,10,48,0.55);--border-glow:rgba(0,240,255,0.22);
+    --text:#fff;--text-dim:rgba(255,255,255,0.80);
+    --font-display:'Orbitron',sans-serif;--font-ui:'Rajdhani',sans-serif;--font-body:'Exo 2',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-body);background:var(--bg-deep);color:var(--text-dim);-webkit-font-smoothing:antialiased;}
+  body>nav{display:none!important;}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .bound{max-width:1160px;margin:0 auto;width:100%;padding:0 28px;position:relative;z-index:3;}
+  a{color:inherit;}
 
-/* NAVIGATION HEADER */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
-.nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
-.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.profile-trigger{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
-.nav-left{display:flex;align-items:center;gap:32px;}
-.nav-right{display:flex;align-items:center;gap:14px;}
-.nav-links{display:flex;gap:24px;}
-.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
-.nl:hover{color:#fff;}
-.nl.a{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
-body>nav{display:none !important;}
-@media(max-width:600px){.nav-links{display:none;}}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
+  .topbar .row{display:flex;align-items:center;gap:18px;height:64px;}
+  .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .topbar nav{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap;}
+  .topbar nav a{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--text-dim);text-decoration:none;}
+  .topbar nav a:hover{color:var(--neon-blue);} .topbar nav a.act{color:var(--neon-blue);}
+  @media(max-width:900px){.topbar nav{display:none;}}
 
-/* APP MAIN WINDOW VIEWPORT GRID */
-.layout{
-  position:fixed;
-  top: 62px; 
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(100vh - 62px);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  z-index: 10;
-}
+  .eyebrow{font-family:var(--font-ui);font-weight:700;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--neon-pink);text-shadow:0 0 12px var(--neon-pink);}
+  .btn{font-family:var(--font-ui);font-weight:700;font-size:1rem;letter-spacing:1.2px;text-transform:uppercase;padding:13px 26px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .2s;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff;box-shadow:0 0 20px rgba(191,0,255,.4);}
+  .btn:hover{transform:translateY(-2px);}
 
-/* TOP STATUS HEADERS BLOCK */
-.countdown-row{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:12px;flex-shrink:0;}
-.stat-card{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;justify-content:center;}
-.stat-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:2px;}
-.stat-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.timer-grid{display:flex;gap:12px;font-family:'Orbitron',sans-serif;}
-.time-unit{display:flex;flex-direction:column;align-items:center;}
-.time-num{font-size:24px;font-weight:900;color:#ff0080;line-height:1;}
-.time-lbl{font-size:8px;color:rgba(255,255,255,0.4);font-weight:700;text-transform:uppercase;margin-top:2px;}
+  /* page hero + countdown */
+  .phero{text-align:center;padding:70px 0 40px;}
+  .phero h1{font-family:var(--font-display);font-weight:900;font-size:clamp(2.4rem,6vw,4.2rem);color:#fff;text-shadow:0 0 28px rgba(0,240,255,.28);margin:12px 0 18px;}
+  .countdown{display:inline-flex;gap:16px;}
+  .cd{background:var(--bg-card);border:1px solid var(--border-glow);border-radius:12px;padding:12px 18px;min-width:84px;}
+  .cd .n{font-family:var(--font-display);font-weight:900;font-size:1.9rem;color:var(--neon-gold);text-shadow:0 0 12px var(--neon-gold);}
+  .cd .l{font-family:var(--font-ui);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
 
-/* HALL OF FAME PODIUM STAGE */
-.podium-stage{background:#0d1120;border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;position:relative;flex-shrink:0;height:180px;justify-content:flex-end;}
-.stage-title{position:absolute;top:12px;left:20px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:#00e5ff;letter-spacing:2px;text-transform:uppercase;}
-.trophy-row{display:flex;align-items:flex-end;justify-content:center;gap:40px;width:100%;max-width:500px;}
-.podium-column{display:flex;flex-direction:column;align-items:center;width:100px;cursor:pointer;transition:.2s;}
-.podium-column:hover{transform:translateY(-3px);}
-.p-avatar{width:40px;height:40px;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:6px;border:2px solid transparent;}
-.p-name{font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);margin-bottom:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
-.p-block{width:100%;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;}
-/* Place Variations */
-.place-2 .p-block{height:45px;background:linear-gradient(180deg,rgba(168,180,200,0.3),rgba(168,180,200,0.05));border-top:2px solid #a8b4c8;color:#a8b4c8;}
-.place-2 .p-avatar{border-color:#a8b4c8;}
-.place-1 .p-block{height:65px;background:linear-gradient(180deg,rgba(255,215,0,0.3),rgba(255,215,0,0.05));border-top:2px solid #ffd700;color:#ffd700;}
-.place-1 .p-avatar{border-color:#ffd700;box-shadow:0 0 15px rgba(255,215,0,0.2);width:46px;height:46px;font-size:22px;}
-.place-3 .p-block{height:30px;background:linear-gradient(180deg,rgba(205,127,50,0.3),rgba(205,127,50,0.05));border-top:2px solid #cd7f32;color:#cd7f32;}
-.place-3 .p-avatar{border-color:#cd7f32;}
+  /* podium */
+  .podium{display:flex;align-items:flex-end;justify-content:center;gap:18px;margin:30px 0 60px;}
+  .place{display:flex;flex-direction:column;align-items:center;flex:0 1 220px;}
+  .place .crown{font-size:1.6rem;height:1.6rem;margin-bottom:6px;filter:drop-shadow(0 0 10px var(--neon-gold));}
+  .avatar{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:1.3rem;color:#fff;background:#0a1233;border:3px solid var(--neon-blue);box-shadow:0 0 22px rgba(0,240,255,.35);margin-bottom:12px;}
+  .p1 .avatar{width:100px;height:100px;border-color:var(--neon-gold);box-shadow:0 0 30px rgba(255,207,63,.55);font-size:1.6rem;}
+  .p2 .avatar{border-color:var(--silver);} .p3 .avatar{border-color:var(--bronze);}
+  .pn{font-family:var(--font-ui);font-weight:700;font-size:1.1rem;color:#fff;}
+  .pg{font-family:var(--font-ui);font-size:.88rem;color:var(--text-dim);margin:2px 0 6px;}
+  .px{font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--neon-gold);text-shadow:0 0 10px var(--neon-gold);margin-bottom:14px;}
+  .block{width:100%;border-radius:12px 12px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:12px;font-family:var(--font-display);font-weight:900;font-size:2rem;color:rgba(255,255,255,0.92);border:1px solid var(--border-glow);border-bottom:none;}
+  .p1 .block{height:150px;background:linear-gradient(180deg, rgba(255,207,63,0.28), rgba(255,207,63,0.04));border-color:rgba(255,207,63,.5);}
+  .p2 .block{height:110px;background:linear-gradient(180deg, rgba(207,214,230,0.22), rgba(207,214,230,0.03));border-color:rgba(207,214,230,.4);}
+  .p3 .block{height:84px;background:linear-gradient(180deg, rgba(224,138,75,0.22), rgba(224,138,75,0.03));border-color:rgba(224,138,75,.4);}
+  @media(max-width:680px){.podium{flex-wrap:wrap;}.place{flex:1 1 100%;}.place.p1{order:1;}.place.p2{order:2;}.place.p3{order:3;}.block{height:54px!important;width:60%;}}
 
-/* TWIN MATRIX SCOREBOARDS GRID */
-.boards-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-height:0;}
-.matrix-panel{background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;height:100%;}
-.panel-hdr{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
-.panel-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:#fff;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
-.panel-title-ico{color:#00e5ff;}
-.panel-count{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);}
+  /* twin scoreboards */
+  .boards{display:grid;grid-template-columns:1.25fr 1fr;gap:24px;padding-bottom:40px;}
+  @media(max-width:880px){.boards{grid-template-columns:1fr;}}
+  .panel{background:var(--bg-card);border:1px solid var(--border-glow);border-radius:18px;padding:22px;backdrop-filter:blur(10px);}
+  .ptitle{font-family:var(--font-display);font-weight:700;font-size:1.05rem;letter-spacing:2px;text-transform:uppercase;color:var(--neon-blue);text-shadow:0 0 10px var(--neon-blue);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(0,240,255,0.15);}
+  .lrow{display:flex;align-items:center;gap:14px;padding:11px 10px;border-radius:10px;transition:background .15s;}
+  .lrow:hover{background:rgba(255,255,255,0.04);}
+  .lrow.me{background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.3);}
+  .rk{font-family:var(--font-display);font-weight:900;font-size:1rem;width:30px;text-align:center;color:var(--text-dim);}
+  .rk.g1{color:var(--neon-gold);text-shadow:0 0 10px var(--neon-gold);} .rk.g2{color:var(--silver);} .rk.g3{color:var(--bronze);}
+  .av{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:.85rem;color:#fff;background:#0a1233;border:1px solid var(--border-glow);}
+  .info{flex:1;min-width:0;}
+  .nm{font-family:var(--font-ui);font-weight:700;font-size:1rem;color:#fff;}
+  .gd{font-family:var(--font-ui);font-size:.85rem;color:var(--text-dim);}
+  .xp{font-family:var(--font-display);font-weight:700;font-size:.95rem;color:var(--neon-gold);white-space:nowrap;}
+  .em{font-size:1.5rem;width:38px;text-align:center;}
 
-/* SCROLL LIST STRIPS */
-.matrix-scroll{flex:1;overflow-y:scroll;padding:12px 16px;}
-.matrix-scroll::-webkit-scrollbar { width: 6px; }
-.matrix-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
-.matrix-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
-.matrix-scroll::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+  .lbmascot{position:fixed;right:1%;bottom:0;width:155px;z-index:2;pointer-events:none;opacity:.9;}
+  .lbmascot svg{width:100%;height:auto;filter:drop-shadow(0 0 24px rgba(191,0,255,.5));transform-origin:bottom center;animation:sway 3.8s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:skewX(0) translateY(0);}50%{transform:skewX(1.4deg) translateY(-8px);}}
+  @media(max-width:1100px){.lbmascot{display:none;}}
+  footer{border-top:1px solid var(--border-glow);padding:40px 0;text-align:center;color:var(--text-dim);font-size:13px;position:relative;z-index:3;}
+  footer a{color:var(--neon-blue);text-decoration:none;margin:0 8px;}
+  footer .d{font-size:11px;margin-top:8px;}
 
-.rank-row{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;transition:.15s;}
-.rank-row:hover {background:rgba(255,255,255,0.04);border-color:rgba(0,229,255,0.15);transform:translateX(2px);}
-.rank-left{display:flex;align-items:center;gap:12px;}
-.rank-num{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:rgba(255,255,255,0.3);width:22px;text-align:center;}
-/* High Tier Highlights */
-.rank-row.top-3 .rank-num{color:#00e5ff;}
-.rank-row.top-3 {background:rgba(0,229,255,0.03);border-color:rgba(0,229,255,0.12);}
-.rank-name{font-size:13px;font-weight:700;color:#fff;}
-.rank-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px;}
-.rank-val{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff88;}
+  @media(prefers-reduced-motion:reduce){.btn{transition:none;}}
 </style>
 </head>
 <body>
-<div class="bg"><div class="neb1"></div><div class="neb2"></div><div class="stars" id="stars"></div></div>
+  <canvas id="stars"></canvas>
 
-<!-- NAVIGATION HEADER -->
-<div class="topbar">
-  <div class="nav-row">
-    <div class="nav-left">
-      <a href="/index.html" style="text-decoration:none;"><div class="nav-logo">VoteReederXP</div></a>
-      <div class="nav-links">
-        <span class="nl" onclick="location.href='/game.html'">Dashboard</span>
-        <span class="nl a" onclick="location.href='/leaderboard.html'">Leaderboard</span>
-        <span class="nl" onclick="location.href='/guilds.html'">Guilds</span>
-        <span class="nl" onclick="location.href='/events.html'">Events</span>
-        <span class="nl" onclick="location.href='/learn.html'">Learn</span>
-        <span class="nl" onclick="location.href='/blog.html'">Blog</span>
-        <span class="nl" onclick="location.href='/about.html'">About</span>
-      </div>
-    </div>
-    <div class="nav-right">
-      <div class="profile-trigger" onclick="location.href='/profile.html'">
-        <div id="nav-avatar" style="width:24px;height:24px;border-radius:50%;background:#ffd700;margin-right:2px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#000;font-weight:900;overflow:hidden;">KR</div>
-        <span id="nav-username" style="font-size:11px;font-weight:700;padding-right:4px;">My Account</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN VIEWPORT CONTAINER -->
-<div class="layout" id="layout">
-  
-  <!-- TOP STATUS COUNTDOWNS -->
-  <div class="countdown-row">
-    <div class="stat-card">
-      <div class="stat-lbl">Deployment Countdown // Election Day '26</div>
-      <div class="timer-grid" id="sb-countdown-clock">
-        <div class="time-unit"><span class="time-num" id="days-val">--</span><span class="time-lbl">Days</span></div>
-        <div class="time-unit"><span class="time-num" id="hours-val">--</span><span class="time-lbl">Hrs</span></div>
-        <div class="time-unit"><span class="time-num" id="min-val">--</span><span class="time-lbl">Min</span></div>
-        <div class="time-unit"><span class="time-num" id="sec-val">--</span><span class="time-lbl">Sec</span></div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-lbl">Active Field Units</div>
-      <div class="stat-val" id="sb-global-volunteers">1,847 Vol</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-lbl">Global Campaign XP Deployed</div>
-      <div class="stat-val" id="sb-global-xp" style="color:#ffd700;">4.2M XP</div>
-    </div>
+  <!-- floating GIG mascot accent (placeholder art) -->
+  <div class="lbmascot">
+    <svg viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg" aria-label="GIG mascot">
+      <defs>
+        <linearGradient id="cape" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bf00ff"/><stop offset="1" stop-color="#ff00aa"/></linearGradient>
+        <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#0044ff"/></linearGradient>
+      </defs>
+      <path d="M120 80 L200 270 L130 248 L70 280 L80 80 Z" fill="url(#cape)" opacity="0.85"/>
+      <rect x="86" y="210" width="18" height="70" rx="8" fill="url(#suit)"/><rect x="116" y="210" width="18" height="70" rx="8" fill="url(#suit)"/>
+      <path d="M78 120 Q110 100 142 120 L150 215 Q110 230 70 215 Z" fill="url(#suit)"/>
+      <polygon points="110,150 120,168 110,186 100,168" fill="#ffcf3f"/>
+      <path d="M78 130 L55 170 L80 175 L88 150 Z" fill="url(#suit)"/><path d="M142 130 L165 170 L140 175 L132 150 Z" fill="url(#suit)"/>
+      <circle cx="110" cy="95" r="28" fill="url(#suit)"/><circle cx="110" cy="95" r="28" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="2"/>
+    </svg>
   </div>
 
-  <!-- HALL OF FAME TROPHY STAGE -->
-  <div class="podium-stage">
-    <div class="stage-title">🏆 Campaign Hall of Fame</div>
-    <div class="trophy-row">
-      <!-- 2nd Place -->
-      <div class="podium-column place-2" onclick="playChime(329.63)">
-        <div class="p-avatar">🥈</div>
-        <div class="p-name" id="sb-podium-2-name">—</div>
-        <div class="p-block">2nd</div>
-      </div>
-      <!-- 1st Place -->
-      <div class="podium-column place-1" onclick="playChime(523.25)">
-        <div class="p-avatar">🥇</div>
-        <div class="p-name" id="sb-podium-1-name">—</div>
-        <div class="p-block">1st</div>
-      </div>
-      <!-- 3rd Place -->
-      <div class="podium-column place-3" onclick="playChime(392.00)">
-        <div class="p-avatar">🥉</div>
-        <div class="p-name" id="sb-podium-3-name">—</div>
-        <div class="p-block">3rd</div>
+  <header class="topbar">
+    <div class="bound row">
+      <a href="/index.html" class="logo">⚡ VoteReederXP</a>
+      <nav>
+        <a href="/index.html">Home</a>
+        <a href="/leaderboard.html" class="act">Leaderboard</a>
+        <a href="/guilds.html">Guilds</a>
+        <a href="/how-to-play.html">How to Play</a>
+        <a href="/about.html">Karen's Platform</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO + COUNTDOWN -->
+  <div class="phero">
+    <div class="bound">
+      <span class="eyebrow">District 29 · Live Standings</span>
+      <h1>The Leaderboard</h1>
+      <div class="countdown" id="countdown">
+        <div class="cd"><div class="n" id="cdD">135</div><div class="l">Days</div></div>
+        <div class="cd"><div class="n" id="cdH">00</div><div class="l">Hours</div></div>
+        <div class="cd"><div class="n" id="cdM">00</div><div class="l">Minutes</div></div>
+        <div class="cd"><div class="n">Nov 3</div><div class="l">Election</div></div>
       </div>
     </div>
   </div>
 
-  <!-- TWIN MATRIX SCOREBOARDS -->
-  <div class="boards-grid">
-    
-    <!-- LEFT PANEL: PLAYER LEADERBOARD -->
-    <div class="matrix-panel">
-      <div class="panel-hdr">
-        <div class="panel-title"><span class="panel-title-ico">⚔️</span> Top 20 Operatives</div>
-        <div class="panel-count">Global</div>
-      </div>
-      <div class="matrix-scroll" id="sb-player-board-stream">
-        <div class="rank-row"><div class="rank-left"><div class="rank-num">—</div><div><div class="rank-name">Loading players…</div><div class="rank-sub">Live leaderboard from Supabase</div></div></div><div class="rank-val">—</div></div>
-      </div>
+  <!-- PODIUM -->
+  <div class="bound">
+    <div class="podium" id="podium">
+      <div class="place p2"><div class="crown" style="visibility:hidden;">👑</div><div class="avatar">MH</div><div class="pn" data-name>MariaH_TX29</div><div class="pg" data-guild>Turnout Titans</div><div class="px" data-xp>2,980 XP</div><div class="block">2</div></div>
+      <div class="place p1"><div class="crown">👑</div><div class="avatar">LL</div><div class="pn" data-name>LibertyLifter</div><div class="pg" data-guild>The Momentum</div><div class="px" data-xp>3,250 XP</div><div class="block">1</div></div>
+      <div class="place p3"><div class="crown" style="visibility:hidden;">👑</div><div class="avatar">DR</div><div class="pn" data-name>DistrictRising</div><div class="pg" data-guild>District Warriors</div><div class="px" data-xp>2,710 XP</div><div class="block">3</div></div>
     </div>
-
-    <!-- RIGHT PANEL: GUILD LEADERBOARD -->
-    <div class="matrix-panel">
-      <div class="panel-hdr">
-        <div class="panel-title"><span class="panel-title-ico">🛡️</span> Guild Leaderboard</div>
-        <div class="panel-count">7 Guilds</div>
-      </div>
-      <div class="matrix-scroll" id="sb-guild-board-stream">
-        <div class="rank-row top-3"><div class="rank-left"><div class="rank-num">01</div><div><div class="rank-name">⚡ The Treasury</div><div class="rank-sub">"Resources win elections."</div></div></div><div class="rank-val">— XP</div></div>
-        <div class="rank-row top-3"><div class="rank-left"><div class="rank-num">02</div><div><div class="rank-name">🔥 The Momentum</div><div class="rank-sub">"Energy is contagious."</div></div></div><div class="rank-val">— XP</div></div>
-        <div class="rank-row top-3"><div class="rank-left"><div class="rank-num">03</div><div><div class="rank-name">⛏️ The Miners</div><div class="rank-sub">"Every voter has a story."</div></div></div><div class="rank-val">— XP</div></div>
-        <div class="rank-row"><div class="rank-left"><div class="rank-num">04</div><div><div class="rank-name">🏛️ The Architects</div><div class="rank-sub">"Strategy before action."</div></div></div><div class="rank-val">— XP</div></div>
-        <div class="rank-row"><div class="rank-left"><div class="rank-num">05</div><div><div class="rank-name">🌊 Turnout Titans</div><div class="rank-sub">"Every vote counts."</div></div></div><div class="rank-val">— XP</div></div>
-        <div class="rank-row"><div class="rank-left"><div class="rank-num">06</div><div><div class="rank-name">📡 The Signal</div><div class="rank-sub">"Control the narrative."</div></div></div><div class="rank-val">— XP</div></div>
-        <div class="rank-row"><div class="rank-left"><div class="rank-num">07</div><div><div class="rank-name">⚔️ District Warriors</div><div class="rank-sub">"Hold the line."</div></div></div><div class="rank-val">— XP</div></div>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script>
-// Twinkling background star generator loop 
-const s=document.getElementById('stars');
-for(let i=0;i<40;i++){const d=document.createElement('div');d.className='s';const sz=Math.random()*1.5+0.3;d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*6+2}s;animation-delay:${Math.random()*8}s;`;s.appendChild(d);}
+  <!-- TWIN SCOREBOARDS -->
+  <div class="bound">
+    <div class="boards">
+      <!-- players -->
+      <div class="panel" id="playerBoard">
+        <div class="ptitle">🏅 Top Players</div>
+        <div class="lrow"><span class="rk g1">1</span><span class="av">LL</span><div class="info"><div class="nm">LibertyLifter</div><div class="gd">The Momentum · Champion</div></div><span class="xp">3,250</span></div>
+        <div class="lrow"><span class="rk g2">2</span><span class="av">MH</span><div class="info"><div class="nm">MariaH_TX29</div><div class="gd">Turnout Titans · Champion</div></div><span class="xp">2,980</span></div>
+        <div class="lrow"><span class="rk g3">3</span><span class="av">DR</span><div class="info"><div class="nm">DistrictRising</div><div class="gd">District Warriors · Champion</div></div><span class="xp">2,710</span></div>
+        <div class="lrow"><span class="rk">4</span><span class="av">GG</span><div class="info"><div class="nm">GrassrootsGuru</div><div class="gd">The Signal · Catalyst</div></div><span class="xp">2,540</span></div>
+        <div class="lrow"><span class="rk">5</span><span class="av">VT</span><div class="info"><div class="nm">VoteTX29</div><div class="gd">The Treasury · Catalyst</div></div><span class="xp">2,310</span></div>
+        <div class="lrow"><span class="rk">6</span><span class="av">KF</span><div class="info"><div class="nm">Karen29Fights</div><div class="gd">The Architects · Catalyst</div></div><span class="xp">2,090</span></div>
+        <div class="lrow"><span class="rk">7</span><span class="av">BW</span><div class="info"><div class="nm">BlockWalker99</div><div class="gd">The Miners · Builder</div></div><span class="xp">1,870</span></div>
+        <div class="lrow"><span class="rk">8</span><span class="av">CS</span><div class="info"><div class="nm">CivicSpark</div><div class="gd">The Momentum · Builder</div></div><span class="xp">1,640</span></div>
+        <div class="lrow"><span class="rk">9</span><span class="av">DK</span><div class="info"><div class="nm">DoorKnockDana</div><div class="gd">Turnout Titans · Builder</div></div><span class="xp">1,420</span></div>
+        <div class="lrow me"><span class="rk">12</span><span class="av">KR</span><div class="info"><div class="nm">ReederRising (you)</div><div class="gd">The Treasury · Advocate</div></div><span class="xp">1,000</span></div>
+      </div>
+      <!-- guilds -->
+      <div class="panel" id="guildBoard">
+        <div class="ptitle">⚔️ Top Guilds</div>
+        <div class="lrow"><span class="rk g1">1</span><span class="em">🔥</span><div class="info"><div class="nm">The Momentum</div><div class="gd">"Energy is contagious."</div></div><span class="xp">48,200</span></div>
+        <div class="lrow"><span class="rk g2">2</span><span class="em">⚡</span><div class="info"><div class="nm">The Treasury</div><div class="gd">"Resources win elections."</div></div><span class="xp">44,600</span></div>
+        <div class="lrow"><span class="rk g3">3</span><span class="em">🌊</span><div class="info"><div class="nm">Turnout Titans</div><div class="gd">"Every vote counts."</div></div><span class="xp">41,900</span></div>
+        <div class="lrow"><span class="rk">4</span><span class="em">⚔️</span><div class="info"><div class="nm">District Warriors</div><div class="gd">"Hold the line."</div></div><span class="xp">38,500</span></div>
+        <div class="lrow"><span class="rk">5</span><span class="em">📡</span><div class="info"><div class="nm">The Signal</div><div class="gd">"Control the narrative."</div></div><span class="xp">33,100</span></div>
+        <div class="lrow"><span class="rk">6</span><span class="em">🏛️</span><div class="info"><div class="nm">The Architects</div><div class="gd">"Strategy before action."</div></div><span class="xp">29,700</span></div>
+        <div class="lrow"><span class="rk">7</span><span class="em">⛏️</span><div class="info"><div class="nm">The Miners</div><div class="gd">"Every voter has a story."</div></div><span class="xp">24,300</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:10px 0 60px;"><a href="/register2.html" class="btn">⚡ Join the Game &amp; Climb</a></div>
+  </div>
 
-// Native Web Audio Synth Chime Engine
-let audioCtx = null;
-function playChime(freq) {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  let time = audioCtx.currentTime;
-  let osc = audioCtx.createOscillator();
-  let gain = audioCtx.createGain();
-  
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(freq, time);
-  // Sweet sliding synthesizer sweep effect
-  osc.frequency.exponentialRampToValueAtTime(freq * 1.5, time + 0.12);
-  
-  gain.gain.setValueAtTime(0.12, time);
-  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
-  
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start(time);
-  osc.stop(time + 0.4);
-}
+  <footer>
+    <div class="bound">
+      <a href="/index.html">Home</a> · <a href="/how-to-play.html">How to Play</a> · <a href="/guilds.html">Guilds</a> · <a href="/about.html">About</a>
+      <div class="d">Paid for by Karen Reeder for Texas House District 29.</div>
+    </div>
+  </footer>
 
-// Target: Tuesday, November 3, 2026 (Karen Reeder's election date)
-const TARGET_DATE = new Date("Nov 3, 2026 00:00:00").getTime();
+  <script>
+    // countdown to Nov 3, 2026
+    (function(){
+      function upd(){const e=new Date('2026-11-03T00:00:00').getTime();let s=Math.max(0,Math.floor((e-Date.now())/1000));
+        const d=Math.floor(s/86400);s-=d*86400;const h=Math.floor(s/3600);s-=h*3600;const m=Math.floor(s/60);
+        const D=document.getElementById('cdD'),H=document.getElementById('cdH'),M=document.getElementById('cdM');
+        if(D)D.textContent=d;if(H)H.textContent=String(h).padStart(2,'0');if(M)M.textContent=String(m).padStart(2,'0');}
+      upd();setInterval(upd,60000);
+    })();
+    // starfield
+    (function(){const c=document.getElementById('stars'),ctx=c.getContext('2d');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const COLORS=['#00f0ff','#ff00aa','#bf00ff','#ffffff','#ffcf3f'];let W,H,parts=[];
+      function mk(r){return{x:Math.random()*W,y:r?Math.random()*H:H+10,r:Math.random()*1.6+0.5,s:Math.random()*0.4+0.1,dx:(Math.random()-0.5)*0.1,col:COLORS[(Math.random()*COLORS.length)|0],a:Math.random()*0.5+0.2,tw:Math.random()*6.28};}
+      function resize(){W=c.width=innerWidth;H=c.height=innerHeight;const n=Math.min(140,Math.floor(W/13));parts=[];for(let i=0;i<n;i++)parts.push(mk(true));if(reduce)draw(true);}
+      function draw(s){ctx.clearRect(0,0,W,H);for(const p of parts){const a=s?p.a:p.a*(0.6+0.4*Math.sin(p.tw));ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.3);ctx.fillStyle=p.col;ctx.shadowBlur=7;ctx.shadowColor=p.col;ctx.fill();}ctx.globalAlpha=1;ctx.shadowBlur=0;}
+      function tick(){for(const p of parts){p.y-=p.s;p.x+=p.dx;p.tw+=0.03;if(p.y<-10)Object.assign(p,mk(false));}draw(false);requestAnimationFrame(tick);}
+      addEventListener('resize',resize);resize();if(!reduce)tick();})();
 
-function updateCountdownClock() {
-  const now = new Date().getTime();
-  const gap = TARGET_DATE - now;
+  </script>
 
-  if (gap <= 0) {
-    document.getElementById('sb-countdown-clock').innerHTML = "<span style='color:#00ff88; font-weight:900;'>OPERATIONS ACTIVE // ELECTION DAY IS HERE</span>";
-    return;
-  }
+  <!-- LIVE DATA — Supabase wiring (window.sb is provided by shared.js below; this polls until ready) -->
+  <script>
+  (function(){
+    const RANKS=[['Champion',2500],['Catalyst',2000],['Builder',1500],['Advocate',1000],['Organizer',500],['Supporter',0]];
+    function rankName(xp){xp=xp||0;for(const [n,t] of RANKS)if(xp>=t)return n;return'Supporter';}
+    function fmt(n){return Number(n||0).toLocaleString();}
+    function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+    function initials(name){if(!name)return'??';const p=name.replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return(((p[0]||'')[0]||'')+((p[1]||'')[0]||(p[0]||'')[1]||'')).toUpperCase()||'??';}
+    function setAvatar(el,p){if(!el)return;if(p&&p.avatar){el.textContent='';el.style.backgroundImage='url('+p.avatar+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center top';}else{el.textContent=initials(p&&p.username);}}
+    function avAttr(p){return p&&p.avatar?(' style="background-image:url('+esc(p.avatar)+');background-size:cover;background-position:center top;"'):'';}
+    const GUILDS=[
+      {name:'The Treasury',em:'⚡',tag:'"Resources win elections."'},
+      {name:'Turnout Titans',em:'🌊',tag:'"Every vote counts."'},
+      {name:'District Warriors',em:'⚔️',tag:'"Hold the line."'},
+      {name:'The Signal',em:'📡',tag:'"Control the narrative."'},
+      {name:'The Miners',em:'⛏️',tag:'"Every voter has a story."'},
+      {name:'The Architects',em:'🏛️',tag:'"Strategy before action."'},
+      {name:'The Momentum',em:'🔥',tag:'"Energy is contagious."'},
+    ];
+    function waitForSb(cb){if(window.sb)return cb(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);cb(window.sb);}else if(++n>80){clearInterval(i);}},100);}
 
-  const sec = 1000, min = sec * 60, hr = min * 60, day = hr * 24;
-  
-  document.getElementById('days-val').textContent = Math.floor(gap / day);
-  document.getElementById('hours-val').textContent = Math.floor((gap % day) / hr);
-  document.getElementById('min-val').textContent = Math.floor((gap % hr) / min);
-  document.getElementById('sec-val').textContent = Math.floor((gap % min) / sec);
-}
-setInterval(updateCountdownClock, 1000);
-updateCountdownClock();
-</script>
+    waitForSb(async (sb)=>{
+      let list=[];
+      try{const {data}=await sb.from('profiles').select('id,username,total_xp,guild,avatar').order('total_xp',{ascending:false});list=data||[];}
+      catch(e){console.warn('[leaderboard] supabase wiring failed',e);return;}
+      let meId=null;try{const {data:{user}}=await sb.auth.getUser();meId=user&&user.id;}catch(e){}
 
-<script>
-/* ── LIVE SUPABASE DATA ── */
-const OUR_GUILDS = ['The Treasury','Turnout Titans','District Warriors','The Signal','The Miners','The Architects','The Momentum'];
-const GUILD_TAGLINE = {'The Treasury':'"Resources win elections."','The Momentum':'"Energy is contagious."','The Miners':'"Every voter has a story."','The Architects':'"Strategy before action."','Turnout Titans':'"Every vote counts."','The Signal':'"Control the narrative."','District Warriors':'"Hold the line."'};
-const GUILD_EMOJI = {'The Treasury':'⚡','Turnout Titans':'🌊','District Warriors':'⚔️','The Signal':'📡','The Miners':'⛏️','The Architects':'🏛️','The Momentum':'🔥'};
-function _waitSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
-function _esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function _fmt(n){return (Number(n)||0).toLocaleString();}
+      // Podium (data [0]=.p1, [1]=.p2, [2]=.p3)
+      ['p1','p2','p3'].forEach((cls,idx)=>{const el=document.querySelector('.podium .'+cls);if(!el)return;const p=list[idx];
+        const av=el.querySelector('.avatar'),nm=el.querySelector('[data-name]'),gd=el.querySelector('[data-guild]'),xp=el.querySelector('[data-xp]');
+        if(!p){if(nm)nm.textContent='—';if(gd)gd.textContent='—';if(xp)xp.textContent='0 XP';if(av)av.textContent='—';return;}
+        if(nm)nm.textContent=p.username||'Anonymous';if(gd)gd.textContent=p.guild||'Unguilded';if(xp)xp.textContent=fmt(p.total_xp)+' XP';setAvatar(av,p);});
 
-async function loadLeaderboards(){
-  const sb = await _waitSb(); if(!sb) return;
-  let me = null;
-  try { const { data:{ user } } = await sb.auth.getUser(); me = user; } catch(e){}
+      // Top Players
+      const pb=document.getElementById('playerBoard');
+      if(pb){let html='<div class="ptitle">🏅 Top Players</div>';
+        const top=list.slice(0,15);
+        top.forEach((p,i)=>{const rk=i+1,g=rk===1?'g1':rk===2?'g2':rk===3?'g3':'',me=meId&&p.id===meId?' me':'';
+          html+='<div class="lrow'+me+'"><span class="rk '+g+'">'+rk+'</span><span class="av"'+avAttr(p)+'>'+(p.avatar?'':initials(p.username))+'</span><div class="info"><div class="nm">'+esc(p.username||'Anonymous')+(me?' (you)':'')+'</div><div class="gd">'+esc(p.guild||'Unguilded')+' · '+rankName(p.total_xp)+'</div></div><span class="xp">'+fmt(p.total_xp)+'</span></div>';});
+        if(meId&&!top.some(p=>p.id===meId)){const idx=list.findIndex(p=>p.id===meId);if(idx>=0){const p=list[idx];
+          html+='<div class="lrow me"><span class="rk">'+(idx+1)+'</span><span class="av"'+avAttr(p)+'>'+(p.avatar?'':initials(p.username))+'</span><div class="info"><div class="nm">'+esc(p.username||'You')+' (you)</div><div class="gd">'+esc(p.guild||'Unguilded')+' · '+rankName(p.total_xp)+'</div></div><span class="xp">'+fmt(p.total_xp)+'</span></div>';}}
+        if(!list.length)html+='<div class="lrow"><div class="info"><div class="gd">No players yet — be the first to earn XP!</div></div></div>';
+        pb.innerHTML=html;}
 
-  // PLAYER LEADERBOARD — top 20 by total_xp
-  const { data: players } = await sb.from('profiles')
-    .select('id, username, total_xp, guild, avatar')
-    .order('total_xp', { ascending:false }).limit(20);
-  if(Array.isArray(players)){
-    ['sb-podium-1-name','sb-podium-2-name','sb-podium-3-name'].forEach((id,i)=>{
-      const el=document.getElementById(id); if(el && players[i]) el.textContent = players[i].username || 'Player';
+      // Top Guilds (sum total_xp per guild)
+      const sums={};list.forEach(p=>{if(p.guild)sums[p.guild]=(sums[p.guild]||0)+(p.total_xp||0);});
+      const ranked=GUILDS.map(g=>({...g,xp:sums[g.name]||0})).sort((a,b)=>b.xp-a.xp);
+      const gb=document.getElementById('guildBoard');
+      if(gb){let html='<div class="ptitle">⚔️ Top Guilds</div>';
+        ranked.forEach((g,i)=>{const rk=i+1,c=rk===1?'g1':rk===2?'g2':rk===3?'g3':'';
+          html+='<div class="lrow"><span class="rk '+c+'">'+rk+'</span><span class="em">'+g.em+'</span><div class="info"><div class="nm">'+g.name+'</div><div class="gd">'+g.tag+'</div></div><span class="xp">'+fmt(g.xp)+'</span></div>';});
+        gb.innerHTML=html;}
     });
-    const stream = document.getElementById('sb-player-board-stream');
-    if(stream){
-      stream.innerHTML = players.map((p,i)=>{
-        const rank = String(i+1).padStart(2,'0');
-        const isMe = me && p.id === me.id;
-        const guild = p.guild ? (GUILD_EMOJI[p.guild]||'🏷️')+' '+_esc(p.guild) : '— No Guild —';
-        const sub = guild + (isMe ? ' · You' : '');
-        const cls = 'rank-row' + (i<3?' top-3':'');
-        const style = isMe ? ' style="border:1px solid #00e5ff;box-shadow:0 0 12px rgba(0,229,255,0.4);"' : '';
-        return '<div class="'+cls+'"'+style+'><div class="rank-left"><div class="rank-num">'+rank+'</div><div><div class="rank-name">'+_esc(p.username||'Player')+'</div><div class="rank-sub">'+sub+'</div></div></div><div class="rank-val">'+_fmt(p.total_xp)+' XP</div></div>';
-      }).join('');
-    }
-  }
+  })();
+  </script>
 
-  // GUILD LEADERBOARD + GLOBAL STATS — one fetch of all guild/xp
-  const { data: all } = await sb.from('profiles').select('guild, total_xp');
-  if(Array.isArray(all)){
-    const volEl = document.getElementById('sb-global-volunteers');
-    if(volEl) volEl.textContent = _fmt(all.length) + ' Vol';
-    const totalXp = all.reduce((s,r)=>s+(Number(r.total_xp)||0),0);
-    const xpEl = document.getElementById('sb-global-xp');
-    if(xpEl) xpEl.textContent = _fmt(totalXp) + ' XP';
-
-    const sums = {}; OUR_GUILDS.forEach(g=>sums[g]=0);
-    all.forEach(r=>{ if(r.guild && Object.prototype.hasOwnProperty.call(sums,r.guild)) sums[r.guild]+=(Number(r.total_xp)||0); });
-    const ranked = OUR_GUILDS.map(g=>({g,xp:sums[g]})).sort((a,b)=>b.xp-a.xp);  // our 7 guilds, top first
-    const gstream = document.getElementById('sb-guild-board-stream');
-    if(gstream){
-      gstream.innerHTML = ranked.map((row,i)=>{
-        const rank = String(i+1).padStart(2,'0');
-        const cls = 'rank-row' + (i<3?' top-3':'');
-        return '<div class="'+cls+'"><div class="rank-left"><div class="rank-num">'+rank+'</div><div><div class="rank-name">'+(GUILD_EMOJI[row.g]||'')+' '+_esc(row.g)+'</div><div class="rank-sub">'+(GUILD_TAGLINE[row.g]||'')+'</div></div></div><div class="rank-val">'+_fmt(row.xp)+' XP</div></div>';
-      }).join('');
-    }
-  }
-
-  // fill nav chip when logged in
-  if(me){
-    try{
-      const { data: prof } = await sb.from('profiles').select('username,avatar').eq('id',me.id).maybeSingle();
-      if(prof){
-        const nu=document.getElementById('nav-username'); if(nu&&prof.username) nu.textContent=prof.username;
-        const na=document.getElementById('nav-avatar'); if(na&&prof.avatar) na.innerHTML='<img src="'+prof.avatar+'" alt="" style="width:100%;height:100%;object-fit:cover;">';
-      }
-    }catch(e){}
-  }
-}
-loadLeaderboards();
-</script>
-<script src="xp.js"></script>
-<script src="shared.js"></script>
+  <!-- xp.js then shared.js LAST — shared.js creates window.sb -->
+  <script src="xp.js"></script>
+  <script src="shared.js"></script>
 </body>
 </html>

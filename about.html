@@ -1,116 +1,221 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>About Karen — VoteReederXP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+<!--
+  about.html (self-contained preview, dossier theme). CLAUDE CODE: swap photo
+  placeholders for <img> (images/karen-photo.png, images/about-photo-1..4.jpg),
+  re-link style.css if you prefer, keep xp.js then shared.js LAST.
+-->
+<style>
+  :root{
+    --neon-pink:#ff00aa;--neon-blue:#00f0ff;--neon-purple:#bf00ff;--neon-gold:#ffcf3f;--neon-green:#00ff88;
+    --bg-deep:#05010f;--bg-card:rgba(18,10,48,0.55);--border-glow:rgba(0,240,255,0.22);
+    --text:#fff;--text-dim:rgba(255,255,255,0.80);
+    --font-display:'Orbitron',sans-serif;--font-ui:'Rajdhani',sans-serif;--font-body:'Exo 2',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-body);background:var(--bg-deep);color:var(--text-dim);-webkit-font-smoothing:antialiased;}
+  body>nav{display:none!important;}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .bound{max-width:1080px;margin:0 auto;width:100%;padding:0 28px;position:relative;z-index:3;}
+  a{color:inherit;}
+
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
+  .topbar .row{display:flex;align-items:center;gap:18px;height:64px;}
+  .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .topbar nav{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap;}
+  .topbar nav a{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--text-dim);text-decoration:none;}
+  .topbar nav a:hover,.topbar nav a.act{color:var(--neon-blue);}
+  @media(max-width:900px){.topbar nav{display:none;}}
+
+  .ticker{overflow:hidden;padding:9px 0;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink),var(--neon-blue));background-size:200%;animation:grad 4s linear infinite;position:relative;z-index:3;}
+  @keyframes grad{0%{background-position:0}100%{background-position:200%}}
+  .ticker .inner{display:flex;gap:3rem;white-space:nowrap;animation:scroll 22s linear infinite;font-family:var(--font-ui);font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:.88rem;color:rgba(0,0,0,.82);}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  .wrap{padding:50px 0 80px;}
+  .term{background:#000;border:1px solid var(--neon-blue);border-radius:10px;padding:1.4rem 1.8rem;font-family:'Courier New',monospace;font-size:.98rem;color:var(--neon-blue);margin-bottom:2.6rem;box-shadow:0 0 30px rgba(0,240,255,.12);}
+  .term div{opacity:0;animation:fade .1s forwards;}
+  .term div:nth-child(1){animation-delay:.2s} .term div:nth-child(2){animation-delay:.6s} .term div:nth-child(3){animation-delay:1s}
+  .term div:nth-child(4){animation-delay:1.4s} .term div:nth-child(5){animation-delay:1.8s} .term div:nth-child(6){animation-delay:2.2s} .term div:nth-child(7){animation-delay:2.6s}
+  .term .w{color:#fff;} .term .ok{color:var(--neon-green);}
+  @keyframes fade{to{opacity:1}}
+  .blink{animation:blink 1s step-end infinite;display:inline-block;} @keyframes blink{50%{opacity:0}}
+
+  .casefile{border:1px solid var(--neon-gold);border-radius:14px;padding:2.2rem;position:relative;margin-bottom:3rem;background:rgba(255,207,63,0.02);}
+  .casefile .label{position:absolute;top:-.7rem;left:1.5rem;background:var(--bg-deep);padding:0 .5rem;font-family:var(--font-display);font-size:.72rem;color:var(--neon-gold);letter-spacing:.12em;}
+  .cf-grid{display:grid;grid-template-columns:260px 1fr;gap:2.4rem;align-items:start;}
+  @media(max-width:760px){.cf-grid{grid-template-columns:1fr;}}
+  .photo{position:relative;border:2px solid var(--neon-blue);border-radius:8px;overflow:hidden;aspect-ratio:3/4;
+    background:linear-gradient(180deg, rgba(0,240,255,0.1), rgba(191,0,255,0.12));display:flex;align-items:flex-end;justify-content:center;}
+  .photo .sil{width:64%;height:84%;align-self:flex-end;border-radius:50% 50% 6px 6px;background:linear-gradient(180deg, rgba(0,240,255,.3), rgba(191,0,255,.22));filter:blur(1px);}
+  .photo .scan{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,240,255,0.1) 50%,transparent 60%);animation:scan 3s linear infinite;pointer-events:none;}
+  @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+  .photo .note{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-family:var(--font-ui);font-size:.72rem;color:var(--text-dim);}
+  .photo-cap{background:var(--neon-blue);color:#000;font-family:var(--font-display);font-size:.72rem;padding:.3rem .75rem;text-align:center;letter-spacing:.1em;}
+  .statbox{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.7rem;}
+  .statbox div{background:var(--bg-card);border:1px solid var(--border-glow);border-radius:6px;padding:.7rem;text-align:center;}
+  .statbox .n{font-family:var(--font-display);font-size:1.1rem;color:var(--neon-blue);}
+  .statbox .l{font-size:.82rem;color:var(--text-dim);}
+
+  .dossier-tag{font-family:var(--font-ui);font-weight:700;letter-spacing:4px;text-transform:uppercase;font-size:.8rem;color:var(--neon-pink);text-shadow:0 0 10px var(--neon-pink);margin-bottom:.5rem;}
+  .cf-name{font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,3.4vw,2.6rem);background:linear-gradient(135deg,#fff,var(--neon-blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+  .cf-roles{font-family:var(--font-display);font-size:.85rem;color:var(--neon-gold);letter-spacing:.08em;margin-bottom:1rem;}
+  .cf-quote{font-family:var(--font-display);font-size:1rem;color:var(--neon-pink);letter-spacing:.08em;margin-bottom:1.4rem;}
+  .casefile p{font-size:1.06rem;color:var(--text-dim);line-height:1.75;margin-bottom:1rem;}
+  .casefile p:first-of-type{color:#fff;}
+  .casefile p b{color:var(--neon-pink);}
+
+  .sec-head{text-align:center;margin:3rem 0 1.6rem;}
+  .sec-tag{font-family:var(--font-ui);font-weight:700;letter-spacing:4px;text-transform:uppercase;font-size:.8rem;color:var(--neon-pink);text-shadow:0 0 10px var(--neon-pink);margin-bottom:.5rem;}
+  .sec-title{font-family:var(--font-display);font-weight:900;font-size:clamp(1.6rem,3.4vw,2.3rem);color:#fff;}
+  .sec-sub{max-width:60ch;margin:.7rem auto 0;color:var(--text-dim);}
+
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:3rem;}
+  .gphoto{height:220px;border-radius:8px;border:1px solid var(--border-glow);background:linear-gradient(135deg, rgba(0,240,255,0.08), rgba(191,0,255,0.1));display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);text-align:center;padding:10px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:3rem;}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr;}}
+  .card{background:var(--bg-card);border:1px solid var(--border-glow);border-radius:14px;padding:1.4rem;transition:border-color .2s,transform .2s;}
+  .card:hover{border-color:var(--neon-purple);transform:translateY(-3px);}
+  .card h4{font-family:var(--font-ui);font-weight:700;font-size:1.1rem;color:var(--neon-blue);margin-bottom:.5rem;letter-spacing:.5px;}
+  .card p{color:var(--text-dim);font-size:1.02rem;line-height:1.6;}
+
+  .cta{text-align:center;padding:1rem 0;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .btn{font-family:var(--font-ui);font-weight:700;font-size:1rem;letter-spacing:1.2px;text-transform:uppercase;padding:14px 26px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-purple{background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff;box-shadow:0 0 20px rgba(191,0,255,.4);}
+  .btn-gold{background:linear-gradient(135deg,var(--neon-gold),#ffe27a);color:#1a1300;box-shadow:0 0 20px rgba(245,197,66,.4);}
+  .btn-outline{background:transparent;color:var(--neon-blue);border:1px solid var(--neon-blue);}
+  .btn-outline:hover{background:rgba(0,240,255,.08);}
+
+  footer{border-top:1px solid var(--border-glow);padding:36px 0;text-align:center;color:var(--text-dim);font-size:13px;position:relative;z-index:3;margin-top:30px;}
+  footer a{color:var(--neon-blue);text-decoration:none;margin:0 8px;}
+  footer .d{font-size:11px;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){.ticker .inner,.photo .scan,.btn,.card{animation:none;transition:none;}}
+</style>
 </head>
 <body>
-<div class="page-content">
+  <canvas id="stars"></canvas>
 
-<!-- TICKER -->
-<div class="slogan-ticker"><div class="ticker-inner">
-  <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM ADVOCATE</span>
-  <span>🌟 CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
-  <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM ADVOCATE</span>
-  <span>🌟 CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
-</div></div>
-
-<div class="section">
-  <div class="section-inner">
-
-    <!-- DOS INTRO -->
-    <div style="background:#000;border:1px solid var(--neon-blue);border-radius:8px;padding:1.5rem 2rem;font-family:'Courier New',monospace;font-size:1rem;color:var(--neon-blue);margin-bottom:3rem;">
-      <div style="opacity:0;animation:fadeInUp .1s .2s forwards;">C:\DISTRICT29&gt; load_candidate_profile.exe</div>
-      <div style="opacity:0;animation:fadeInUp .1s .6s forwards;">Initializing mission briefing...</div>
-      <div style="opacity:0;animation:fadeInUp .1s 1s forwards;">CANDIDATE: <span style="color:#fff">KAREN REEDER</span></div>
-      <div style="opacity:0;animation:fadeInUp .1s 1.4s forwards;">DISTRICT: <span style="color:#fff">Texas House District 29 — Brazoria County</span></div>
-      <div style="opacity:0;animation:fadeInUp .1s 1.8s forwards;">PROFESSION: <span style="color:#fff">Mechanical Engineer &amp; STEM Advocate</span></div>
-      <div style="opacity:0;animation:fadeInUp .1s 2.2s forwards;">STATUS: <span style="color:#00ff88">RUNNING FOR CHANGE ✓</span></div>
-      <div style="opacity:0;animation:fadeInUp .1s 2.6s forwards;">C:\DISTRICT29&gt; <span style="animation:blink 1s step-end infinite;display:inline-block;">_</span></div>
+  <header class="topbar">
+    <div class="bound row">
+      <a href="/index.html" class="logo">⚡ VoteReederXP</a>
+      <nav>
+        <a href="/index.html">Home</a>
+        <a href="/leaderboard.html">Leaderboard</a>
+        <a href="/guilds.html">Guilds</a>
+        <a href="/how-to-play.html">How to Play</a>
+        <a href="/about.html" class="act">Karen's Platform</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
     </div>
-    <style>@keyframes blink{50%{opacity:0}}</style>
+  </header>
+
+  <div class="ticker"><div class="inner">
+    <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM LEADER</span><span>🤝 COMMUNITY ADVOCATE</span><span>🌟 A CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
+    <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM LEADER</span><span>🤝 COMMUNITY ADVOCATE</span><span>🌟 A CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
+  </div></div>
+
+  <div class="bound wrap">
+    <!-- TERMINAL INTRO -->
+    <div class="term">
+      <div>C:\DISTRICT29&gt; load_candidate_profile.exe</div>
+      <div>Initializing mission briefing...</div>
+      <div>CANDIDATE: <span class="w">KAREN REEDER</span></div>
+      <div>DISTRICT: <span class="w">Texas House District 29 — Brazoria County</span></div>
+      <div>PROFESSION: <span class="w">Mechanical Engineer · Project Manager · STEM Leader</span></div>
+      <div>STATUS: <span class="ok">RUNNING FOR CHANGE ✓</span></div>
+      <div>C:\DISTRICT29&gt; <span class="blink">_</span></div>
+    </div>
 
     <!-- CASE FILE -->
-    <div style="border:1px solid var(--neon-gold);border-radius:12px;padding:2rem;position:relative;margin-bottom:3rem;">
-      <div style="position:absolute;top:-.7rem;left:1.5rem;background:var(--bg-deep);padding:0 .5rem;font-family:var(--font-display);font-size:.75rem;color:var(--neon-gold);letter-spacing:.12em;">// CLASSIFIED — DISTRICT 29 //</div>
-
-      <div style="display:grid;grid-template-columns:260px 1fr;gap:2.5rem;align-items:start;">
-
-        <!-- PHOTO -->
+    <div class="casefile">
+      <div class="label">// CLASSIFIED — DISTRICT 29 //</div>
+      <div class="cf-grid">
         <div>
-          <div style="border:2px solid var(--neon-blue);border-radius:8px;overflow:hidden;position:relative;">
-            <img src="images/karen-photo.png" alt="Karen Reeder" style="width:100%;display:block;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,240,255,0.08) 50%,transparent 60%);animation:scanLine 3s linear infinite;pointer-events:none;"></div>
+          <div class="photo">
+            <img src="/images/karen-photo.png" alt="Karen Reeder" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+            <div class="scan"></div>
           </div>
-          <style>@keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}</style>
-          <div style="background:var(--neon-blue);color:#000;font-family:var(--font-display);font-size:.75rem;padding:.3rem .75rem;text-align:center;letter-spacing:.1em;">CANDIDATE — DISTRICT 29</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem;">
-            <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:6px;padding:.75rem;text-align:center;"><div style="font-family:var(--font-display);font-size:1.1rem;color:var(--neon-blue);">D-29</div><div style="font-size:.85rem;color:var(--text-dim);">District</div></div>
-            <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:6px;padding:.75rem;text-align:center;"><div style="font-family:var(--font-display);font-size:1.1rem;color:var(--neon-blue);">2026</div><div style="font-size:.85rem;color:var(--text-dim);">Election</div></div>
+          <div class="photo-cap">CANDIDATE — DISTRICT 29</div>
+          <div class="statbox">
+            <div><div class="n">D-29</div><div class="l">District</div></div>
+            <div><div class="n">2026</div><div class="l">Election</div></div>
           </div>
         </div>
-
-        <!-- BIO -->
         <div>
-          <div class="section-tag">// CANDIDATE DOSSIER</div>
-          <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.5rem);background:linear-gradient(135deg,#fff,var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.3rem;">Karen Reeder</h2>
-          <div style="font-family:var(--font-display);font-size:.9rem;color:var(--neon-gold);letter-spacing:.1em;margin-bottom:1.25rem;">MECHANICAL ENGINEER · STEM ADVOCATE · CANDIDATE</div>
-          <div style="font-family:var(--font-display);font-size:1rem;color:var(--neon-pink);letter-spacing:.1em;margin-bottom:1.5rem;">"A CHANCE FOR CHANGE"</div>
-          <p style="font-size:1.1rem;color:var(--text-primary);margin-bottom:1rem;line-height:1.75;">
-            Karen Reeder is a Mechanical Engineer, STEM Advocate, and community leader running for Texas House District 29 in Brazoria County. She believes every family deserves a representative who actually shows up.
-          </p>
-          <p style="font-size:1.05rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.75;">
-            Raised in Southeast Texas, Karen has spent her career solving hard problems — the same way she plans to approach Austin. Practical. Data-driven. Community-first.
-          </p>
-          <p style="font-size:1.05rem;color:var(--text-dim);line-height:1.75;">
-            VoteReederXP exists because Karen believes civic education is broken. Schools teach you about three branches of government — but not the local elections that affect your water, your schools, your sheriff, and your state rep. <strong style="color:var(--neon-pink);">This platform closes that gap.</strong>
-          </p>
+          <div class="dossier-tag">// Candidate Dossier</div>
+          <h2 class="cf-name">Karen Reeder</h2>
+          <div class="cf-roles">MECHANICAL ENGINEER · PROJECT MANAGER · STEM LEADER · COMMUNITY ADVOCATE · MOM</div>
+          <div class="cf-quote">"A CHANCE FOR CHANGE"</div>
+          <p>Karen Reeder is a mechanical engineer, project manager, STEM leader, community advocate, and mom running for Texas House District 29 in Brazoria County. She believes every family deserves a representative who actually shows up.</p>
+          <p>Raised in Southeast Texas, Karen has spent her career solving hard problems — the same way she plans to approach Austin. Practical. Data-driven. Community-first.</p>
+          <p>VoteReederXP exists because Karen believes civic education is broken. Schools teach you about three branches of government — but not the local elections that affect your water, your schools, your sheriff, and your state rep. <b>This platform closes that gap.</b></p>
         </div>
       </div>
     </div>
 
-    <!-- FAMILY PHOTOS -->
-    <div class="section-header">
-      <div class="section-tag">// MEET THE CANDIDATE</div>
-      <h2 class="section-title">Real Person. Real Community.</h2>
-      <p class="section-sub">Karen is a neighbor, a parent, and a problem-solver. Here's a glimpse behind the campaign.</p>
+    <!-- FAMILY / COMMUNITY -->
+    <div class="sec-head">
+      <div class="sec-tag">// Meet the Candidate</div>
+      <div class="sec-title">Real Person. Real Community.</div>
+      <p class="sec-sub">Karen is a neighbor, a parent, and a problem-solver. Here's a glimpse behind the campaign.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:3rem;">
-      <img src="images/about-photo-1.jpg" alt="Karen on the campaign trail" style="width:100%;height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border-glow);">
-      <img src="images/about-photo-2.jpg" alt="Karen with the community" style="width:100%;height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border-glow);">
-      <img src="images/about-photo-3.jpg" alt="Karen at a campaign event" style="width:100%;height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border-glow);">
-      <img src="images/about-photo-4.jpg" alt="Karen in District 29" style="width:100%;height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border-glow);">
+    <div class="gallery">
+      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-1.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-2.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-3.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-4.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
     </div>
 
     <!-- WHY SHE'S RUNNING -->
-    <div class="section-header">
-      <div class="section-tag">// MISSION BRIEFING</div>
-      <h2 class="section-title">Why She's Running</h2>
+    <div class="sec-head">
+      <div class="sec-tag">// Mission Briefing</div>
+      <div class="sec-title">Why She's Running</div>
     </div>
-    <div class="grid-2" style="margin-bottom:3rem;">
-      <div class="card"><h4 style="font-family:var(--font-display);font-size:1rem;color:var(--neon-blue);margin-bottom:.5rem;">🏥 Affordable Healthcare</h4><p style="color:var(--text-dim);font-size:1.05rem;">Expand Medicaid, protect pre-existing conditions, lower prescription costs for Texas families.</p></div>
-      <div class="card"><h4 style="font-family:var(--font-display);font-size:1rem;color:var(--neon-blue);margin-bottom:.5rem;">🎓 Public Education</h4><p style="color:var(--text-dim);font-size:1.05rem;">Fully fund public schools, raise teacher pay, stop voucher schemes draining Brazoria County classrooms.</p></div>
-      <div class="card"><h4 style="font-family:var(--font-display);font-size:1rem;color:var(--neon-blue);margin-bottom:.5rem;">💼 Working Families</h4><p style="color:var(--text-dim);font-size:1.05rem;">Fight for living wages, protect workers' rights, grow small businesses right here in District 29.</p></div>
-      <div class="card"><h4 style="font-family:var(--font-display);font-size:1rem;color:var(--neon-blue);margin-bottom:.5rem;">🗳️ Voting Rights</h4><p style="color:var(--text-dim);font-size:1.05rem;">Make it easier to vote, not harder. Every eligible Texan deserves a voice in their democracy.</p></div>
-      <div class="card"><h4 style="font-family:var(--font-display);font-size:1rem;color:var(--neon-blue);margin-bottom:.5rem;">🔬 STEM & Innovation</h4><p style="color:var(--text-dim);font-size:1.05rem;">As a Mechanical Engineer, Karen champions STEM education and workforce development for Brazoria County's future.</p></div>
-      <div class="card"><h4 style="font-family:var(--font-display);font-size:1rem;color:var(--neon-blue);margin-bottom:.5rem;">🤝 Community</h4><p style="color:var(--text-dim);font-size:1.05rem;">Show up for every neighborhood, every zip code. District 29 is home — and Karen will protect it.</p></div>
+    <div class="grid2">
+      <div class="card"><h4>🏥 Affordable Healthcare</h4><p>Expand Medicaid, protect pre-existing conditions, and lower prescription costs for Texas families.</p></div>
+      <div class="card"><h4>🎓 Public Education</h4><p>Fully fund public schools, raise teacher pay, and stop voucher schemes draining Brazoria County classrooms.</p></div>
+      <div class="card"><h4>💼 Working Families</h4><p>Fight for living wages, protect workers' rights, and grow small businesses right here in District 29.</p></div>
+      <div class="card"><h4>🗳️ Voting Rights</h4><p>Make it easier to vote, not harder. Every eligible Texan deserves a voice in their democracy.</p></div>
+      <div class="card"><h4>🔬 STEM &amp; Innovation</h4><p>As an engineer and STEM leader, Karen champions STEM education and workforce development for Brazoria County's future.</p></div>
+      <div class="card"><h4>🤝 Community</h4><p>Show up for every neighborhood, every zip code. District 29 is home — and Karen will protect it.</p></div>
     </div>
 
     <!-- CTA -->
-    <div style="text-align:center;padding:2rem 0;">
-      <a href="volunteer.html" class="btn btn-purple" style="margin-right:1rem;">⚡ Join the Campaign</a>
-      <a href="donate.html" class="btn btn-pink" style="margin-right:1rem;">💳 Donate Now</a>
-      <a href="register.html" class="btn btn-outline">🗳️ Register to Vote</a>
+    <div class="cta">
+      <a href="/register2.html" class="btn btn-purple">⚡ Join the Campaign</a>
+      <a href="https://secure.actblue.com/donate/votereeder" class="btn btn-gold">🗳️ Donate</a>
+      <a href="/how-to-play.html" class="btn btn-outline">📖 How to Play</a>
     </div>
-
   </div>
-</div>
 
-</div>
-<script src="shared.js"></script>
+  <footer>
+    <div class="bound">
+      <a href="/index.html">Home</a> · <a href="/how-to-play.html">How to Play</a> · <a href="/leaderboard.html">Leaderboard</a> · <a href="/contact.html">Contact</a>
+      <div class="d">Paid for by Karen Reeder for Texas House District 29.</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){const c=document.getElementById('stars'),ctx=c.getContext('2d');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const COLORS=['#00f0ff','#ff00aa','#bf00ff','#ffffff','#ffcf3f'];let W,H,parts=[];
+      function mk(r){return{x:Math.random()*W,y:r?Math.random()*H:H+10,r:Math.random()*1.6+0.5,s:Math.random()*0.4+0.1,dx:(Math.random()-0.5)*0.1,col:COLORS[(Math.random()*COLORS.length)|0],a:Math.random()*0.5+0.2,tw:Math.random()*6.28};}
+      function resize(){W=c.width=innerWidth;H=c.height=innerHeight;const n=Math.min(120,Math.floor(W/14));parts=[];for(let i=0;i<n;i++)parts.push(mk(true));if(reduce)draw(true);}
+      function draw(s){ctx.clearRect(0,0,W,H);for(const p of parts){const a=s?p.a:p.a*(0.6+0.4*Math.sin(p.tw));ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.3);ctx.fillStyle=p.col;ctx.shadowBlur=7;ctx.shadowColor=p.col;ctx.fill();}ctx.globalAlpha=1;ctx.shadowBlur=0;}
+      function tick(){for(const p of parts){p.y-=p.s;p.x+=p.dx;p.tw+=0.03;if(p.y<-10)Object.assign(p,mk(false));}draw(false);requestAnimationFrame(tick);}
+      addEventListener('resize',resize);resize();if(!reduce)tick();})();
+  </script>
+
+  <!-- xp.js then shared.js LAST — shared.js creates window.sb -->
+  <script src="xp.js"></script>
+  <script src="shared.js"></script>
 </body>
 </html>
