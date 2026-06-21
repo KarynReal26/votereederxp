@@ -514,7 +514,12 @@ async function addTaskToBoard(task, btn) {
 async function initChat() {
   if (!window.sb) return;
   // Load recent messages
-  const msgs = await sbFetch('chat_messages?select=*,profiles(username,guild,avatar)&order=created_at.asc&limit=50');
+  // Use window.sb (authenticated, carries user JWT) so the chat_messages SELECT RLS policy passes
+  const { data: msgs } = await window.sb
+    .from('chat_messages')
+    .select('*, profiles(username,guild,avatar)')
+    .order('created_at', { ascending: true })
+    .limit(50);
   if (msgs && msgs.length) {
     const box = document.getElementById('chat-messages');
     box.innerHTML = '';
