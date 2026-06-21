@@ -13,36 +13,55 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const page = location.pathname.split('/').pop() || 'index.html';
 
 // ── NAV ──────────────────────────────────────────────────
-// Skip the old injected nav on pages that already use the new .topbar.
-// NOTE: only the nav block is guarded — NOT a bare `return`, because window.sb
-// (and the footer/auth modal) are created further down and must still run here.
+// Inject the NEW topbar nav, but ONLY on pages that don't already have a .topbar
+// in their own HTML. Guard wraps just the injection — window.sb / footer / auth
+// modal are created further down and must still run on every page.
 if (!document.querySelector('.topbar')) {
-const navEl = document.createElement('nav');
-navEl.innerHTML = `
-<a class="nav-logo" href="index.html">⚡ VoteReederXP</a>
-<button class="nav-toggle" id="nav-toggle-btn" onclick="toggleNav()">☰</button>
-<ul class="nav-links" id="nav-links-list">
-  <li><a href="index.html" ${page==='index.html'?'class="active"':''}>Home</a></li>
-  <li><a href="about.html" ${page==='about.html'?'class="active"':''}>About</a></li>
-  <li><a href="learn.html" ${page==='learn.html'?'class="active"':''}>Learn</a></li>
-  <li><a href="guilds.html" ${page==='guilds.html'?'class="active"':''}>Guilds</a></li>
-  <li><a href="events.html" ${page==='events.html'?'class="active"':''}>Events</a></li>
-  <li><a href="gallery.html" ${page==='gallery.html'?'class="active"':''}>Photos</a></li>
-  <li><a href="blog.html" ${page==='blog.html'?'class="active"':''}>Blog</a></li>
-  <li><a href="volunteer.html" ${page==='volunteer.html'?'class="active"':''}>Join the Campaign</a></li>
-  <li><a href="register.html" ${page==='register.html'?'class="active"':''}>Voting 101</a></li>
-  <li><a href="https://secure.actblue.com/donate/votereeder" target="_blank" class="nav-cta">Donate ▸</a></li>
-  <li id="nav-myxp-li" style="display:none;">
-    <a href="game.html" id="nav-myxp-btn" style="color:var(--neon-gold);border:1px solid var(--neon-gold);border-radius:4px;padding:.32rem .55rem !important;" ${page==='game.html'?'class="active"':''}>
-      ⚡ <span id="nav-xp-display">My XP</span>
-    </a>
-  </li>
-  <li id="nav-rank-li" style="display:none;">
-    <span id="nav-rank-display" style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);border:1px solid rgba(0,240,255,0.3);border-radius:4px;padding:.32rem .55rem;"></span>
-  </li>
-  <li><a href="#" id="nav-auth-btn" class="nav-auth">Login / Sign Up</a></li>
-</ul>`;
-document.body.prepend(navEl);
+  const navStyle = document.createElement('style');
+  navStyle.textContent = `
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Inter',sans-serif;}
+.topbar .nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;gap:16px;flex-wrap:wrap;}
+.topbar .nav-left{display:flex;align-items:center;gap:28px;}
+.topbar .nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;text-decoration:none;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.topbar .nav-links{display:flex;gap:22px;list-style:none;margin:0;padding:0;}
+.topbar .nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);cursor:pointer;transition:.15s;text-decoration:none;}
+.topbar .nl:hover{color:#fff;}
+.topbar .nl.active{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
+.topbar .nav-right{display:flex;align-items:center;gap:14px;}
+.topbar .nav-donate{font-size:12px;font-weight:700;color:#ffd700;text-decoration:none;border:1px solid rgba(255,215,0,0.45);border-radius:6px;padding:6px 12px;}
+.topbar .nav-donate:hover{background:rgba(255,215,0,0.1);}
+.topbar .nav-login{font-size:13px;font-weight:600;color:#00e5ff;text-decoration:none;cursor:pointer;}
+.topbar .avatar-wrap{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:4px;cursor:pointer;}
+.topbar .av-ring{width:32px;height:32px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;}
+.topbar .av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
+@media(max-width:680px){.topbar .nav-links{display:none;}}
+`;
+  document.head.appendChild(navStyle);
+
+  const navEl = document.createElement('div');
+  navEl.className = 'topbar';
+  navEl.innerHTML = `
+  <div class="nav-row">
+    <div class="nav-left">
+      <a class="nav-logo" href="index.html">VoteReederXP</a>
+      <div class="nav-links">
+        <span class="nl ${page==='game.html'?'active':''}" onclick="location.href='/game.html'">Dashboard</span>
+        <span class="nl ${page==='leaderboard.html'?'active':''}" onclick="location.href='/leaderboard.html'">Leaderboard</span>
+        <span class="nl ${page==='guilds.html'?'active':''}" onclick="location.href='/guilds.html'">Guilds</span>
+        <span class="nl ${page==='events.html'?'active':''}" onclick="location.href='/events.html'">Events</span>
+        <span class="nl ${page==='learn.html'?'active':''}" onclick="location.href='/learn.html'">Learn</span>
+        <span class="nl ${page==='blog.html'?'active':''}" onclick="location.href='/blog.html'">Blog</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a class="nav-donate" href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate ▸</a>
+      <a class="nav-login" href="#" id="nav-auth-btn">Login / Sign Up</a>
+      <div class="avatar-wrap" onclick="location.href='/profile.html'">
+        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+      </div>
+    </div>
+  </div>`;
+  document.body.prepend(navEl);
 } // end nav-injection guard (skipped when a .topbar already exists)
 
 // ── FOOTER ───────────────────────────────────────────────
@@ -161,8 +180,11 @@ document.body.appendChild(authEl);
 // close on background click
 authEl.addEventListener('click', e => { if (e.target === authEl) authEl.classList.remove('open'); });
 
-// Nav auth button — goes to volunteer page for new users, opens login modal for returning
-document.getElementById('nav-auth-btn').addEventListener('click', e => {
+// Nav auth button — opens login modal. Guard: it doesn't exist on pages whose own
+// .topbar suppressed the injected nav, and this runs BEFORE window.sb is created,
+// so a null here would abort the whole script (and window.sb would never load).
+const _navAuthBtn = document.getElementById('nav-auth-btn');
+if (_navAuthBtn) _navAuthBtn.addEventListener('click', e => {
   e.preventDefault();
   authEl.classList.add('open');
 });
