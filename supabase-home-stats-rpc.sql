@@ -20,7 +20,7 @@ stable
 as $$
   select json_build_object(
     'volunteers',          (select count(*) from public.profiles),
-    'xp',                  (select coalesce(sum(xp_score), 0) from public.profiles),
+    'xp',                  (select coalesce(sum(total_xp), 0) from public.profiles),
     'missions_completed',  (select count(*) from public.user_tasks where status = 'complete')
   );
 $$;

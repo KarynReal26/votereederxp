@@ -742,10 +742,10 @@ async function loadHeroStats(){
   console.log('[hero-stats] volunteers =', volunteers);
   if(volEl) animateCounter(volEl, volunteers);
 
-  // 2. XP Earned — SUM of xp_score from profiles
+  // 2. XP Earned — SUM of total_xp from profiles
   let xpSum=0;
   if(sb){
-    try{ const { data, error } = await sb.from('profiles').select('xp_score'); if(error) throw error; xpSum=(data||[]).reduce((s,row)=>s+(Number(row.xp_score)||0),0); console.log('[hero-stats] XP sum =', xpSum, 'from', (data||[]).length, 'profiles'); }catch(e){ console.warn('[hero-stats] XP sum failed:', e); }
+    try{ const { data, error } = await sb.from('profiles').select('total_xp'); if(error) throw error; xpSum=(data||[]).reduce((s,row)=>s+(Number(row.total_xp)||0),0); console.log('[hero-stats] XP sum =', xpSum, 'from', (data||[]).length, 'profiles'); }catch(e){ console.warn('[hero-stats] XP sum failed:', e); }
   }
   if(xpEl) animateCounter(xpEl, xpSum);
 

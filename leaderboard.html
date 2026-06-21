@@ -274,10 +274,10 @@ async function loadLeaderboards(){
   let me = null;
   try { const { data:{ user } } = await sb.auth.getUser(); me = user; } catch(e){}
 
-  // PLAYER LEADERBOARD — top 20 by xp_score
+  // PLAYER LEADERBOARD — top 20 by total_xp
   const { data: players } = await sb.from('profiles')
-    .select('id, username, xp_score, guild, avatar')
-    .order('xp_score', { ascending:false }).limit(20);
+    .select('id, username, total_xp, guild, avatar')
+    .order('total_xp', { ascending:false }).limit(20);
   if(Array.isArray(players)){
     ['sb-podium-1-name','sb-podium-2-name','sb-podium-3-name'].forEach((id,i)=>{
       const el=document.getElementById(id); if(el && players[i]) el.textContent = players[i].username || 'Player';
@@ -291,22 +291,22 @@ async function loadLeaderboards(){
         const sub = guild + (isMe ? ' · You' : '');
         const cls = 'rank-row' + (i<3?' top-3':'');
         const style = isMe ? ' style="border:1px solid #00e5ff;box-shadow:0 0 12px rgba(0,229,255,0.4);"' : '';
-        return '<div class="'+cls+'"'+style+'><div class="rank-left"><div class="rank-num">'+rank+'</div><div><div class="rank-name">'+_esc(p.username||'Player')+'</div><div class="rank-sub">'+sub+'</div></div></div><div class="rank-val">'+_fmt(p.xp_score)+' XP</div></div>';
+        return '<div class="'+cls+'"'+style+'><div class="rank-left"><div class="rank-num">'+rank+'</div><div><div class="rank-name">'+_esc(p.username||'Player')+'</div><div class="rank-sub">'+sub+'</div></div></div><div class="rank-val">'+_fmt(p.total_xp)+' XP</div></div>';
       }).join('');
     }
   }
 
   // GUILD LEADERBOARD + GLOBAL STATS — one fetch of all guild/xp
-  const { data: all } = await sb.from('profiles').select('guild, xp_score');
+  const { data: all } = await sb.from('profiles').select('guild, total_xp');
   if(Array.isArray(all)){
     const volEl = document.getElementById('sb-global-volunteers');
     if(volEl) volEl.textContent = _fmt(all.length) + ' Vol';
-    const totalXp = all.reduce((s,r)=>s+(Number(r.xp_score)||0),0);
+    const totalXp = all.reduce((s,r)=>s+(Number(r.total_xp)||0),0);
     const xpEl = document.getElementById('sb-global-xp');
     if(xpEl) xpEl.textContent = _fmt(totalXp) + ' XP';
 
     const sums = {}; OUR_GUILDS.forEach(g=>sums[g]=0);
-    all.forEach(r=>{ if(r.guild && Object.prototype.hasOwnProperty.call(sums,r.guild)) sums[r.guild]+=(Number(r.xp_score)||0); });
+    all.forEach(r=>{ if(r.guild && Object.prototype.hasOwnProperty.call(sums,r.guild)) sums[r.guild]+=(Number(r.total_xp)||0); });
     const ranked = OUR_GUILDS.map(g=>({g,xp:sums[g]})).sort((a,b)=>b.xp-a.xp);  // our 7 guilds, top first
     const gstream = document.getElementById('sb-guild-board-stream');
     if(gstream){
