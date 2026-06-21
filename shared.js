@@ -64,6 +64,53 @@ if (!document.querySelector('.topbar')) {
   document.body.prepend(navEl);
 } // end nav-injection guard (skipped when a .topbar already exists)
 
+// ── MOBILE NAV HAMBURGER + DROPDOWN (added to whatever .topbar exists, every page) ──
+(function(){
+  const topbar = document.querySelector('.topbar');
+  if (!topbar) return;
+  const host = topbar.querySelector('.nav-right') || topbar.querySelector('.nav-row') || topbar;
+
+  const st = document.createElement('style');
+  st.textContent = `
+.nav-burger{display:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:#fff;font-size:20px;line-height:1;width:40px;height:40px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-menu{position:fixed;top:54px;right:14px;z-index:3000;background:#111827;border:1px solid rgba(0,229,255,0.45);border-radius:12px;padding:8px;min-width:220px;box-shadow:0 14px 44px rgba(0,0,0,0.65);display:none;flex-direction:column;font-family:'Inter',sans-serif;}
+.nav-menu.open{display:flex;}
+.nav-menu a{display:block;padding:11px 14px;color:rgba(255,255,255,0.82);text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;}
+.nav-menu a:hover{background:rgba(0,229,255,0.1);color:#00e5ff;}
+.nav-menu .nm-donate{color:#ffd700;}
+.nav-menu hr{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:6px 4px;}
+@media(max-width:900px){ .topbar .nav-links{display:none !important;} .nav-burger{display:flex;} }
+`;
+  document.head.appendChild(st);
+
+  const burger = document.createElement('button');
+  burger.className = 'nav-burger';
+  burger.type = 'button';
+  burger.setAttribute('aria-label','Open menu');
+  burger.textContent = '☰';
+  host.appendChild(burger);
+
+  const menu = document.createElement('div');
+  menu.className = 'nav-menu';
+  menu.innerHTML = `
+<a href="/game.html">Dashboard</a>
+<a href="/leaderboard.html">Leaderboard</a>
+<a href="/guilds.html">Guilds</a>
+<a href="/events.html">Events</a>
+<a href="/learn.html">Learn</a>
+<a href="/blog.html">Blog</a>
+<a href="/about.html">About</a>
+<a href="/how-to-play.html">How to Play</a>
+<hr>
+<a href="/volunteer.html">Join Campaign</a>
+<a href="/contact.html">Contact Us</a>
+<a class="nm-donate" href="https://secure.actblue.com/donate/karenreeder" target="_blank">💛 Donate</a>`;
+  document.body.appendChild(menu);
+
+  burger.addEventListener('click', function(e){ e.stopPropagation(); menu.classList.toggle('open'); });
+  document.addEventListener('click', function(e){ if(!menu.contains(e.target) && e.target !== burger) menu.classList.remove('open'); });
+})();
+
 // ── FOOTER ───────────────────────────────────────────────
 const footerEl = document.createElement('footer');
 footerEl.innerHTML = `
@@ -74,6 +121,7 @@ footerEl.innerHTML = `
   <li><a href="game.html">Missions</a></li>
   <li><a href="game.html#leaderboard">Leaderboard</a></li>
   <li><a href="game.html#guilds">Guilds</a></li>
+  <li><a href="how-to-play.html">How to Play</a></li>
   <li><a href="register.html">Voting 101</a></li>
   <li><a href="volunteer.html">Join the Campaign</a></li>
   <li><a href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate</a></li>
