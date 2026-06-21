@@ -706,21 +706,54 @@ function animateCounter(el,target){
   function step(ts){if(!startTime)startTime=ts;const p=Math.min((ts-startTime)/2000,1);const e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*target).toLocaleString();if(p<1)requestAnimationFrame(step);}
   requestAnimationFrame(step);
 }
+// quote-aware split of one CSV line
+function parseStatCSVRow(line){
+  const cols=[]; let cur='',q=false;
+  for(let i=0;i<line.length;i++){ const c=line[i]; if(c==='"'){q=!q;} else if(c===','&&!q){cols.push(cur);cur='';} else {cur+=c;} }
+  cols.push(cur);
+  return cols.map(c=>c.replace(/^"|"$/g,'').trim());
+}
+
 async function loadHeroStats(){
   const xpEl=document.getElementById('s-xp'), volEl=document.getElementById('s-vol'), misEl=document.getElementById('s-doors'), daysEl=document.getElementById('s-voters');
-  // Days to election — pure calc, always works (no Supabase)
+  [xpEl,volEl,misEl].forEach(el=>{ if(el) el.textContent='…'; }); // loading state
+
+  // 4. Days to Election — pure calc, always works (no Supabase)
   const days=Math.max(0,Math.ceil((new Date('2026-11-03') - new Date())/(1000*60*60*24)));
   if(daysEl) animateCounter(daysEl, days);
-  // Supabase-backed stats — fall back to 0 on any failure
-  let volunteers=0, xpSum=0, missionsDone=0;
+  console.log('[hero-stats] days to election:', days);
+
+  // Wait for window.sb (same interval pattern used elsewhere)
   const sb = await new Promise(r=>{ if(window.sb) return r(window.sb); let n=0; const i=setInterval(()=>{ if(window.sb){clearInterval(i);r(window.sb);} else if(++n>50){clearInterval(i);r(null);} },100); });
-  if(sb){
-    try{ const { count } = await sb.from('profiles').select('*',{count:'exact',head:true}); volunteers=count||0; }catch(e){}
-    try{ const { data } = await sb.from('profiles').select('xp_score'); xpSum=(data||[]).reduce((s,row)=>s+(Number(row.xp_score)||0),0); }catch(e){}
-    try{ const { count } = await sb.from('user_tasks').select('*',{count:'exact',head:true}).eq('status','complete'); missionsDone=count||0; }catch(e){}
+  console.log('[hero-stats] window.sb ready:', !!sb);
+
+  // 1. Volunteers Joined — from Google Sheets Config tab via proxy; fallback to profiles COUNT
+  let volunteers=0;
+  try{
+    const res=await fetch('/.netlify/functions/sheets-proxy?gid=538338089');
+    const text=await res.text();
+    const lines=text.trim().split('\n');
+    console.log('[hero-stats] volunteer CSV data row:', lines[1]);
+    if(lines[1]){ const cols=parseStatCSVRow(lines[1]); const v=parseInt((cols[1]||'').replace(/[^0-9]/g,''),10); if(!isNaN(v)) volunteers=v; }
+  }catch(e){ console.warn('[hero-stats] volunteer sheet failed:', e); }
+  if(!volunteers && sb){
+    try{ const { count } = await sb.from('profiles').select('*',{count:'exact',head:true}); volunteers=count||0; console.log('[hero-stats] volunteers fallback (profiles count):', count); }catch(e){ console.warn('[hero-stats] profiles count failed:', e); }
   }
+  console.log('[hero-stats] volunteers =', volunteers);
   if(volEl) animateCounter(volEl, volunteers);
-  if(xpEl)  animateCounter(xpEl, xpSum);
+
+  // 2. XP Earned — SUM of xp_score from profiles
+  let xpSum=0;
+  if(sb){
+    try{ const { data, error } = await sb.from('profiles').select('xp_score'); if(error) throw error; xpSum=(data||[]).reduce((s,row)=>s+(Number(row.xp_score)||0),0); console.log('[hero-stats] XP sum =', xpSum, 'from', (data||[]).length, 'profiles'); }catch(e){ console.warn('[hero-stats] XP sum failed:', e); }
+  }
+  if(xpEl) animateCounter(xpEl, xpSum);
+
+  // 3. Missions Completed — COUNT user_tasks where status=complete
+  let missionsDone=0;
+  if(sb){
+    try{ const { count, error } = await sb.from('user_tasks').select('*',{count:'exact',head:true}).eq('status','complete'); if(error) throw error; missionsDone=count||0; console.log('[hero-stats] missions completed =', count); }catch(e){ console.warn('[hero-stats] missions count failed (RLS may block anon):', e); }
+  }
   if(misEl) animateCounter(misEl, missionsDone);
 }
 const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){loadHeroStats();observer.disconnect();}});},{threshold:0.3});
