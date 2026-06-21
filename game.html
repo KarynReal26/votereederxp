@@ -511,6 +511,55 @@ async function addTaskToBoard(task, btn) {
   loadMissions();
 }
 
+/* ── AVAILABLE TASKS — live from the Google Sheets "Game" tab (gid=1810466887) ── */
+function parseGameCSV(text){
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).map(line => {
+    const cols = []; let cur = '', q = false;
+    for (let i=0;i<line.length;i++){ const c=line[i]; if(c==='"'){q=!q;} else if(c===','&&!q){cols.push(cur);cur='';} else {cur+=c;} }
+    cols.push(cur);
+    const o = {}; headers.forEach((h,i)=>o[h]=(cols[i]||'').replace(/^"|"$/g,'').trim()); return o;
+  }).filter(r => r.Active === 'YES');
+}
+function _taskClass(cat){
+  const c = (cat||'').toLowerCase();
+  if (c.includes('learn')) return 'au';
+  if (c.includes('event')) return 'ev';
+  if (c.includes('social') || c.includes('recruit')) return 'so';
+  return 'fi';
+}
+async function loadAvailableTasks(){
+  const list = document.getElementById('task-list');
+  if (!list) return;
+  try {
+    const res = await fetch('/.netlify/functions/sheets-proxy?gid=1810466887');
+    const rows = parseGameCSV(await res.text());
+    if (!rows.length) return; // keep static fallback if sheet is empty/unavailable
+    list.innerHTML = rows.map(r => {
+      const name = r.Action || 'Mission';
+      const xp = parseInt((r.XP||'').replace(/[^0-9]/g,''),10) || 0;
+      const verify = r.Verification || 'Self Report';
+      const k = _taskClass(r.Category);
+      return '<div class="task t-'+k+'" data-task="'+escapeHtml(name)+'" data-xp="'+xp+'" data-verify="'+escapeHtml(verify)+'">'
+        + '<div class="t-top"><span class="t-tag tag-'+k+'">'+escapeHtml((r.Icon?r.Icon+' ':'')+(r.Category||''))+'</span><span class="t-xp">+'+xp+' XP</span></div>'
+        + '<div class="t-name">'+escapeHtml(name)+'</div>'
+        + '<div class="t-sub">'+escapeHtml(r.Description || verify)+'</div>'
+        + '<button class="t-btn btn-'+k+'" onclick="addTaskFromCard(this)">Tap to Add to Board</button>'
+        + '</div>';
+    }).join('');
+    const cnt = document.getElementById('task-count');
+    if (cnt) cnt.textContent = rows.length;
+    console.log('[available-tasks] loaded', rows.length, 'missions from sheet');
+  } catch(e){ console.warn('[available-tasks] sheet load failed, keeping static fallback:', e); }
+}
+function addTaskFromCard(btn){
+  const card = btn.closest('.task');
+  if (!card) return;
+  addTaskToBoard({ task_name: card.dataset.task, xp: parseInt(card.dataset.xp,10)||0, verification: card.dataset.verify || 'Self Report' }, btn);
+}
+loadAvailableTasks();
+
 /* ── CHAT REALTIME ── */
 async function initChat() {
   if (!window.sb) return;
