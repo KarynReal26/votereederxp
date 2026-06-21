@@ -13,6 +13,10 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const page = location.pathname.split('/').pop() || 'index.html';
 
 // ── NAV ──────────────────────────────────────────────────
+// Skip the old injected nav on pages that already use the new .topbar.
+// NOTE: only the nav block is guarded — NOT a bare `return`, because window.sb
+// (and the footer/auth modal) are created further down and must still run here.
+if (!document.querySelector('.topbar')) {
 const navEl = document.createElement('nav');
 navEl.innerHTML = `
 <a class="nav-logo" href="index.html">⚡ VoteReederXP</a>
@@ -21,6 +25,7 @@ navEl.innerHTML = `
   <li><a href="index.html" ${page==='index.html'?'class="active"':''}>Home</a></li>
   <li><a href="about.html" ${page==='about.html'?'class="active"':''}>About</a></li>
   <li><a href="learn.html" ${page==='learn.html'?'class="active"':''}>Learn</a></li>
+  <li><a href="guilds.html" ${page==='guilds.html'?'class="active"':''}>Guilds</a></li>
   <li><a href="events.html" ${page==='events.html'?'class="active"':''}>Events</a></li>
   <li><a href="gallery.html" ${page==='gallery.html'?'class="active"':''}>Photos</a></li>
   <li><a href="blog.html" ${page==='blog.html'?'class="active"':''}>Blog</a></li>
@@ -38,6 +43,7 @@ navEl.innerHTML = `
   <li><a href="#" id="nav-auth-btn" class="nav-auth">Login / Sign Up</a></li>
 </ul>`;
 document.body.prepend(navEl);
+} // end nav-injection guard (skipped when a .topbar already exists)
 
 // ── FOOTER ───────────────────────────────────────────────
 const footerEl = document.createElement('footer');
