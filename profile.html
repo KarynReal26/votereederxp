@@ -368,6 +368,9 @@ async function checkUsername(val){
   const status = document.getElementById('username-status');
   const saveBtn = document.getElementById('save-username');
   try {
+    // user may not be set yet if the check fires during initial load — load it lazily
+    if (!user) { const { data: { user: u } } = await sb.auth.getUser(); user = u; }
+    if (!user) { status.className = 'status-line'; status.textContent = ''; return; }
     const { data, error } = await sb.from('profiles').select('id,username').eq('username', val);
     if(error) throw error;
     const taken = (data || []).some(row => row.id !== user.id);
