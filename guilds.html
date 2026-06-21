@@ -3,468 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join a Guild — VoteReederXP</title>
+<title>Choose Your Guild — VoteReederXP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,240,255,0.015) 2px,rgba(0,240,255,0.015) 4px); pointer-events:none; z-index:1; }
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#fff;padding-top:64px;margin:0;}
+body>nav{display:none !important;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
+.nav-left{display:flex;align-items:center;gap:32px;}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:24px;}
+.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);cursor:pointer;transition:.15s;}
+.nl:hover{color:#fff;}
+.nl.a{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.bell{position:relative;cursor:pointer;font-size:20px;}
+.bell-dot{position:absolute;top:-4px;right:-6px;background:#ff0080;color:#fff;font-size:8px;font-weight:900;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.avatar-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
+.av-ring{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
+.av-in{width:100%;height:100%;border-radius:50%;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;overflow:hidden;}
+.av-in img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.av-name{font-size:13px;font-weight:700;color:#fff;}
+.av-rank{font-size:11px;color:#ffd700;}
+@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
+@media(max-width:600px){.nav-links{display:none;}}
 
-.guilds-page { max-width:1280px; margin:0 auto; padding:1.5rem 2rem 4rem; }
+/* ===== PAGE ===== */
+.wrap{max-width:1240px;margin:0 auto;padding:2.5rem 1.5rem 5rem;}
 
 /* HERO */
-.guilds-hero { text-align:center; padding:3rem 2rem 2rem; position:relative; }
-.guilds-hero-tag { font-family:var(--font-ui); font-size:.9rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--neon-pink); text-shadow:0 0 15px var(--neon-pink); margin-bottom:.75rem; }
-.guilds-hero-title { font-family:var(--font-display); font-size:clamp(2rem,5vw,4rem); font-weight:900; background:linear-gradient(135deg,#fff 0%,var(--neon-blue) 50%,var(--neon-pink) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:1.5rem; }
-.guilds-hero-intro { max-width:800px; margin:0 auto 1rem; font-family:var(--font-ui); font-size:1.05rem; color:var(--text-dim); line-height:1.8; }
-.guilds-hero-note { display:inline-block; background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.2); border-radius:10px; padding:.75rem 1.5rem; font-family:var(--font-ui); font-size:.9rem; color:var(--neon-blue); margin-top:1rem; line-height:1.6; }
+.hero{text-align:center;max-width:760px;margin:0 auto 3rem;}
+.hero h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2rem,6vw,3.4rem);margin:0 0 1.1rem;line-height:1.05;letter-spacing:1px;background:linear-gradient(90deg,#00e5ff,#bf00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:1.02rem;line-height:1.65;color:rgba(255,255,255,0.7);margin:0 auto;}
+.hero .meta{margin-top:1.2rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+.hero .meta span{font-size:.74rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:.4rem .8rem;border-radius:20px;}
 
-/* DIVIDER */
-.guilds-divider { border:none; border-top:1px solid var(--border-glow); margin:2.5rem 0; }
+/* GRID */
+.guild-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;}
 
-/* SECTION HEADER */
-.guilds-section-title { font-family:var(--font-display); font-size:1.1rem; font-weight:900; color:var(--neon-gold); letter-spacing:.15em; text-transform:uppercase; text-align:center; margin-bottom:.5rem; }
-.guilds-section-sub { font-family:var(--font-ui); font-size:.9rem; color:var(--text-dim); text-align:center; margin-bottom:2rem; }
+/* CARD */
+.gcard{position:relative;background:#111827;border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.gcard:hover{transform:translateY(-5px);border-color:rgba(255,255,255,0.18);box-shadow:0 16px 40px rgba(0,0,0,0.5);}
+.gcard .accent{height:5px;width:100%;}
+.gcard .body{padding:1.5rem 1.4rem 1.6rem;display:flex;flex-direction:column;flex:1;}
+.gcard .emoji{font-size:2.6rem;line-height:1;margin-bottom:.7rem;}
+.gcard .gname{font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.18rem;letter-spacing:.5px;margin:0 0 .35rem;}
+.gcard .tagline{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin:0 0 .8rem;}
+.gcard .desc{font-size:.9rem;line-height:1.55;color:rgba(255,255,255,0.62);margin:0 0 1.1rem;flex:1;}
+.gcard .count{font-family:'Orbitron',sans-serif;font-size:.84rem;font-weight:700;color:rgba(255,255,255,0.8);margin:0 0 1.1rem;display:flex;align-items:center;gap:.45rem;}
+.gcard .count .num{color:#fff;}
+.gcard .join{border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:800;font-size:.92rem;color:#0a0e1a;padding:.78rem 1rem;border-radius:10px;width:100%;transition:filter .15s ease,transform .12s ease;letter-spacing:.3px;}
+.gcard .join:hover{filter:brightness(1.1);}
+.gcard .join:active{transform:scale(0.98);}
 
-/* GUILD CARDS */
-.guilds-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; margin-bottom:3rem; }
-@media(max-width:768px){ .guilds-grid { grid-template-columns:1fr; } }
-
-.guild-landing-card {
-  background:var(--bg-card);
-  border:1px solid var(--border-glow);
-  border-radius:16px;
-  overflow:hidden;
-  transition:all .3s;
-  display:flex;
-  flex-direction:column;
-}
-.guild-landing-card:hover { transform:translateY(-4px); box-shadow:0 0 30px rgba(0,240,255,0.15); }
-.guild-landing-top { height:6px; }
-.guild-landing-body { padding:1.5rem; flex:1; display:flex; flex-direction:column; }
-.guild-landing-header { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
-.guild-landing-emblem { font-size:2.5rem; }
-.guild-landing-info { flex:1; }
-.guild-landing-name { font-family:var(--font-display); font-size:1.1rem; font-weight:900; color:var(--text-primary); margin-bottom:.2rem; }
-.guild-landing-team { font-family:var(--font-ui); font-size:.75rem; color:var(--text-dim); letter-spacing:.05em; }
-.guild-landing-desc { font-family:var(--font-ui); font-size:.9rem; color:var(--text-dim); line-height:1.7; margin-bottom:1rem; flex:1; }
-.guild-landing-meta { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
-.guild-meta-tag { font-family:var(--font-display); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; padding:.2rem .6rem; border-radius:20px; border:1px solid; }
-.guild-landing-limit { font-family:var(--font-ui); font-size:.75rem; color:var(--text-dim); margin-bottom:1rem; }
-.guild-landing-btn { font-family:var(--font-display); font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; padding:.65rem 1.25rem; border-radius:8px; border:none; cursor:pointer; transition:all .2s; width:100%; }
-
-/* COMMITMENT SECTION */
-.commitment-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:3rem; }
-@media(max-width:768px){ .commitment-grid { grid-template-columns:1fr; } }
-.commitment-card { background:rgba(255,255,255,0.03); border:1px solid var(--border-glow); border-radius:12px; padding:1.25rem; text-align:center; }
-.commitment-icon { font-size:2rem; margin-bottom:.5rem; display:block; }
-.commitment-title { font-family:var(--font-display); font-size:.8rem; font-weight:700; color:var(--neon-blue); margin-bottom:.4rem; letter-spacing:.05em; }
-.commitment-text { font-family:var(--font-ui); font-size:.82rem; color:var(--text-dim); line-height:1.6; }
-
-/* CTA */
-.guilds-cta { text-align:center; background:linear-gradient(135deg,rgba(0,240,255,0.08),rgba(191,0,255,0.08)); border:1px solid var(--border-glow); border-radius:16px; padding:2.5rem; }
-.guilds-cta-title { font-family:var(--font-display); font-size:1.4rem; font-weight:900; color:var(--text-primary); margin-bottom:.75rem; }
-.guilds-cta-sub { font-family:var(--font-ui); font-size:.95rem; color:var(--text-dim); margin-bottom:1.5rem; line-height:1.6; }
-/* GUILD CELEBRATION */
-@keyframes celebFadeIn {
-  from { opacity:0; transform:scale(0.8) translateY(20px); }
-  to { opacity:1; transform:scale(1) translateY(0); }
-}
-@keyframes celebBounce {
-  0%,100% { transform:translateY(0) scale(1); }
-  50% { transform:translateY(-20px) scale(1.1); }
-}
-@keyframes confettiFall {
-  0% { opacity:1; transform:translateY(0) rotate(0deg); }
-  100% { opacity:0; transform:translateY(100vh) rotate(720deg); }
-}
+/* TOAST */
+#toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);background:#111827;border:1px solid #00e5ff;color:#fff;font-size:.92rem;font-weight:600;padding:.9rem 1.4rem;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,0.55),0 0 18px rgba(0,229,255,0.25);z-index:500;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;max-width:90vw;text-align:center;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-<div class="page-content">
-<div class="guilds-page">
-
-  <!-- HERO -->
-  <div class="guilds-hero">
-    <div class="guilds-hero-tag">// Team Reeder</div>
-    <h1 class="guilds-hero-title">Choose Your Guild</h1>
-    <p class="guilds-hero-intro">We're building a people-powered campaign for every corner of Brazoria County — and that starts with you. Whether you love talking to neighbors, planning events, creating content, or organizing behind the scenes, there's a place for your skills and energy on Team Reeder.</p>
-    <div class="guilds-hero-note">
-      🌐 You do not have to be in Texas to support this campaign — we have virtual opportunities!<br>
-      👥 Volunteers of all ages are welcome. Leadership roles are open to adults only.
+<div class="topbar" id="topbar">
+  <div class="nav-row">
+    <div class="nav-left">
+      <div class="nav-logo">VoteReederXP</div>
+      <div class="nav-links">
+        <span class="nl" onclick="location.href='/game.html'">Dashboard</span>
+        <span class="nl" onclick="location.href='/leaderboard.html'">Leaderboard</span>
+        <span class="nl a" onclick="location.href='/guilds.html'">Guilds</span>
+        <span class="nl" onclick="location.href='/events.html'">Events</span>
+        <span class="nl" onclick="location.href='/learn.html'">Learn</span>
+        <span class="nl" onclick="location.href='/blog.html'">Blog</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="bell">🔔<span class="bell-dot" id="notif-count">0</span></div>
+      <div class="avatar-wrap" onclick="location.href='/profile.html'">
+        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+        <div><div class="av-name" id="nav-username">My Account</div><div class="av-rank" id="nav-rank">Advocate</div></div>
+      </div>
     </div>
   </div>
-
-  <hr class="guilds-divider">
-
-  <!-- COMMITMENT -->
-  <div class="guilds-section-title">What to Expect</div>
-  <div class="guilds-section-sub">Every guild has a different rhythm — here's what commitment looks like across the board.</div>
-  <div class="commitment-grid">
-    <div class="commitment-card">
-      <span class="commitment-icon">⏰</span>
-      <div class="commitment-title">Time Commitment</div>
-      <div class="commitment-text">Most roles require 2-5 hours per week. Leadership roles may require more. You set your own pace and earn XP for every action!</div>
-    </div>
-    <div class="commitment-card">
-      <span class="commitment-icon">🌐</span>
-      <div class="commitment-title">Virtual or In-Person</div>
-      <div class="commitment-text">Many roles are fully virtual — perfect if you're outside Texas or have a busy schedule. Field work is in-person in Brazoria County.</div>
-    </div>
-    <div class="commitment-card">
-      <span class="commitment-icon">⚡</span>
-      <div class="commitment-title">Earn While You Serve</div>
-      <div class="commitment-text">Every action earns XP. Complete missions, climb the leaderboard, and compete as a guild team. The top guild wins recognition every month!</div>
-    </div>
-  </div>
-
-  <hr class="guilds-divider">
-
-  <!-- GUILD CARDS -->
-  <div class="guilds-section-title">⚔️ The 7 Guilds</div>
-  <div class="guilds-section-sub">Each guild represents a campaign team. Choose the one that matches your skills — you can only be in one, so choose wisely!</div>
-
-  <div class="guilds-grid">
-
-    <!-- District Warriors -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#ff6600,#ffd700);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">🔥</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">District Warriors</div>
-            <div class="guild-landing-team">Field Team · In-Person</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">If you want to be outside, meet neighbors, and feel the energy of the campaign — this is your lane. Door knockers, canvassers, and field organizers who show up and fight for every vote in District 29. You are the heartbeat of the campaign on the ground.</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#ff6600;border-color:rgba(255,102,0,0.4);">🚶 In-Person</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">🏘️ Canvassing</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">🚪 Door Knocking</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 50 members · Open to all ages</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#ff6600,#ffd700);color:#000;" onclick="selectGuild('District Warriors','🔥','guild-warriors.html')">🔥 Join District Warriors</button>
-      </div>
-    </div>
-
-    <!-- Turnout Titans -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#ffd700,#00f0ff);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">🌊</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">Turnout Titans</div>
-            <div class="guild-landing-team">Outreach Team · Virtual + In-Person</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">If you like talking to people — or texting them with purpose — this is where momentum gets built. Voter registration champions who make sure every eligible voter in District 29 is registered and ready to cast their ballot. Virtual opportunities available!</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#00f0ff;border-color:rgba(0,240,255,0.4);">📱 Virtual OK</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">🗳️ Voter Registration</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">📞 Phone Banking</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 50 members · Open to all ages</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#ffd700,#00f0ff);color:#000;" onclick="selectGuild('Turnout Titans','🌊','guild-titans.html')">🌊 Join Turnout Titans</button>
-      </div>
-    </div>
-
-    <!-- The Momentum -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#00f0ff,#bf00ff);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">⚡</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">The Momentum</div>
-            <div class="guild-landing-team">Operations Team · Virtual + In-Person</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">If you're a "get it done" person who loves structure — this team makes the whole campaign run clean. Events, phone banks, scheduling, logistics, and everything in between. Operations keeps the campaign running like a well-oiled machine.</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#00f0ff;border-color:rgba(0,240,255,0.4);">📱 Virtual OK</span>
-          <span class="guild-meta-tag" style="color:#bf00ff;border-color:rgba(191,0,255,0.4);">📋 Logistics</span>
-          <span class="guild-meta-tag" style="color:#bf00ff;border-color:rgba(191,0,255,0.4);">🎪 Events</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 50 members · Open to all ages</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#00f0ff,#bf00ff);color:#000;" onclick="selectGuild('The Momentum','⚡','guild-momentum.html')">⚡ Join The Momentum</button>
-      </div>
-    </div>
-
-    <!-- The Signal -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#00aaff,#bf00ff);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">📡</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">The Signal</div>
-            <div class="guild-landing-team">Communications Team · Fully Virtual</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">If you love storytelling, design, writing, or content — this is how we influence what people believe and share. Storytellers, content creators, and communicators who spread Karen's message far and wide. This team is fully virtual!</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#00aaff;border-color:rgba(0,170,255,0.4);">💻 Fully Virtual</span>
-          <span class="guild-meta-tag" style="color:#bf00ff;border-color:rgba(191,0,255,0.4);">✍️ Writing</span>
-          <span class="guild-meta-tag" style="color:#bf00ff;border-color:rgba(191,0,255,0.4);">📱 Social Media</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 30 members · Open to all ages</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#00aaff,#bf00ff);color:#fff;" onclick="selectGuild('The Signal','📡','guild-democracy.html')">📡 Join The Signal</button>
-      </div>
-    </div>
-
-    <!-- The Miners -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#00ff88,#00f0ff);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">⛏️</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">The Miners</div>
-            <div class="guild-landing-team">Data & Issue Teams · Fully Virtual</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">Perfect for organized, analytical folks who want to see how strategy turns into votes. You dig deep for facts, stats, and insights — school closings, healthcare data, district issues. If you like research, policy, and helping Karen sound sharp and confident — this is high-impact work.</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#00ff88;border-color:rgba(0,255,136,0.4);">💻 Fully Virtual</span>
-          <span class="guild-meta-tag" style="color:#00f0ff;border-color:rgba(0,240,255,0.4);">📊 Data Analysis</span>
-          <span class="guild-meta-tag" style="color:#00f0ff;border-color:rgba(0,240,255,0.4);">🔍 Research</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 15 members · Limited spots!</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#00ff88,#00f0ff);color:#000;" onclick="selectGuild('The Miners','⛏️','guild-builders.html')">⛏️ Join The Miners</button>
-      </div>
-    </div>
-
-    <!-- The Architects -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#9b59b6,#ffd700);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">🏛️</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">The Architects</div>
-            <div class="guild-landing-team">Political / Coalitions & Legal · Virtual</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">This is for connectors — people who can open doors, build trust, and bring influential voices to the table. Also ideal for detail-driven folks who want experience with campaign rules, risk, and smart documentation. Policy visionaries who develop solutions and build the agenda that will move District 29 forward.</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#9b59b6;border-color:rgba(155,89,182,0.4);">💻 Virtual</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">⚖️ Policy</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">🤝 Coalitions</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">📜 Legal</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 10 members · Very limited — by merit!</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#9b59b6,#ffd700);color:#000;" onclick="selectGuild('The Architects','🏛️','guild-rise.html')">🏛️ Join The Architects</button>
-      </div>
-    </div>
-
-    <!-- The Treasury -->
-    <div class="guild-landing-card">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#00d4aa,#ffd700);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">💎</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">The Treasury</div>
-            <div class="guild-landing-team">Finance Team · Virtual</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">If you like numbers, budgets, and fundraising strategy — this is your lane. Finance keeps the campaign funded, organized, and compliant with state reporting rules. The financial backbone that makes every mission possible.</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#00d4aa;border-color:rgba(0,212,170,0.4);">💻 Virtual</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">💰 Fundraising</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">📊 Finance</span>
-        </div>
-        <div class="guild-landing-limit">👥 Max 15 members · Limited spots!</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#00d4aa,#ffd700);color:#000;" onclick="selectGuild('The Treasury','💎','guild-treasury.html')">💎 Join The Treasury</button>
-      </div>
-    </div>
-
-    <!-- Not Sure -->
-    <div class="guild-landing-card" style="border-color:rgba(255,0,170,0.3);background:rgba(255,0,170,0.04);">
-      <div class="guild-landing-top" style="background:linear-gradient(90deg,#ff00aa,#ffd700);"></div>
-      <div class="guild-landing-body">
-        <div class="guild-landing-header">
-          <div class="guild-landing-emblem">🤔</div>
-          <div class="guild-landing-info">
-            <div class="guild-landing-name">Not Sure Yet?</div>
-            <div class="guild-landing-team">Join the campaign first!</div>
-          </div>
-        </div>
-        <div class="guild-landing-desc">That's okay! Sign up as a volunteer first, start earning XP on the game page, and you can choose your guild once you reach Organizer rank (300 XP). You'll have a better feel for where you fit after your first few missions!</div>
-        <div class="guild-landing-meta">
-          <span class="guild-meta-tag" style="color:#ff00aa;border-color:rgba(255,0,170,0.4);">⚡ Earn 300 XP first</span>
-          <span class="guild-meta-tag" style="color:#ffd700;border-color:rgba(255,215,0,0.4);">🎮 Try missions</span>
-        </div>
-        <div class="guild-landing-limit">You can switch guilds after 30 days if you change your mind!</div>
-        <button class="guild-landing-btn" style="background:linear-gradient(135deg,#ff00aa,#ffd700);color:#000;" onclick="window.location.href='volunteer.html'">⚡ Sign Up First →</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- CTA -->
-  <div class="guilds-cta">
-    <div class="guilds-cta-title">⚡ Ready to Level Up Democracy?</div>
-    <div class="guilds-cta-sub">Every action counts. Every XP point matters. District 29 needs you — and your team is waiting.<br>Join a guild, complete missions, and help Karen Reeder get to Austin!</div>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <a href="volunteer.html" class="btn btn-primary" style="font-size:.85rem;padding:.75rem 2rem;">⚡ Sign Up Now</a>
-      <a href="game.html" class="btn btn-purple" style="font-size:.85rem;padding:.75rem 2rem;">🎮 Go to Game Dashboard</a>
-      <a href="donate.html" class="btn" style="font-size:.85rem;padding:.75rem 2rem;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:var(--neon-gold);">💛 Donate to the Campaign</a>
-    </div>
-  </div>
-
 </div>
-</div>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Choose Your Guild</h1>
+    <p>Guilds are teams you join to organize with other volunteers, earn guild XP together, and specialize in how you help the campaign. Pick the squad that fits your strengths and climb the ranks side by side. You'll need to be logged in to join &mdash; and once you're in, you can switch guilds every 30 days.</p>
+    <div class="meta">
+      <span>🔒 Login required to join</span>
+      <span>🔄 Switch every 30 days</span>
+      <span>⭐ Earn XP together</span>
+    </div>
+  </section>
+
+  <section class="guild-grid" id="guild-grid">
+    <!-- 1. The Treasury -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#00d4aa,#ffd700);"></div>
+      <div class="body">
+        <div class="emoji">⚡</div>
+        <h3 class="gname">The Treasury</h3>
+        <p class="tagline" style="color:#00d4aa;">Resource Mobilization &amp; Scale</p>
+        <p class="desc">The financial backbone. Keep the campaign funded, organized, and compliant so the mission never stops.</p>
+        <p class="count">👥 <span class="num" id="count-treasury">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#00d4aa,#ffd700);" onclick="joinGuild('The Treasury')">Join This Guild</button>
+      </div>
+    </article>
+
+    <!-- 2. Turnout Titans -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#ffd700,#00f0ff);"></div>
+      <div class="body">
+        <div class="emoji">🌊</div>
+        <h3 class="gname">Turnout Titans</h3>
+        <p class="tagline" style="color:#ffd700;">Civic Engagement Champions</p>
+        <p class="desc">Voter registration champions making sure every eligible voter in District 29 is registered and ready to vote.</p>
+        <p class="count">👥 <span class="num" id="count-titans">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#ffd700,#00f0ff);" onclick="joinGuild('Turnout Titans')">Join This Guild</button>
+      </div>
+    </article>
+
+    <!-- 3. District Warriors -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#ff6600,#ffd700);"></div>
+      <div class="body">
+        <div class="emoji">⚔️</div>
+        <h3 class="gname">District Warriors</h3>
+        <p class="tagline" style="color:#ff8c00;">Ground Defense &amp; Field Operations</p>
+        <p class="desc">Boots on the ground. Door knockers, canvassers, and field organizers who fight for every vote.</p>
+        <p class="count">👥 <span class="num" id="count-warriors">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#ff6600,#ffd700);" onclick="joinGuild('District Warriors')">Join This Guild</button>
+      </div>
+    </article>
+
+    <!-- 4. The Signal -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#00aaff,#bf00ff);"></div>
+      <div class="body">
+        <div class="emoji">📡</div>
+        <h3 class="gname">The Signal</h3>
+        <p class="tagline" style="color:#00aaff;">Communications &amp; Outreach</p>
+        <p class="desc">The voice of the campaign. Storytellers and communicators who spread Karen's message far and wide.</p>
+        <p class="count">👥 <span class="num" id="count-signal">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#00aaff,#bf00ff);color:#fff;" onclick="joinGuild('The Signal')">Join This Guild</button>
+      </div>
+    </article>
+
+    <!-- 5. The Miners -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#00ff88,#00f0ff);"></div>
+      <div class="body">
+        <div class="emoji">⛏️</div>
+        <h3 class="gname">The Miners</h3>
+        <p class="tagline" style="color:#00ff88;">Data &amp; Research</p>
+        <p class="desc">Data researchers and intelligence gatherers digging for the facts and insights that fuel the campaign.</p>
+        <p class="count">👥 <span class="num" id="count-miners">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#00ff88,#00f0ff);" onclick="joinGuild('The Miners')">Join This Guild</button>
+      </div>
+    </article>
+
+    <!-- 6. The Architects -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#9b59b6,#ffd700);"></div>
+      <div class="body">
+        <div class="emoji">🏛️</div>
+        <h3 class="gname">The Architects</h3>
+        <p class="tagline" style="color:#bf6fd6;">Strategy &amp; Planning</p>
+        <p class="desc">Policy visionaries who analyze issues, develop solutions, and build the agenda to move District 29 forward.</p>
+        <p class="count">👥 <span class="num" id="count-architects">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#9b59b6,#ffd700);color:#fff;" onclick="joinGuild('The Architects')">Join This Guild</button>
+      </div>
+    </article>
+
+    <!-- 7. The Momentum -->
+    <article class="gcard">
+      <div class="accent" style="background:linear-gradient(90deg,#ff0080,#ff3b3b);"></div>
+      <div class="body">
+        <div class="emoji">🔥</div>
+        <h3 class="gname">The Momentum</h3>
+        <p class="tagline" style="color:#ff0080;">Social Acceleration Wave</p>
+        <p class="desc">The social powerhouse keeping the campaign moving &mdash; events, energy, and momentum across every channel.</p>
+        <p class="count">👥 <span class="num" id="count-momentum">—</span> members</p>
+        <button class="join" style="background:linear-gradient(90deg,#ff0080,#ff3b3b);color:#fff;" onclick="joinGuild('The Momentum')">Join This Guild</button>
+      </div>
+    </article>
+  </section>
+</main>
+
+<div id="toast"></div>
 
 <script>
-// CELEBRATION MODAL
-function showGuildCelebration(guildName, emoji) {
-  // Create overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'guild-celebrate';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-  
-  overlay.innerHTML = `
-    <div id="confetti-container" style="position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:99998;"></div>
-    <div style="text-align:center;animation:celebFadeIn .6s ease forwards;padding:2rem;">
-      <div style="font-size:5rem;margin-bottom:1rem;animation:celebBounce 1s ease infinite;">${emoji}</div>
-      <div style="font-family:'Orbitron',monospace;font-size:.75rem;color:var(--neon-gold);letter-spacing:.4em;text-transform:uppercase;margin-bottom:.5rem;">// YOU HAVE BEEN ENLISTED</div>
-      <div style="font-family:'Orbitron',monospace;font-size:clamp(1.5rem,5vw,3rem);font-weight:900;background:linear-gradient(135deg,#ffd700,#ffaa00,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem;line-height:1.2;">WELCOME TO<br>${guildName.toUpperCase()}</div>
-      <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:#aaaacc;margin-bottom:2rem;line-height:1.7;">
-        📧 Check your email for your mission briefing<br>
-        💬 Visit your Guild HQ to meet your team<br>
-        ⚡ Complete missions to earn XP for your guild<br>
-        🏆 Help take <strong style="color:var(--neon-gold);">${guildName}</strong> to the top of the leaderboard!
-      </div>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <button onclick="document.getElementById('guild-celebrate').remove();window.location.href='game.html'" style="font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.1em;background:linear-gradient(135deg,#ffd700,#ffaa00);color:#000;border:none;border-radius:10px;padding:1rem 2rem;cursor:pointer;font-weight:900;">⚡ GO TO DASHBOARD</button>
-        <button onclick="document.getElementById('guild-celebrate').remove();" style="font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.1em;background:transparent;color:#aaaacc;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:1rem 2rem;cursor:pointer;">Browse More Guilds</button>
-      </div>
-    </div>`;
+// Map exact guild names -> count span ids
+var GUILD_COUNT_IDS = {
+  'The Treasury': 'count-treasury',
+  'Turnout Titans': 'count-titans',
+  'District Warriors': 'count-warriors',
+  'The Signal': 'count-signal',
+  'The Miners': 'count-miners',
+  'The Architects': 'count-architects',
+  'The Momentum': 'count-momentum'
+};
 
-  document.body.appendChild(overlay);
+function waitForSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
 
-  // Play horn sound
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const playNote = (freq, start, dur) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = freq;
-      o.type = 'square';
-      g.gain.setValueAtTime(0.3, ctx.currentTime + start);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-      o.start(ctx.currentTime + start);
-      o.stop(ctx.currentTime + start + dur);
-    };
-    playNote(523, 0, 0.15);    // C
-    playNote(659, 0.15, 0.15); // E
-    playNote(784, 0.3, 0.15);  // G
-    playNote(1047, 0.45, 0.4); // High C — hold!
-  } catch(e) {}
-
-  // Launch confetti
-  launchConfetti();
+// Toast helper: bottom-center, fades in/out over ~3.5s
+var _toastTimer = null;
+function toast(message){
+  var el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = message;
+  el.classList.add('show');
+  if(_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3500);
 }
 
-function launchConfetti() {
-  const container = document.getElementById('confetti-container');
-  if (!container) return;
-  const colors = ['#ffd700','#ff00aa','#00f0ff','#00ff88','#bf00ff','#ff6600','#ffffff'];
-  for (let i = 0; i < 150; i++) {
-    setTimeout(() => {
-      const piece = document.createElement('div');
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const size = Math.random() * 10 + 6;
-      const left = Math.random() * 100;
-      const duration = Math.random() * 3 + 2;
-      const delay = Math.random() * 2;
-      const rotation = Math.random() * 720;
-      piece.style.cssText = `
-        position:absolute;
-        top:-20px;
-        left:${left}%;
-        width:${size}px;
-        height:${size * 0.6}px;
-        background:${color};
-        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
-        animation:confettiFall ${duration}s ${delay}s ease-in forwards;
-        transform:rotate(${rotation}deg);
-        opacity:0;
-      `;
-      container.appendChild(piece);
-    }, i * 20);
+// Tally member counts per guild and write into spans (default 0)
+async function loadCounts(){
+  // Initialize all to 0
+  for(var name in GUILD_COUNT_IDS){
+    var el0 = document.getElementById(GUILD_COUNT_IDS[name]);
+    if(el0) el0.textContent = '0';
   }
-}
-
-async function selectGuild(guildName, emoji, guildUrl) {
-  if (!window.sb) {
-    const overlay = document.getElementById('auth-overlay');
-    if (overlay) {
-      const title = document.getElementById('auth-modal-title');
-      const sub = document.getElementById('auth-modal-sub');
-      if (title) title.textContent = '⚡ Join ' + guildName + '!';
-      if (sub) sub.textContent = 'Create a free account to join ' + guildName + ' and start earning XP!';
-      overlay.classList.add('open');
-      localStorage.setItem('pending_guild', JSON.stringify({name: guildName, emoji, url: guildUrl}));
+  try{
+    const sb = await waitForSb();
+    if(!sb) return;
+    const { data } = await sb.from('profiles').select('guild');
+    if(!data) return;
+    var tally = {};
+    for(var i=0;i<data.length;i++){
+      var g = data[i] && data[i].guild;
+      if(g){ tally[g] = (tally[g]||0) + 1; }
     }
-    return;
-  }
-
-  const { data: { user } } = await window.sb.auth.getUser();
-  if (!user) {
-    const overlay = document.getElementById('auth-overlay');
-    if (overlay) overlay.classList.add('open');
-    localStorage.setItem('pending_guild', JSON.stringify({name: guildName, emoji, url: guildUrl}));
-    return;
-  }
-
-  const { error } = await window.sb.from('profiles')
-    .update({ guild: guildName })
-    .eq('id', user.id);
-
-  if (!error) {
-    localStorage.removeItem('pending_guild');
-    showGuildCelebration(guildName, emoji);
-  } else {
-    alert('Error joining guild. Please try again.');
-  }
+    for(var gname in GUILD_COUNT_IDS){
+      var el = document.getElementById(GUILD_COUNT_IDS[gname]);
+      if(el) el.textContent = String(tally[gname] || 0);
+    }
+  }catch(e){ console.error('loadCounts error', e); }
 }
 
-// Check for pending guild after login
-window.addEventListener('load', async () => {
-  if (!window.sb) return;
-  const pending = localStorage.getItem('pending_guild');
-  if (!pending) return;
-  const { data: { user } } = await window.sb.auth.getUser();
-  if (!user) return;
-  const guild = JSON.parse(pending);
-  const { error } = await window.sb.from('profiles')
-    .update({ guild: guild.name })
-    .eq('id', user.id);
-  if (!error) {
-    localStorage.removeItem('pending_guild');
-    window.location.href = guild.url;
+// Fill nav avatar/username if logged in (non-critical)
+async function fillNav(){
+  try{
+    const sb = await waitForSb();
+    if(!sb) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if(!session) return;
+    const { data: prof } = await sb.from('profiles').select('username,avatar').eq('id', session.user.id).maybeSingle();
+    if(!prof) return;
+    var nameEl = document.getElementById('nav-username');
+    var avEl = document.getElementById('nav-avatar');
+    if(prof.username && nameEl) nameEl.textContent = prof.username;
+    if(avEl){
+      if(prof.avatar){
+        avEl.innerHTML = '<img src="' + prof.avatar + '" alt="avatar">';
+      } else if(prof.username){
+        var initials = prof.username.trim().split(/\s+/).map(function(w){return w.charAt(0);}).join('').slice(0,2).toUpperCase();
+        if(initials) avEl.textContent = initials;
+      }
+    }
+  }catch(e){ /* non-critical */ }
+}
+
+// Join flow
+async function joinGuild(name){
+  const sb = await waitForSb();
+  if(!sb){ toast('Connection not ready, try again'); return; }
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ window.location.href = '/register2.html'; return; }
+  const { data: prof } = await sb.from('profiles').select('guild,guild_joined_at').eq('id', session.user.id).maybeSingle();
+  if(prof && prof.guild === name){ toast('You are already in ' + name + '.'); return; }
+  if(prof && prof.guild && prof.guild_joined_at){
+    const days = (Date.now() - new Date(prof.guild_joined_at)) / 86400000;
+    if(days < 30){ toast('You can switch guilds again in ' + Math.ceil(30 - days) + ' days.'); return; }
   }
+  const { error } = await sb.from('profiles').update({ guild: name, guild_joined_at: new Date().toISOString() }).eq('id', session.user.id);
+  if(error){ console.error(error); toast('Could not join — please try again.'); return; }
+  toast('⚡ Welcome to ' + name + '! Taking you to your dashboard...');
+  setTimeout(function(){ window.location.href = '/game.html'; }, 1300);
+}
+
+// Init on load (no auth gate — page is public)
+document.addEventListener('DOMContentLoaded', function(){
+  loadCounts();
+  fillNav();
 });
 </script>
 
-
-  <!-- SOCIAL FEED -->
-  <div style="max-width:1280px;margin:2rem auto;padding:0 2rem 4rem;">
-    <div style="text-align:center;margin-bottom:1.5rem;">
-      <div style="font-family:var(--font-display);font-size:.7rem;color:var(--neon-blue);letter-spacing:.3em;text-transform:uppercase;margin-bottom:.35rem;">// CAMPAIGN FEED</div>
-      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--text-primary);">📱 Latest from the Trail</div>
-    </div>
-    <div style="border:1px solid var(--border-glow);border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.02);width:100%;">
-      <div style="position:relative;width:100%;padding-bottom:100%;height:0;overflow:hidden;">
-        <iframe src="https://www.juicer.io/api/feeds/elect-karen-reeder/iframe" frameborder="0" style="position:absolute;top:0;left:0;width:100%;height:500px;display:block;" title="Elect Karen Reeder - Juicer social media feed"></iframe>
-      </div>
-    </div>
-  </div>
+<script src="xp.js"></script>
 <script src="shared.js"></script>
 </body>
 </html>
