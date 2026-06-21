@@ -749,11 +749,21 @@ async function loadHeroStats(){
   }
   if(xpEl) animateCounter(xpEl, xpSum);
 
-  // 3. Missions Completed — COUNT user_tasks where status=complete
+  // 3. Missions Completed — via home_stats() RPC (bypasses owner-only RLS on user_tasks);
+  //    falls back to a direct count (returns 0 for anon if the RPC isn't installed yet)
   let missionsDone=0;
   if(sb){
-    try{ const { count, error } = await sb.from('user_tasks').select('*',{count:'exact',head:true}).eq('status','complete'); if(error) throw error; missionsDone=count||0; console.log('[hero-stats] missions completed =', count); }catch(e){ console.warn('[hero-stats] missions count failed (RLS may block anon):', e); }
+    try{
+      const { data: hs, error } = await sb.rpc('home_stats');
+      if(error) throw error;
+      console.log('[hero-stats] home_stats rpc:', hs);
+      if(hs && hs.missions_completed != null) missionsDone = Number(hs.missions_completed) || 0;
+    }catch(e){
+      console.warn('[hero-stats] home_stats rpc unavailable, trying direct count:', e);
+      try{ const { count } = await sb.from('user_tasks').select('*',{count:'exact',head:true}).eq('status','complete'); missionsDone=count||0; }catch(e2){ console.warn('[hero-stats] direct missions count failed (RLS may block anon):', e2); }
+    }
   }
+  console.log('[hero-stats] missions completed =', missionsDone);
   if(misEl) animateCounter(misEl, missionsDone);
 }
 const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){loadHeroStats();observer.disconnect();}});},{threshold:0.3});
