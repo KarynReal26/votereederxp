@@ -249,3 +249,9 @@ git push
 | The Treasury | guild-treasury.html |
 | Admin | guild-admin.html |
 
+---
+
+## 🆕 June 21, 2026 (cont.)
+New pages: **register2.html**, **profile.html**, **leaderboard.html** (rebuilt: podium + countdown to **Nov 4, 2026** + twin scoreboards, live Supabase), **guilds.html** (rebuilt: 7 cards, live member counts, direct join). game.html: mobile hamburger/off-canvas sidebar + Join/Change Guild button. index.html: missions add to `user_tasks` (auth-gated) + live Google-Sheets CSV. Nav everywhere: Dashboard → Leaderboard → Guilds → Events → Learn → Blog.
+**Action items:** add `profiles.city`, `profiles.state`, `profiles.badges` columns; confirm RLS for `user_tasks`/`chat_messages`/`profiles`. Old-nav pages (about/donate/blog/admin/guild-*) still lack the Guilds link — fix in `shared.js`. See HANDOFF.md for full detail.
+

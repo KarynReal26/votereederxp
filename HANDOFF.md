@@ -1100,3 +1100,48 @@ Never move it above the shared.js script tag!
 - `Add avatar picker to registration`
 - `Avatar picker + live kanban and chat wired to Supabase`
 - `Fix RLS writes + update handoff docs`
+
+---
+
+## 📝 SESSION UPDATE — June 21, 2026 (Pages, Guilds, Leaderboard, Mobile, Nav)
+
+### New / rebuilt pages
+- **`register2.html`** — two-phase registration portal. Phase 1 `window.sb.auth.signUp({email,password})` → reveals Phase 2 (in-page) → Phase 2 "Deploy" upserts `profiles` (username, guild, **avatar full path**, city, state) → redirect `/game.html`. Has the 3-tab avatar picker (72 images) and a "Already have an account? Sign In" link → `/index.html`. ⚠️ Upsert writes `city`/`state` — **add those columns to `profiles`** or the upsert errors.
+- **`profile.html`** — settings page: change avatar (3-tab grid), username (live availability check), password (`sb.auth.updateUser`), guild (30-day rule), and XP history from `user_tasks` ordered by `completed_at`.
+- **`leaderboard.html`** — REPLACED with the "Gemini" design (podium stage + countdown clock + twin scoreboards). Wired to live Supabase: player board (`profiles` by `xp_score` desc, top 20, podium top-3, "· You" highlight), guild board (sum `xp_score` per guild, our 7 guilds), global stats (volunteer count, total XP). Countdown target = **Nov 4, 2026** (Karen's election date). Old top-10 list design is in git history.
+- **`guilds.html`** — REPLACED old chooser. New "Choose Your Guild" page: 7 guild cards with live member counts (`profiles` grouped by guild), Join flow (logged in → 30-day check → update `profiles.guild`+`guild_joined_at` → toast → `/game.html`; logged out → `/register2.html`). The detailed `guild-*.html` pages still exist but are no longer linked from here.
+
+### game.html
+- **Mobile polish**: hamburger (☰) under 900px slides the sidebar in as a left overlay (backdrop + ✕ close); bigger kanban card padding; 48px min touch targets on `.t-btn`/`.mark-btn`.
+- Added a **"⚔️ Join / Change Guild"** button in the Player Profile card → `/guilds.html`.
+- `markTaskComplete()` now stamps `completed_at` when completing a task.
+
+### index.html
+- **Missions add-to-board**: mission buttons now check `sb.auth.getSession()` → logged in inserts `user_tasks` (status `in_progress`) + toast; logged out → `/register2.html`. Missions render **live from Google Sheets** via `/.netlify/functions/sheets-proxy?gid=1810466887` using the `parseSheetCSV()` parser.
+- "Contact the Campaign" button → `/contact.html` (was dead `#`). "Karen's Platform" button → `/about.html` (was dead `#`).
+
+### Navigation (all topbar pages)
+- Canonical nav order: **Dashboard → Leaderboard → Guilds → Events → Learn → Blog**. Avatar/profile chip → `/profile.html`. Applied to index, game, events, learn, contact, volunteer, profile, leaderboard, guilds.
+
+### Supabase / data notes (verified live via REST this session)
+- `user_tasks.completed_at` — **EXISTS** (migration not needed).
+- `profiles.guild_joined_at` — **EXISTS**.
+- `profiles.badges` — **DOES NOT EXIST** (column missing). Any badge UI must add it first.
+- `sheets-proxy` returns **CSV**, not JSON (`Content-Type: text/csv`). Only `shared.js` (volunteer counter) and `index.html` (`parseSheetCSV`) call it — both handle text. Do NOT `.json()` it.
+- All writes (tasks, chat, guild join, profile saves) go through **`window.sb`** (carries user JWT) so owner-scoped RLS passes. Reads of `profiles` rely on public/anon read being allowed (confirmed).
+
+### ⬜ Known issues / still to do
+- **Add `profiles.city` + `profiles.state`** (register2 upsert) and **`profiles.badges`** (badge features) columns.
+- **RLS policies must exist**: `user_tasks` (owner CRUD), `chat_messages` (auth insert / read), `profiles` (owner update + public read). Live-test join/add-task/chat/save.
+- **Old-nav pages NOT updated** (still on `shared.js` nav, no Guilds link): about, donate, blog, terms, privacy, admin, register, register2, and detailed `guild-*.html`. Cleanest fix = update the nav in `shared.js` once.
+- Detailed `guild-*.html` pages are now orphaned (not linked from new guilds.html).
+- HANDOFF's old note "Contact webhook needs wiring into contact.html" is **stale** — it IS wired (`MAKE_CONTACT_WEBHOOK`).
+
+### Commits (branch `master`, this session-continued)
+- `Add two-phase registration portal`, `Add sign-in link to register2 topbar`
+- `Add profile page, leaderboard, mobile polish`, `Profile page, leaderboard, mobile polish, nav links updated`
+- `Index missions add to board - auth gate and Supabase insert`
+- `Fix contact form webhook on index.html`
+- `Add guilds page with join flow`
+- `Contact link fix, about page, guild join flow, mission auth gate, nav updates, handoff docs`
+- `Replace leaderboard with Gemini design + live Supabase data`

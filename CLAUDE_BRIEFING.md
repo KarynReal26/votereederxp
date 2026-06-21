@@ -324,3 +324,11 @@ A guild change updates `profiles` and fires the guild's Make webhook (→ Gmail 
   ```
 - Do **not** `git init` at `C:\Vote Reeder` — the repo already exists in `site/`; doing so creates a nested repo.
 - Windows note: Git will warn `LF will be replaced by CRLF` on commit — harmless.
+
+---
+
+## ADDENDUM — June 21, 2026 (cont.)
+New/changed pages: **register2.html** (two-phase signup), **profile.html** (settings), **leaderboard.html** (new podium/countdown/twin-scoreboard design, live Supabase), **guilds.html** (rebuilt, direct join flow). game.html got mobile polish (hamburger + off-canvas sidebar) and a Join/Change Guild button. index.html missions now add to `user_tasks` (auth-gated) and render live from Google Sheets CSV (`parseSheetCSV`).
+Nav order everywhere: **Dashboard → Leaderboard → Guilds → Events → Learn → Blog**; avatar → /profile.html.
+Verified columns: `user_tasks.completed_at` EXISTS, `profiles.guild_joined_at` EXISTS, **`profiles.badges` MISSING**. `profiles.city`/`state` needed for register2.
+Full detail in **HANDOFF.md → "SESSION UPDATE — June 21, 2026 (Pages, Guilds, Leaderboard, Mobile, Nav)"**.
