@@ -144,7 +144,7 @@ body>nav{display:none !important;}
 // Endpoint: /.netlify/functions/events-proxy
 // Falls back to direct URL in local dev
 
-const PROXY_URL = '/.netlify/functions/events-proxy';
+const PROXY_URL = '/api/events';  // Netlify _redirects rewrites this to the Google Sheet CSV (same-origin, no CORS)
 const DIRECT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWflC-rX01G1bhMdahO-tCzkuDRjDmjouukJzC1AyVBPeEVnQmbDIDmGOBAkKUPDnZp-Xo-K1FJd7m/pub?gid=0&single=true&output=csv';
 
 const EVENT_TYPES = {
