@@ -111,7 +111,8 @@ if (!document.querySelector('.topbar')) {
   document.addEventListener('click', function(e){ if(!menu.contains(e.target) && e.target !== burger) menu.classList.remove('open'); });
 })();
 
-// ── FOOTER ───────────────────────────────────────────────
+// ── FOOTER (skip if the page already has its own <footer>) ──
+if (!document.querySelector('footer')) {
 const footerEl = document.createElement('footer');
 footerEl.innerHTML = `
 <div class="footer-logo">⚡ VoteReederXP</div>
@@ -146,6 +147,7 @@ footerEl.innerHTML = `
   </span>
 </div>`;
 document.body.appendChild(footerEl);
+} // end footer guard (skipped when the page already has its own <footer>)
 
 // ── AUTH MODAL ───────────────────────────────────────────
 const authEl = document.createElement('div');
