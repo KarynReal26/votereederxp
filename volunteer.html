@@ -363,29 +363,7 @@ body>nav{display:none !important;}
   </div>
 </div>
 
-<script>
-// Volunteer counter
-const VOL_CSV = '/.netlify/functions/sheets-proxy?gid=538338089';  // same-origin proxy (avoids Google Sheets CORS)
-fetch(VOL_CSV)
-  .then(r => r.text())
-  .then(text => {
-    const lines = text.trim().split('\n');
-    const cols = lines[1].split(',');
-    const count = parseInt(cols[1]) || 0;
-    const goal = parseInt(cols[2]) || 1000;
-    document.getElementById('vol-count').textContent = count.toLocaleString();
-    document.getElementById('vol-goal').textContent = goal.toLocaleString();
-    const pct = Math.min((count / goal) * 100, 100).toFixed(1);
-    document.getElementById('vol-bar').style.width = pct + '%';
-    document.getElementById('vol-pct').textContent = pct + '% to goal';
-  })
-  .catch(() => {
-    document.getElementById('vol-count').textContent = '38';
-    document.getElementById('vol-goal').textContent = '1,000';
-    document.getElementById('vol-bar').style.width = '3.8%';
-    document.getElementById('vol-pct').textContent = '3.8% to goal';
-  });
-</script>
+<!-- Volunteer counter is handled by shared.js (single source) -->
 <script src="shared.js"></script>
 </body>
 </html>
