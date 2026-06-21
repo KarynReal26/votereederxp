@@ -1,5 +1,5 @@
 # VoteReederXP — Session Handoff Document
-**Last Updated:** June 14, 2026  
+**Last Updated:** June 21, 2026  
 **Campaign:** Karen Reeder for Texas House District 29
 
 ---
@@ -31,6 +31,8 @@
 - `newsletter_signups` — newsletter subscribers
 - `events` — campaign events
 - `event_checkins` — event attendance
+- `chat_messages` — District 29 global chat (Realtime enabled). Columns: `user_id`, `message`, `username`, `guild`, `created_at`
+- `user_tasks` — per-user kanban board tasks. Columns: `id`, `user_id`, `status` (`in_progress`/`pending`/`complete`), `task_name`, `xp_value` (int), `verification` (`SELF REPORT`/`PHOTO PROOF`/`AUTO`), `created_at`
 
 ### RPC Functions:
 - `award_xp(p_user_id, p_action, p_category, p_amount)` — awards XP and logs transaction
@@ -1048,3 +1050,53 @@ Never move it above the shared.js script tag!
 3. Check `var` not `const` for SUPABASE_URL
 4. Check auth script is AFTER shared.js
 5. Check `not-logged-in` div has no inline display:none
+
+---
+
+## 📝 SESSION UPDATE — June 21, 2026 (New Dashboard + Avatars + Live Kanban/Chat)
+
+### Git / Repo
+- **Repo lives at `C:\Vote Reeder\site`** (the `.git` is in `site/`, NOT in the `Vote Reeder` root).
+- **Branch:** `master`  ·  **Remote:** `origin` → https://github.com/KarynReal26/votereederxp.git
+- Deploy/commit workflow: run git commands **from `C:\Vote Reeder\site`** (e.g. `git add -A && git commit -m "..." && git push origin master`).
+- Do NOT `git init` at the `Vote Reeder` root — it would create a nested repo. The real repo is already initialized in `site/`.
+
+### Completed This Session:
+1. **New dashboard design (`game.html`)** — redesigned game/dashboard layout. Cards use `#111827` backgrounds with cyan/purple neon accents; profile, badges, global chat, and the "My Board" kanban are the main panels.
+
+2. **Avatar picker (`register.html`)** — 72 avatars in `images/avatars/`, renamed to descriptive filenames `avatar-01-women-maya.png … avatar-72-symbol-progress.png`. Picker sits in the `// Create Your Account` section above the username field, with **3 tabs**:
+   - **Women** = `avatar-01` … `avatar-24`
+   - **Men** = `avatar-25` … `avatar-48`
+   - **Symbolic** = `avatar-49` … `avatar-72`
+   - Clicking selects with a glowing cyan border (+✓ badge). **Required** to submit.
+   - Selection stored as the **full relative path** `images/avatars/avatar-XX-...png` so `game.html` `loadProfile()` renders `<img src="${p.avatar}">` directly with no path rewriting.
+   - Wired into all 3 registration write paths: Supabase **auth metadata** (`options.data.avatar`), a **profiles** upsert (`avatar` column), and the **Make webhook** body.
+
+3. **Supabase tables added** (see Tables list above):
+   - **`chat_messages`** — global chat. **Realtime enabled** on this table (INSERT events drive the live feed).
+   - **`user_tasks`** — per-user kanban tasks.
+
+4. **Kanban wired to `user_tasks` (`game.html`)** — `loadMissions()` now reads `user_tasks` for the logged-in user and maps by `status`: `in_progress`→`#col-in-progress` (`.kin`), `pending`→`#col-pending` (`.kpe`), `complete`→`#col-complete` (`.kco`). Count badges `count-in`/`count-pending`/`count-complete` updated from bucket sizes.
+   - **Mark Complete** button → `markTaskComplete()` updates that row's `status` to `complete`.
+   - Sidebar **"Tap to Add to Board"** (`.t-btn`) → `addTaskToBoard()` inserts a `user_tasks` row with `status:'in_progress'` (reads name/XP/tag off the sidebar card).
+
+5. **Chat wired to `chat_messages` (`game.html`)** — `sendChat()` inserts `{ user_id, message, username, guild }`, pulling `username`/`guild` from the cached profile. `initChat()` realtime handler reads `username`/`guild` straight off the inserted row.
+
+6. **RLS fix — all writes use the authenticated client.** `user_tasks` insert/update, the `user_tasks` read in `loadMissions()`, and `chat_messages` insert now go through **`window.sb` (supabase-js, carries the user JWT)** instead of the anon-key `sbFetch` helper. This is required for owner-scoped RLS policies (`auth.uid() = user_id`) to pass. `sbFetch` was also hardened to tolerate empty/204 responses.
+
+### ⚠️ Verify / Still To Confirm:
+- **RLS policies must exist** for `user_tasks` (owner can SELECT/INSERT/UPDATE own rows) and `chat_messages` (auth users INSERT; public/auth SELECT). Confirm a real task add, a Mark Complete, and a chat message all persist.
+- **`user_tasks` column name is `xp_value`** (not `xp`) — code matches this.
+- The chat **read** in `initChat()` and the registration **profiles upsert** still use the anon-key path; revisit if RLS blocks them.
+- Dashboard now shows **live** kanban data — a user with zero `user_tasks` sees empty columns (the old demo cards are replaced on load).
+
+### Files Changed This Session:
+- `game.html` — new dashboard, live kanban (`loadMissions`/`markTaskComplete`/`addTaskToBoard`), live chat (`sendChat`), `window.sb` writes.
+- `register.html` — avatar picker (markup, CSS, JS, 3 write paths, required validation).
+- `images/avatars/` — 72 avatars renamed to descriptive filenames.
+
+### Commits (branch `master`):
+- `New dashboard design + 72 avatar images`
+- `Add avatar picker to registration`
+- `Avatar picker + live kanban and chat wired to Supabase`
+- `Fix RLS writes + update handoff docs`

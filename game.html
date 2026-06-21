@@ -419,7 +419,7 @@ async function loadProfile() {
 /* ── LOAD MISSIONS — live kanban from user_tasks ──
    Expected user_tasks columns: id, user_id (uuid), status
    ('in_progress' | 'pending' | 'complete'), task_name (text),
-   xp (int), verification (text, optional), created_at (timestamptz) */
+   xp_value (int), verification (text, optional), created_at (timestamptz) */
 const KCOLS = { in_progress: 'col-in-progress', pending: 'col-pending', complete: 'col-complete' };
 const KCOUNTS = { in_progress: 'count-in', pending: 'count-pending', complete: 'count-complete' };
 
@@ -433,7 +433,7 @@ function verifyMeta(v) {
 function renderTaskCard(t, status) {
   const id   = String(t.id);
   const name = escapeHtml(t.task_name || 'Task');
-  const xp   = (t.xp != null ? t.xp : 0);
+  const xp   = (t.xp_value != null ? t.xp_value : 0);
   const vm   = verifyMeta(t.verification);
   const top  = `<div class="kcard-top"><span class="kcard-name">${name}</span><span class="vtag ${vm.cls}">${vm.label}</span></div>`;
   if (status === 'complete') {
@@ -451,8 +451,10 @@ async function loadMissions() {
   if (!user) return;
   CURRENT_USER = user;
 
-  const tasks = await sbFetch(`user_tasks?user_id=eq.${user.id}&order=created_at.asc`);
-  if (!Array.isArray(tasks)) return;
+  const { data: tasks, error } = await window.sb
+    .from('user_tasks').select('*').eq('user_id', user.id)
+    .order('created_at', { ascending: true });
+  if (error || !Array.isArray(tasks)) return;
 
   const buckets = { in_progress: [], pending: [], complete: [] };
   tasks.forEach(t => { (buckets[t.status] || buckets.in_progress).push(t); });
@@ -468,11 +470,8 @@ async function loadMissions() {
 async function markTaskComplete(taskId, btn) {
   if (btn) { btn.disabled = true; btn.textContent = '✅ Complete!'; btn.style.background = '#00dc78'; }
   playPacManXPSound();
-  await sbFetch(`user_tasks?id=eq.${encodeURIComponent(taskId)}`, {
-    method: 'PATCH',
-    headers: { 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ status: 'complete' })
-  });
+  const { error } = await window.sb.from('user_tasks').update({ status: 'complete' }).eq('id', taskId);
+  if (error) console.error('markTaskComplete failed:', error);
   loadMissions();
 }
 
@@ -482,17 +481,14 @@ async function addTaskToBoard(task, btn) {
   const user = CURRENT_USER || (await window.sb.auth.getUser()).data.user;
   if (!user) return;
   CURRENT_USER = user;
-  await sbFetch('user_tasks', {
-    method: 'POST',
-    headers: { 'Prefer': 'return=minimal' },
-    body: JSON.stringify({
-      user_id: user.id,
-      status: 'in_progress',
-      task_name: task.task_name,
-      xp: task.xp,
-      verification: task.verification
-    })
+  const { error } = await window.sb.from('user_tasks').insert({
+    user_id: user.id,
+    status: 'in_progress',
+    task_name: task.task_name,
+    xp_value: task.xp,
+    verification: task.verification
   });
+  if (error) console.error('addTaskToBoard failed:', error);
   loadMissions();
 }
 
@@ -542,7 +538,8 @@ async function sendChat() {
         username = prof?.[0]?.username || 'Player';
         guild = prof?.[0]?.guild || null;
       }
-      await sbFetch('chat_messages', {method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({user_id: user.id, message: msg, username, guild: guild || null})});
+      const { error } = await window.sb.from('chat_messages').insert({ user_id: user.id, message: msg, username, guild: guild || null });
+      if (error) console.error('sendChat failed:', error);
       return; // realtime will pick it up
     }
   }

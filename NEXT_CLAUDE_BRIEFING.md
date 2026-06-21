@@ -1,7 +1,18 @@
 # VoteReederXP — Next Claude Briefing
-**Date:** June 16, 2026
+**Date:** June 21, 2026
 **Campaign:** Karen Reeder for Texas House District 29
 **Site:** https://votereederxp.com
+
+---
+
+## 🆕 LATEST SESSION — June 21, 2026
+Full details in **HANDOFF.md** → "SESSION UPDATE — June 21, 2026". Highlights:
+- **Git lives at `C:\Vote Reeder\site`, branch `master`**, remote `origin` → github.com/KarynReal26/votereederxp. Run git from `site/`. Never `git init` at the `Vote Reeder` root.
+- **New dashboard design** in `game.html`.
+- **Avatar picker** in `register.html` — 72 avatars (`images/avatars/avatar-01…72`), 3 tabs (Women 01–24 / Men 25–48 / Symbolic 49–72), required, stored as full path `images/avatars/...png` in `profiles.avatar`.
+- **New Supabase tables:** `chat_messages` (Realtime enabled) and `user_tasks` (kanban; XP column is `xp_value`).
+- **Kanban wired to `user_tasks`**, **chat wired to `chat_messages`**; all writes use the authenticated `window.sb` client (so owner-scoped RLS passes).
+- **TODO:** confirm RLS policies on `user_tasks` + `chat_messages` allow the logged-in user to read/insert/update.
 
 ---
 
