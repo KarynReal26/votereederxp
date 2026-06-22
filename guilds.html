@@ -110,7 +110,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#00d4aa;">"Resources win elections."</p>
         <p class="desc">The financial backbone of District 29. Fundraisers, donors, and budget strategists who know every door knocked costs money. The quiet powerhouse behind every campaign win.</p>
         <p class="count">👥 <span class="num" id="count-treasury">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#00d4aa,#ffd700);" onclick="joinGuild('The Treasury')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#00d4aa,#ffd700);" onclick="joinGuild('The Treasury', this)">Join This Guild</button>
       </div>
     </article>
 
@@ -123,7 +123,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#ffd700;">"Every vote counts. Get them all."</p>
         <p class="desc">Phone bankers, ride organizers, voter registrars. They measure success in votes cast and make sure nobody is left behind on election day.</p>
         <p class="count">👥 <span class="num" id="count-titans">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#ffd700,#00f0ff);" onclick="joinGuild('Turnout Titans')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#ffd700,#00f0ff);" onclick="joinGuild('Turnout Titans', this)">Join This Guild</button>
       </div>
     </article>
 
@@ -136,7 +136,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#ff8c00;">"Hold the line. Door by door."</p>
         <p class="desc">Ground troops who canvass the hardest neighborhoods and never back down from a difficult conversation. Boots on the ground.</p>
         <p class="count">👥 <span class="num" id="count-warriors">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#ff6600,#ffd700);" onclick="joinGuild('District Warriors')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#ff6600,#ffd700);" onclick="joinGuild('District Warriors', this)">Join This Guild</button>
       </div>
     </article>
 
@@ -149,7 +149,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#00aaff;">"Control the narrative."</p>
         <p class="desc">Communicators, storytellers, content creators, and press strategists. They turn policy into stories and stories into votes.</p>
         <p class="count">👥 <span class="num" id="count-signal">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#00aaff,#bf00ff);color:#fff;" onclick="joinGuild('The Signal')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#00aaff,#bf00ff);color:#fff;" onclick="joinGuild('The Signal', this)">Join This Guild</button>
       </div>
     </article>
 
@@ -162,7 +162,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#00ff88;">"Every voter has a story. Find it."</p>
         <p class="desc">Data analysts, voter researchers, and canvassing specialists. They map the district, find persuadable voters, and surface insights that win campaigns.</p>
         <p class="count">👥 <span class="num" id="count-miners">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#00ff88,#00f0ff);" onclick="joinGuild('The Miners')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#00ff88,#00f0ff);" onclick="joinGuild('The Miners', this)">Join This Guild</button>
       </div>
     </article>
 
@@ -175,7 +175,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#bf6fd6;">"Strategy before action."</p>
         <p class="desc">Campaign strategists, policy thinkers, and long-game planners who see three moves ahead. They build the systems and write the playbooks.</p>
         <p class="count">👥 <span class="num" id="count-architects">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#9b59b6,#ffd700);color:#fff;" onclick="joinGuild('The Architects')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#9b59b6,#ffd700);color:#fff;" onclick="joinGuild('The Architects', this)">Join This Guild</button>
       </div>
     </article>
 
@@ -188,7 +188,7 @@ body>nav{display:none !important;}
         <p class="tagline" style="color:#ff0080;">"Energy is contagious. Spread it."</p>
         <p class="desc">Social media amplifiers, event hypers, people who show up early and stay late. They turn a small rally into a movement and a single post into a viral wave.</p>
         <p class="count">👥 <span class="num" id="count-momentum">—</span> members</p>
-        <button class="join" style="background:linear-gradient(90deg,#ff0080,#ff3b3b);color:#fff;" onclick="joinGuild('The Momentum')">Join This Guild</button>
+        <button class="join" style="background:linear-gradient(90deg,#ff0080,#ff3b3b);color:#fff;" onclick="joinGuild('The Momentum', this)">Join This Guild</button>
       </div>
     </article>
   </section>
@@ -209,6 +209,8 @@ var GUILD_COUNT_IDS = {
 };
 
 function waitForSb(){return new Promise(r=>{if(window.sb)return r(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);r(window.sb);}else if(++n>50){clearInterval(i);r(null);}},100);});}
+// Race a Supabase call against a timeout so a stalled request can never hang the join silently.
+function withTimeout(p, ms){return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('Request timed out — check your connection and try again.')), ms||12000))]);}
 
 // Toast helper: bottom-center, fades in/out over ~3.5s
 var _toastTimer = null;
@@ -269,21 +271,36 @@ async function fillNav(){
 }
 
 // Join flow
-async function joinGuild(name){
+async function joinGuild(name, btn){
+  if(joinGuild._busy) return;
   const sb = await waitForSb();
-  if(!sb){ toast('Connection not ready, try again'); return; }
+  if(!sb){ toast('Connection not ready — try again in a moment.'); return; }
   const { data: { session } } = await sb.auth.getSession();
   if(!session){ window.location.href = '/register2.html'; return; }
-  const { data: prof } = await sb.from('profiles').select('guild,guild_joined_at').eq('id', session.user.id).maybeSingle();
-  if(prof && prof.guild === name){ toast('You are already in ' + name + '.'); return; }
-  if(prof && prof.guild && prof.guild_joined_at){
-    const days = (Date.now() - new Date(prof.guild_joined_at)) / 86400000;
-    if(days < 30){ toast('You can switch guilds again in ' + Math.ceil(30 - days) + ' days.'); return; }
+
+  joinGuild._busy = true;
+  const origLabel = btn ? btn.textContent : null;
+  if(btn){ btn.disabled = true; btn.textContent = 'Joining…'; }
+  function restore(){ joinGuild._busy = false; if(btn){ btn.disabled = false; btn.textContent = origLabel; } }
+
+  try {
+    const { data: prof } = await withTimeout(
+      sb.from('profiles').select('guild,guild_joined_at').eq('id', session.user.id).maybeSingle());
+    if(prof && prof.guild === name){ toast('You are already in ' + name + '.'); restore(); return; }
+    if(prof && prof.guild && prof.guild_joined_at){
+      const days = (Date.now() - new Date(prof.guild_joined_at)) / 86400000;
+      if(days < 30){ toast('You can switch guilds again in ' + Math.ceil(30 - days) + ' days.'); restore(); return; }
+    }
+    const { error } = await withTimeout(
+      sb.from('profiles').update({ guild: name, guild_joined_at: new Date().toISOString() }).eq('id', session.user.id));
+    if(error){ console.error(error); toast('Could not join — ' + (error.message || 'please try again.')); restore(); return; }
+    toast('⚡ Welcome to ' + name + '! Taking you to your dashboard…');
+    setTimeout(function(){ window.location.href = '/game.html'; }, 1300);
+  } catch(err){
+    console.error(err);
+    toast('Could not join — ' + (err.message || 'please try again.'));
+    restore();
   }
-  const { error } = await sb.from('profiles').update({ guild: name, guild_joined_at: new Date().toISOString() }).eq('id', session.user.id);
-  if(error){ console.error(error); toast('Could not join — please try again.'); return; }
-  toast('⚡ Welcome to ' + name + '! Taking you to your dashboard...');
-  setTimeout(function(){ window.location.href = '/game.html'; }, 1300);
 }
 
 // Init on load (no auth gate — page is public)
