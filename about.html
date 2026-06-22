@@ -26,6 +26,7 @@
   .bound{max-width:1080px;margin:0 auto;width:100%;padding:0 28px;position:relative;z-index:3;}
   a{color:inherit;}
 
+  /* .logo kept — the footer reuses it. The top nav is injected by shared.js. */
   .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 
   .ticker{overflow:hidden;padding:9px 0;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink),var(--neon-blue));background-size:200%;animation:grad 4s linear infinite;position:relative;z-index:3;}
@@ -72,7 +73,8 @@
   .sec-sub{max-width:60ch;margin:.7rem auto 0;color:var(--text-dim);}
 
   .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:3rem;}
-  .gphoto{height:220px;border-radius:8px;border:1px solid var(--border-glow);background:linear-gradient(135deg, rgba(0,240,255,0.08), rgba(191,0,255,0.1));display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);text-align:center;padding:10px;}
+  .gphoto{position:relative;overflow:hidden;height:220px;border-radius:8px;border:1px solid var(--border-glow);background:linear-gradient(135deg, rgba(0,240,255,0.08), rgba(191,0,255,0.1));display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.8rem;color:var(--text-dim);text-align:center;padding:10px;}
+  .gphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:3rem;}
   @media(max-width:680px){.grid2{grid-template-columns:1fr;}}
@@ -98,6 +100,8 @@
 <body>
   <canvas id="stars"></canvas>
 
+  <!-- top nav injected by shared.js (single shared menu site-wide) -->
+
   <div class="ticker"><div class="inner">
     <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM LEADER</span><span>🤝 COMMUNITY ADVOCATE</span><span>🌟 A CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
     <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM LEADER</span><span>🤝 COMMUNITY ADVOCATE</span><span>🌟 A CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
@@ -121,8 +125,9 @@
       <div class="cf-grid">
         <div>
           <div class="photo">
-            <img src="/images/karen-photo.png" alt="Karen Reeder" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+            <div class="sil"></div>
             <div class="scan"></div>
+            <div class="note">↳ images/karen-photo.png</div>
           </div>
           <div class="photo-cap">CANDIDATE — DISTRICT 29</div>
           <div class="statbox">
@@ -149,10 +154,10 @@
       <p class="sec-sub">Karen is a neighbor, a parent, and a problem-solver. Here's a glimpse behind the campaign.</p>
     </div>
     <div class="gallery">
-      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-1.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-2.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-3.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div class="gphoto" style="padding:0;overflow:hidden;"><img src="/images/about-photo-4.jpg" alt="Karen Reeder in the community" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div class="gphoto"><img src="images/about-photo-1.jpg" alt="Karen Reeder with a supporter at a campaign event"></div>
+      <div class="gphoto"><img src="images/about-photo-2.jpg" alt="Karen Reeder with community members at a campaign event"></div>
+      <div class="gphoto"><img src="images/about-photo-3.jpg" alt="Karen Reeder with supporters and volunteers at a campaign rally"></div>
+      <div class="gphoto"><img src="images/about-photo-4.jpg" alt="Karen Reeder holding a campaign yard sign"></div>
     </div>
 
     <!-- WHY SHE'S RUNNING -->
@@ -193,8 +198,7 @@
       function tick(){for(const p of parts){p.y-=p.s;p.x+=p.dx;p.tw+=0.03;if(p.y<-10)Object.assign(p,mk(false));}draw(false);requestAnimationFrame(tick);}
       addEventListener('resize',resize);resize();if(!reduce)tick();})();
   </script>
-
-  <!-- xp.js then shared.js LAST — shared.js creates window.sb -->
+  <!-- xp.js then shared.js LAST — shared.js creates window.sb and injects the shared nav/footer/auth modal -->
   <script src="xp.js"></script>
   <script src="shared.js"></script>
 </body>
