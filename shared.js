@@ -19,21 +19,29 @@ const page = location.pathname.split('/').pop() || 'index.html';
 if (!document.querySelector('.topbar')) {
   const navStyle = document.createElement('style');
   navStyle.textContent = `
-.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Inter',sans-serif;}
-.topbar .nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;gap:16px;flex-wrap:wrap;}
-.topbar .nav-left{display:flex;align-items:center;gap:28px;}
-.topbar .nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;text-decoration:none;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.topbar .nav-links{display:flex;gap:22px;list-style:none;margin:0;padding:0;}
-.topbar .nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);cursor:pointer;transition:.15s;text-decoration:none;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,1,15,0.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,240,255,0.22);font-family:'Rajdhani','Inter',sans-serif;}
+.topbar .nav-row{display:flex;align-items:center;justify-content:space-between;padding:11px 26px;gap:16px;flex-wrap:wrap;max-width:1280px;margin:0 auto;}
+.topbar .nav-left{display:flex;align-items:center;gap:30px;}
+.topbar .nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,#00f0ff,#bf00ff,#ff00aa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.topbar .nav-links{display:flex;gap:24px;list-style:none;margin:0;padding:0;}
+.topbar .nl{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,0.62);cursor:pointer;transition:.15s;text-decoration:none;}
 .topbar .nl:hover{color:#fff;}
-.topbar .nl.active{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
-.topbar .nav-right{display:flex;align-items:center;gap:14px;}
-.topbar .nav-donate{font-size:12px;font-weight:700;color:#ffd700;text-decoration:none;border:1px solid rgba(255,215,0,0.45);border-radius:6px;padding:6px 12px;}
-.topbar .nav-donate:hover{background:rgba(255,215,0,0.1);}
-.topbar .nav-login{font-size:13px;font-weight:600;color:#00e5ff;text-decoration:none;cursor:pointer;}
-.topbar .avatar-wrap{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:4px;cursor:pointer;}
-.topbar .av-ring{width:32px;height:32px;border-radius:8px;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;}
-.topbar .av-in{width:100%;height:100%;border-radius:7px;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
+.topbar .nl.active{color:#00f0ff;text-shadow:0 0 10px rgba(0,240,255,.5);}
+.topbar .nav-right{display:flex;align-items:center;gap:16px;}
+.topbar .nav-donate{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ffcf3f;text-decoration:none;border:1px solid rgba(255,207,63,0.45);border-radius:7px;padding:6px 14px;transition:.15s;white-space:nowrap;}
+.topbar .nav-donate:hover{background:rgba(255,207,63,0.12);}
+.topbar .nav-login{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#00f0ff;text-decoration:none;cursor:pointer;white-space:nowrap;}
+.topbar .nav-login:hover{text-decoration:underline;}
+.topbar .avatar-wrap{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:24px;padding:4px;cursor:pointer;}
+.topbar .av-ring{width:32px;height:32px;border-radius:8px;background:conic-gradient(from 0deg,#00f0ff,#bf00ff,#ff00aa,#00f0ff);padding:2px;}
+.topbar .av-in{width:100%;height:100%;border-radius:7px;background:#0a1230;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#5fa8ff;overflow:hidden;}
+.topbar .av-in img{width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:7px;display:block;}
+.topbar .nav-acct{display:flex;align-items:center;gap:14px;}
+.topbar .nav-bell{font-size:18px;line-height:1;cursor:pointer;opacity:.8;}
+.topbar .nav-bell:hover{opacity:1;}
+.topbar .acct-meta{display:flex;flex-direction:column;line-height:1.12;}
+.topbar .acct-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;}
+.topbar .acct-score{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;color:#ffcf3f;white-space:nowrap;}
 @media(max-width:680px){.topbar .nav-links{display:none;}}
 `;
   document.head.appendChild(navStyle);
@@ -56,8 +64,15 @@ if (!document.querySelector('.topbar')) {
     <div class="nav-right">
       <a class="nav-donate" href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate ▸</a>
       <a class="nav-login" href="#" id="nav-auth-btn">Login / Sign Up</a>
-      <div class="avatar-wrap" onclick="location.href='/profile.html'">
-        <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+      <div class="nav-acct" id="nav-account" style="display:none;">
+        <div class="nav-bell" title="Notifications">🔔</div>
+        <div class="avatar-wrap" title="Your profile" onclick="location.href='/profile.html'">
+          <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
+          <div class="acct-meta">
+            <span class="acct-name" id="nav-username">My Account</span>
+            <span class="acct-score" id="nav-score">0 XP · Supporter</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>`;
@@ -93,6 +108,8 @@ if (!document.querySelector('.topbar')) {
   const menu = document.createElement('div');
   menu.className = 'nav-menu';
   menu.innerHTML = `
+<a href="#" onclick="document.getElementById('auth-overlay').classList.add('open');this.closest('.nav-menu').classList.remove('open');return false;">🔑 Log In / Sign Up</a>
+<hr>
 <a href="/game.html">Dashboard</a>
 <a href="/leaderboard.html">Leaderboard</a>
 <a href="/guilds.html">Guilds</a>
@@ -324,72 +341,56 @@ sbScript.onload = () => {
   window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   checkForRecoveryToken();
 
+  // Rank thresholds — identical to game.html's dashboard so the nav number matches.
+  function rankFromXp(xp){xp=xp||0;return xp>=2500?'Champion':xp>=2000?'Catalyst':xp>=1500?'Builder':xp>=1000?'Advocate':xp>=500?'Organizer':'Supporter';}
+  function navInitials(name){if(!name)return'KR';const p=String(name).trim().split(/\s+/);return (p.length<2?p[0].slice(0,2):(p[0][0]+p[1][0])).toUpperCase();}
+
   window.sb.auth.onAuthStateChange(async (event, session) => {
     const authBtn = document.getElementById('nav-auth-btn');
-    const myXpLi  = document.getElementById('nav-myxp-li');
-    const rankLi  = document.getElementById('nav-rank-li');
+    const acct    = document.getElementById('nav-account');
 
     if (session && session.user) {
       const user = session.user;
-      const username = user.user_metadata?.username || user.user_metadata?.full_name || null;
+      const metaName = user.user_metadata?.username || user.user_metadata?.full_name || null;
 
-      // If OAuth user has no username yet, prompt them
-      if (!username && event === 'SIGNED_IN') {
-        showUsernamePrompt(user);
-        return;
-      }
+      // OAuth user without a username yet → prompt for one first
+      if (!metaName && event === 'SIGNED_IN') { showUsernamePrompt(user); return; }
 
-      // Show XP in nav
-      if (myXpLi) myXpLi.style.display = 'list-item';
-      if (rankLi) rankLi.style.display = 'list-item';
+      // Logged-in: show the account cluster (bell + avatar + score), hide the login
+      // link. The gold Donate button stays visible in BOTH states.
+      if (authBtn) authBtn.style.display = 'none';
+      if (acct) acct.style.display = 'flex';
 
-      // Load XP + rank — DEFERRED out of the auth callback on purpose.
-      // Supabase holds the auth lock for the duration of onAuthStateChange.
-      // awaiting a token-bearing query *inside* this callback deadlocks when a
-      // TOKEN_REFRESHED event fires (i.e. while the user lingers on a page) and
-      // then every later request hangs forever — that was the profile "Save"
-      // button freezing at "Saving…". setTimeout(0) runs it after the lock is
-      // released. (See supabase auth-js: never await sb calls in this callback.)
-      const _uid = session.user.id;
+      // Load profile OUTSIDE the auth callback. Supabase holds the auth lock during
+      // onAuthStateChange; awaiting a token-bearing query here deadlocks on
+      // TOKEN_REFRESHED and freezes later requests. setTimeout(0) runs it after release.
+      const _uid = user.id;
       setTimeout(async () => {
         try {
-          const { data: profile } = await window.sb
-            .from('profiles')
-            .select('total_xp, rank')
-            .eq('id', _uid)
-            .single();
-          if (profile) {
-            const navXp   = document.getElementById('nav-xp-display');
-            const navRank = document.getElementById('nav-rank-display');
-            if (navXp)   navXp.textContent   = '⚡ ' + (profile.total_xp || 0).toLocaleString() + ' XP';
-            if (navRank) navRank.textContent = profile.rank || 'Supporter';
+          const { data: p } = await window.sb.from('profiles')
+            .select('username, avatar, total_xp, guild').eq('id', _uid).single();
+          const name = (p && p.username) || metaName || 'My Account';
+          const xp   = (p && p.total_xp) || 0;            // total_xp — same column the dashboard reads
+          const nm = document.getElementById('nav-username'); if (nm) nm.textContent = name;
+          const sc = document.getElementById('nav-score');    if (sc) sc.textContent = xp.toLocaleString() + ' XP · ' + rankFromXp(xp);
+          const av = document.getElementById('nav-avatar');
+          if (av) {
+            // profiles.avatar holds a full path (images/avatars/…png) saved by the
+            // register/profile flows — use it as-is; fall back to initials if empty.
+            if (p && p.avatar) av.innerHTML = '<img src="' + p.avatar + '" alt="' + name + '">';
+            else av.textContent = navInitials(name);
           }
         } catch(e) {}
       }, 0);
 
-      // Update auth button to show username + logout
-      if (authBtn && username) {
-        authBtn.textContent = '👤 ' + username;
-        authBtn.style.color = '#00ff88';
-        authBtn.onclick = (e) => {
-          e.preventDefault();
-          if (confirm('Sign out?')) window.sb.auth.signOut().then(() => {
-            window.location.href = 'index.html';
-          });
-        };
-      }
-
     } else {
-      // Logged out state
-      if (myXpLi) myXpLi.style.display = 'none';
-      if (rankLi) rankLi.style.display = 'none';
+      // Logged-out: hide the account cluster, show Login / Sign Up (Donate stays visible)
+      if (acct) acct.style.display = 'none';
       if (authBtn) {
+        authBtn.style.display = '';
         authBtn.textContent = 'Login / Sign Up';
         authBtn.style.color = '';
-        authBtn.onclick = (e) => {
-          e.preventDefault();
-          document.getElementById('auth-overlay').classList.add('open');
-        };
+        authBtn.onclick = (e) => { e.preventDefault(); document.getElementById('auth-overlay').classList.add('open'); };
       }
     }
   });

@@ -12,7 +12,8 @@
   CLAUDE CODE: move shared styles to style.css if you prefer; keep #stars,
   wire the XP bar / stat pills / podium to Supabase (stubs marked below),
   swap image placeholders for real art, and keep xp.js then shared.js LAST.
-  index has its own .topbar so shared.js skips nav injection.
+  Nav is injected by shared.js (single shared menu site-wide) — index no longer
+  carries its own topbar. Keep xp.js then shared.js LAST before </body>.
 -->
 <style>
   :root{
@@ -29,17 +30,9 @@
   .bound{max-width:1280px;margin:0 auto;width:100%;padding:0 40px;position:relative;z-index:3;}
   a{color:inherit;}
 
-  /* ---------- topbar ---------- */
-  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
-  .topbar .row{display:flex;align-items:center;gap:18px;height:64px;}
+  /* ---------- logo (used by footer) ---------- */
   .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;
     background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-  .topbar nav{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap;}
-  .topbar nav a{font-family:var(--font-ui);font-weight:700;font-size:14px;letter-spacing:.5px;color:var(--text-dim);text-decoration:none;}
-  .topbar nav a:hover{color:var(--neon-blue);}
-  .donate{font-family:var(--font-ui);font-weight:700;font-size:13px;letter-spacing:.8px;text-decoration:none;color:#1a1300;
-    background:linear-gradient(135deg,var(--neon-gold),#ffe27a);padding:9px 16px;border-radius:8px;box-shadow:0 0 16px rgba(245,197,66,.35);}
-  @media(max-width:900px){.topbar nav{display:none;}}
 
   /* ---------- shared ---------- */
   .eyebrow{font-family:var(--font-ui);font-weight:700;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--neon-pink);text-shadow:0 0 12px var(--neon-pink);}
@@ -189,20 +182,7 @@
   <canvas id="stars"></canvas>
 
   <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="bound row">
-      <a href="/index.html" class="logo">⚡ VoteReederXP</a>
-      <nav>
-        <a href="/index.html">Home</a>
-        <a href="/leaderboard.html">Leaderboard</a>
-        <a href="/guilds.html">Guilds</a>
-        <a href="/how-to-play.html">How to Play</a>
-        <a href="/about.html">Karen's Platform</a>
-        <a href="/contact.html">Contact</a>
-      </nav>
-      <a href="https://secure.actblue.com/donate/votereeder" class="donate">Donate</a>
-    </div>
-  </header>
+  <!-- nav is injected by shared.js (single shared menu across all pages) -->
 
   <!-- HERO -->
   <section class="hero">
@@ -349,16 +329,66 @@
       addEventListener('resize',resize);resize();if(!reduce)tick();})();
 
     /* ============================================================
-       CLAUDE CODE — SUPABASE WIRING (window.sb), then xp.js + shared.js LAST
-       • Campaign XP bar  -> sum of profiles.xp_score vs goal (#xpText, .xpfill width)
-       • Hero stats       -> #stXP (total XP), #stVol (volunteers), #stMissions (user_tasks where status='complete'), #stDays auto
-       • Podium top 3     -> profiles order by xp_score desc limit 3
-                             DOM order is [.p2, .p1, .p3]; map results [0]=.p1,[1]=.p2,[2]=.p3
-                             set [data-name],[data-guild],[data-xp] per place
-       • Civic Champion   -> highest XP earned this month -> #cotmName
-       • Your rank        -> logged-in user's position -> #yourRank
+       LIVE DATA — pulls real numbers from Supabase (window.sb from shared.js).
+       Two things Claude Code must VERIFY against the real schema (flagged below):
+         (1) XP_COL  — the xp column name in `profiles` (same one leaderboard.html uses)
+         (2) missions — the table + status value for a completed mission/task
+       In preview (no window.sb) it safely keeps the placeholder numbers.
        ============================================================ */
+    (async function(){
+      function waitForSb(){return new Promise(res=>{if(window.sb)return res(window.sb);const t=setInterval(()=>{if(window.sb){clearInterval(t);res(window.sb);}},80);setTimeout(()=>{clearInterval(t);res(window.sb||null);},6000);});}
+      const comma = n => Number(n||0).toLocaleString('en-US');
+      const fmt = n => n>=1000 ? (n/1000).toFixed(n>=100000?0:1).replace(/\.0$/,'')+'K' : String(n);
+
+      // Days to election — Nov 3, 2026 (no DB needed)
+      const election = new Date('2026-11-03T00:00:00-06:00');
+      const days = Math.max(0, Math.ceil((election - new Date())/86400000));
+      const dEl = document.getElementById('stDays'); if(dEl) dEl.textContent = comma(days);
+
+      const sb = await waitForSb();
+      if(!sb) return; // preview / offline — keep placeholders
+
+      const XP_COL = 'total_xp';   // (1) VERIFIED: profiles.total_xp (matches leaderboard.html + game.html)
+      const GOAL = 100000;
+      try{
+        const { data: profs } = await sb.from('profiles').select(`username,guild,avatar,${XP_COL}`);
+        if(profs && profs.length){
+          const totalXP = profs.reduce((s,p)=> s + (p[XP_COL]||0), 0);
+          const xpText = document.getElementById('xpText');
+          if(xpText) xpText.textContent = comma(totalXP) + ' / ' + comma(GOAL) + ' XP';
+          const fill = document.querySelector('.xpfill');
+          if(fill) fill.style.width = Math.min(100,(totalXP/GOAL)*100) + '%';
+          const stXP = document.getElementById('stXP'); if(stXP) stXP.textContent = fmt(totalXP);
+          const stVol = document.getElementById('stVol'); if(stVol) stVol.textContent = comma(profs.length);
+
+          // Podium: top 3 by XP -> map to .p1 / .p2 / .p3
+          const top = [...profs].sort((a,b)=>(b[XP_COL]||0)-(a[XP_COL]||0)).slice(0,3);
+          const slot = {0:'.p1',1:'.p2',2:'.p3'};
+          top.forEach((p,i)=>{
+            const el = document.querySelector('#podium '+slot[i]); if(!el) return;
+            const nm=el.querySelector('[data-name]'); if(nm) nm.textContent=p.username||'—';
+            const gd=el.querySelector('[data-guild]'); if(gd) gd.textContent=p.guild||'';
+            const xp=el.querySelector('[data-xp]'); if(xp) xp.textContent=comma(p[XP_COL]||0)+' XP';
+          });
+        }
+
+        // (2) VERIFIED: game.html writes user_tasks.status='complete'. But user_tasks
+        // has owner-only RLS, so a direct anon count returns 0 on the public home page.
+        // home_stats() (SECURITY DEFINER) returns the true campaign-wide total past RLS;
+        // fall back to the direct count if the RPC isn't available.
+        let missions = null;
+        try{ const { data: hs } = await sb.rpc('home_stats'); if(hs && hs.missions_completed!=null) missions = hs.missions_completed; }catch(_){}
+        if(missions==null){
+          const { count } = await sb.from('user_tasks').select('*',{count:'exact',head:true}).eq('status','complete');
+          missions = count;
+        }
+        const stM = document.getElementById('stMissions');
+        if(stM && missions!=null) stM.textContent = comma(missions);
+      }catch(e){ console.warn('index live-data load failed', e); }
+    })();
   </script>
-  <!-- PRODUCTION: <script src="xp.js"></script> then <script src="shared.js"></script> LAST, below the auth gate -->
+  <!-- xp.js then shared.js LAST — shared.js creates window.sb and injects the shared nav/footer/auth modal -->
+  <script src="xp.js"></script>
+  <script src="shared.js"></script>
 </body>
 </html>
