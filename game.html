@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VoteReederXP — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body,input,button,textarea{font-family:'Inter',sans-serif;color:#fff;}
@@ -234,6 +234,19 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
 /* 5 — Let the secondary panels (badges, chat) recede a touch so the real flow
        — pick task → board → complete — leads. Profile card stays forward. */
 .badge-card,.chat-card{background:#0f1521!important;border-color:rgba(255,255,255,0.05)!important;}
+
+/* ============================================================
+   NAV BRAND-MATCH (CSS only) — matches the rebranded shared menu.
+   Rajdhani is loaded via the head <link>. Touches nav styling only —
+   not .layout/.kcol/.kcol-scroll/setLayout()/ticker/XP pill/bell/avatar.
+   ============================================================ */
+.topbar{ background:rgba(5,1,15,0.82) !important; backdrop-filter:blur(10px); border-bottom:1px solid rgba(0,240,255,0.22) !important; }
+.nl{ font-family:'Rajdhani','Inter',sans-serif !important; font-size:15px !important; font-weight:700 !important; letter-spacing:.5px !important; color:rgba(255,255,255,0.62) !important; }
+.nl:hover{ color:#fff !important; }
+.nl.a{ color:#00f0ff !important; border-bottom:2px solid #00f0ff !important; text-shadow:0 0 10px rgba(0,240,255,.5); }
+.nav-logo{ letter-spacing:1px; }
+.nav-donate{ font-family:'Rajdhani','Inter',sans-serif; font-size:14px;font-weight:700;letter-spacing:.5px; color:#ffcf3f;text-decoration:none; border:1px solid rgba(255,207,63,0.45); border-radius:7px;padding:6px 14px;white-space:nowrap;transition:.15s; }
+.nav-donate:hover{ background:rgba(255,207,63,0.12); }
 </style>
 </head>
 <body>
@@ -257,6 +270,7 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
     <div class="nav-right">
       <div class="boost-badge"><div class="boost-val">⚡ 2X XP</div><div class="boost-sub">02:14:37</div></div>
       <div class="xp-pill"><span class="xp-num" id="nav-xp">1,000</span><span class="xp-lbl">XP · <span id="nav-rank">Advocate</span></span></div>
+      <a class="nav-donate" href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate</a>
       <div class="bell">🔔<span class="bell-dot">3</span></div>
       <div class="avatar-wrap" onclick="location.href='/profile.html'">
         <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>

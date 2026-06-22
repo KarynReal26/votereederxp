@@ -10,25 +10,6 @@
 body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#fff;padding-top:64px;}
 body>nav{display:none !important;}
 a{color:inherit;}
-/* TOPBAR */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:200;background:#0d1120;border-bottom:1px solid rgba(255,255,255,0.07);}
-.nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;}
-.nav-left{display:flex;align-items:center;gap:32px;}
-.nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.nav-links{display:flex;gap:24px;}
-.nl{font-size:13px;font-weight:600;color:rgba(255,255,255,0.78);cursor:pointer;transition:.15s;}
-.nl:hover{color:#fff;}
-.nl.a{color:#00e5ff;border-bottom:2px solid #00e5ff;padding-bottom:2px;}
-.nav-right{display:flex;align-items:center;gap:14px;}
-.bell{position:relative;cursor:pointer;font-size:20px;}
-.bell-dot{position:absolute;top:-4px;right:-6px;background:#ff0080;color:#fff;font-size:8px;font-weight:900;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.avatar-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:5px 14px 5px 5px;cursor:pointer;}
-.av-ring{width:34px;height:34px;border-radius:9px;background:conic-gradient(from 0deg,#00e5ff,#bf00ff,#ff0080,#00e5ff);padding:2px;animation:spin 6s linear infinite;}
-.av-in{width:100%;height:100%;border-radius:7px;background:#0a1840;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#3c8cff;}
-.av-name{font-size:13px;font-weight:700;color:#fff;}
-.av-rank{font-size:11px;color:#ffd700;}
-@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
-@media(max-width:600px){.nav-links{display:none;}}
 /* LAYOUT */
 .wrap{max-width:920px;margin:0 auto;padding:40px 20px 90px;}
 .hero{text-align:center;margin-bottom:48px;}
@@ -81,31 +62,6 @@ footer .disclaimer{margin-top:10px;font-size:11px;color:rgba(255,255,255,0.75);}
 </style>
 </head>
 <body>
-<!-- TOPBAR -->
-<div class="topbar">
-<div class="nav-row">
-<div class="nav-left">
-<a href="/index.html" style="text-decoration:none;"><div class="nav-logo">VoteReederXP</div></a>
-<div class="nav-links">
-<span class="nl" onclick="location.href='/game.html'">Dashboard</span>
-<span class="nl" onclick="location.href='/leaderboard.html'">Leaderboard</span>
-<span class="nl" onclick="location.href='/guilds.html'">Guilds</span>
-<span class="nl" onclick="location.href='/events.html'">Events</span>
-<span class="nl" onclick="location.href='/learn.html'">Learn</span>
-<span class="nl" onclick="location.href='/blog.html'">Blog</span>
-<span class="nl" onclick="location.href='/about.html'">About</span>
-</div>
-</div>
-<div class="nav-right">
-<div class="bell">🔔<span class="bell-dot" id="notif-count">0</span></div>
-<div class="avatar-wrap" onclick="location.href='/profile.html'">
-<div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
-<div><div class="av-name" id="nav-username">My Account</div><div class="av-rank" id="nav-rank">Advocate</div></div>
-</div>
-</div>
-</div>
-</div>
-
 <div class="wrap">
 <div class="hero">
 <h1>How to Play VoteReederXP</h1>

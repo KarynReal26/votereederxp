@@ -20,19 +20,13 @@
     --font-display:'Orbitron',sans-serif;--font-ui:'Rajdhani',sans-serif;--font-body:'Exo 2',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-body);background:var(--bg-deep);color:var(--text-dim);-webkit-font-smoothing:antialiased;}
+  body{font-family:var(--font-body);background:var(--bg-deep);color:var(--text-dim);-webkit-font-smoothing:antialiased;padding-top:56px;}
   body>nav{display:none!important;}
   #stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
   .bound{max-width:1080px;margin:0 auto;width:100%;padding:0 28px;position:relative;z-index:3;}
   a{color:inherit;}
 
-  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
-  .topbar .row{display:flex;align-items:center;gap:18px;height:64px;}
   .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-  .topbar nav{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap;}
-  .topbar nav a{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--text-dim);text-decoration:none;}
-  .topbar nav a:hover,.topbar nav a.act{color:var(--neon-blue);}
-  @media(max-width:900px){.topbar nav{display:none;}}
 
   .ticker{overflow:hidden;padding:9px 0;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink),var(--neon-blue));background-size:200%;animation:grad 4s linear infinite;position:relative;z-index:3;}
   @keyframes grad{0%{background-position:0}100%{background-position:200%}}
@@ -103,20 +97,6 @@
 </head>
 <body>
   <canvas id="stars"></canvas>
-
-  <header class="topbar">
-    <div class="bound row">
-      <a href="/index.html" class="logo">⚡ VoteReederXP</a>
-      <nav>
-        <a href="/index.html">Home</a>
-        <a href="/leaderboard.html">Leaderboard</a>
-        <a href="/guilds.html">Guilds</a>
-        <a href="/how-to-play.html">How to Play</a>
-        <a href="/about.html" class="act">Karen's Platform</a>
-        <a href="/contact.html">Contact</a>
-      </nav>
-    </div>
-  </header>
 
   <div class="ticker"><div class="inner">
     <span>⚡ MECHANICAL ENGINEER</span><span>🎯 STEM LEADER</span><span>🤝 COMMUNITY ADVOCATE</span><span>🌟 A CHANCE FOR CHANGE</span><span>🏆 DISTRICT 29</span>
