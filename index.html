@@ -56,7 +56,7 @@
   .hcontent{position:relative;z-index:4;max-width:1040px;margin:0 auto;width:100%;padding:0 40px;}
   .hero .eyebrow{margin-bottom:18px;display:inline-block;}
   .eyebrow.white{color:#fff;text-shadow:0 0 14px rgba(0,240,255,.45);}
-  .htitle{font-family:var(--font-display);font-weight:900;font-size:clamp(2.4rem,8vw,6rem);line-height:1;letter-spacing:.03em;white-space:nowrap;
+  .htitle{font-family:var(--font-display);font-weight:900;font-size:clamp(1.6rem,8vw,6rem);line-height:1;letter-spacing:.03em;white-space:nowrap;
     background:linear-gradient(135deg,#fff 0%,var(--neon-blue) 38%,var(--neon-purple) 68%,var(--neon-pink) 100%);
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 28px rgba(0,240,255,.28));}
   .hsub{font-family:var(--font-display);font-weight:700;font-size:clamp(1rem,2.4vw,1.7rem);letter-spacing:6px;text-transform:uppercase;color:var(--neon-blue);text-shadow:0 0 20px var(--neon-blue);margin:12px 0 30px;}
@@ -91,6 +91,7 @@
   .kphoto{position:relative;aspect-ratio:4/5;border-radius:20px;
     background:radial-gradient(120% 90% at 50% 0%, rgba(255,0,170,0.18), transparent 55%),linear-gradient(180deg, rgba(0,240,255,0.10), rgba(5,1,15,0.7));
     border:1px solid var(--border-glow);box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 50px rgba(0,240,255,.2);display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+  .kphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
   .kphoto .sil{width:60%;height:80%;align-self:flex-end;border-radius:50% 50% 8px 8px;background:linear-gradient(180deg, rgba(0,240,255,.26), rgba(191,0,255,.2));filter:blur(1px);}
   .kphoto .nm{position:absolute;top:48%;left:0;right:0;transform:translateY(-60%);text-align:center;font-family:var(--font-display);font-weight:900;font-size:1.5rem;letter-spacing:2px;color:#fff;text-shadow:0 0 18px rgba(0,240,255,.5);}
   .kphoto .note{position:absolute;bottom:0;left:0;right:0;padding:8px;text-align:center;font-family:var(--font-ui);font-size:.78rem;color:var(--text-dim);background:rgba(0,0,0,.45);}
@@ -151,6 +152,36 @@
   .copy{font-size:13px;color:var(--text-dim);line-height:1.8;}
   .copy a{color:var(--neon-blue);text-decoration:none;}
 
+  /* ---------- MOBILE ---------- */
+  @media(max-width:600px){
+    .hcontent{padding:0 18px;}
+    .hero{padding:84px 0 96px;}
+    .hsub{letter-spacing:3px;margin:10px 0 22px;}
+    .hdesc{font-size:1.02rem;line-height:1.6;}
+    .xpbar{margin-bottom:22px;}
+    .hbtns{gap:10px;margin-bottom:30px;}
+    .hbtns .btn{padding:12px 18px;font-size:.9rem;}
+    .hstats{gap:14px 26px;}
+    .hstat .v{font-size:1.5rem;}
+    .hstat .n{font-size:.72rem;letter-spacing:1px;}
+    .ticker{padding:8px 14px;}
+    .ticker span{white-space:normal;display:block;text-align:center;font-size:.66rem;letter-spacing:1px;line-height:1.55;}
+    .meet{padding:54px 0;}
+    .meet .grid{gap:28px;}
+    .kname{font-size:clamp(2rem,8vw,2.6rem);}
+    .ktag{font-size:.95rem;letter-spacing:3px;}
+    .meet p{font-size:1.02rem;}
+    .lb-section{padding:54px 0 60px;}
+    .news{padding:54px 0;}
+    .news .panel{padding:24px 18px;margin:0 14px;}
+    footer{padding:36px 0 32px;}
+    .fnav{gap:14px 18px;}
+  }
+  @media(max-width:380px){
+    .hstats{gap:12px 18px;}
+    .hstat .v{font-size:1.35rem;}
+    .hbtns .btn{padding:11px 14px;font-size:.85rem;}
+  }
   @media(prefers-reduced-motion:reduce){.mascot svg,.xpfill,.btn{animation:none;transition:none;}}
 </style>
 </head>
@@ -216,9 +247,7 @@
   <section class="meet">
     <div class="bound grid">
       <div class="kphoto">
-        <div class="sil"></div>
-        <div class="nm">KAREN<br>REEDER</div>
-        <div class="note">↳ images/karen-photo1.png</div>
+        <img src="images/karen-photo1.png" alt="Karen Reeder">
       </div>
       <div>
         <span class="eyebrow">Meet the Candidate</span>
@@ -319,50 +348,17 @@
       function tick(){for(const p of parts){p.y-=p.s;p.x+=p.dx;p.tw+=0.03;if(p.y<-10)Object.assign(p,mk(false));}draw(false);requestAnimationFrame(tick);}
       addEventListener('resize',resize);resize();if(!reduce)tick();})();
 
+    /* ============================================================
+       CLAUDE CODE — SUPABASE WIRING (window.sb), then xp.js + shared.js LAST
+       • Campaign XP bar  -> sum of profiles.xp_score vs goal (#xpText, .xpfill width)
+       • Hero stats       -> #stXP (total XP), #stVol (volunteers), #stMissions (user_tasks where status='complete'), #stDays auto
+       • Podium top 3     -> profiles order by xp_score desc limit 3
+                             DOM order is [.p2, .p1, .p3]; map results [0]=.p1,[1]=.p2,[2]=.p3
+                             set [data-name],[data-guild],[data-xp] per place
+       • Civic Champion   -> highest XP earned this month -> #cotmName
+       • Your rank        -> logged-in user's position -> #yourRank
+       ============================================================ */
   </script>
-
-  <!-- LIVE DATA — Supabase wiring (window.sb is provided by shared.js below; this polls until ready) -->
-  <script>
-  (function(){
-    function fmt(n){return Number(n||0).toLocaleString();}
-    function initials(name){if(!name)return'??';const p=name.replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return(((p[0]||'')[0]||'')+((p[1]||'')[0]||(p[0]||'')[1]||'')).toUpperCase()||'??';}
-    function setAvatar(el,p){if(!el)return;if(p&&p.avatar){el.textContent='';el.style.backgroundImage='url('+p.avatar+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center top';}else{el.textContent=initials(p&&p.username);}}
-    function waitForSb(cb){if(window.sb)return cb(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);cb(window.sb);}else if(++n>80){clearInterval(i);}},100);}
-
-    // Volunteers — Google Sheet Config tab (Label,Count,Goal,...)
-    fetch('/.netlify/functions/sheets-proxy?gid=538338089').then(r=>r.text()).then(t=>{
-      for(const row of t.split('\n')){const c=row.split(',');if(c[0]&&/volunteer/i.test(c[0])){const v=parseInt((c[1]||'').replace(/[^0-9]/g,''),10);const el=document.getElementById('stVol');if(el&&!isNaN(v))el.textContent=fmt(v);break;}}
-    }).catch(()=>{});
-
-    waitForSb(async (sb)=>{
-      try{
-        const {data:profiles}=await sb.from('profiles').select('id,username,total_xp,guild,avatar').order('total_xp',{ascending:false});
-        const list=profiles||[];
-        // Campaign XP bar + #stXP
-        const GOAL=100000, totalXP=list.reduce((s,p)=>s+(p.total_xp||0),0);
-        const xpText=document.getElementById('xpText'); if(xpText)xpText.textContent=fmt(totalXP)+' / '+fmt(GOAL)+' XP';
-        const fill=document.querySelector('.xpfill'); if(fill)fill.style.width=Math.min(100,Math.round(totalXP/GOAL*100))+'%';
-        const stXP=document.getElementById('stXP'); if(stXP)stXP.textContent=fmt(totalXP);
-        // Podium top 3 (data [0]=.p1, [1]=.p2, [2]=.p3)
-        ['p1','p2','p3'].forEach((cls,idx)=>{const el=document.querySelector('.podium .'+cls);if(!el)return;const p=list[idx];
-          const av=el.querySelector('.avatar'),nm=el.querySelector('[data-name]'),gd=el.querySelector('[data-guild]'),xp=el.querySelector('[data-xp]');
-          if(!p){if(nm)nm.textContent='—';if(gd)gd.textContent='—';if(xp)xp.textContent='0 XP';if(av)av.textContent='—';return;}
-          if(nm)nm.textContent=p.username||'Anonymous';if(gd)gd.textContent=p.guild||'Unguilded';if(xp)xp.textContent=fmt(p.total_xp)+' XP';setAvatar(av,p);});
-        // Civic Champion = current #1
-        const cotm=document.getElementById('cotmName'); if(cotm)cotm.textContent=(list[0]&&list[0].username)||'—';
-        // Your rank
-        const {data:{user}}=await sb.auth.getUser();
-        const yr=document.getElementById('yourRank');
-        if(yr){if(user){const idx=list.findIndex(p=>p.id===user.id);yr.textContent=idx>=0?('#'+(idx+1)+' · '+fmt(list[idx].total_xp)+' XP'):'— complete a mission to get on the board —';}else yr.textContent='— sign in to see your rank —';}
-      }catch(e){console.warn('[home] supabase wiring failed',e);}
-      // Missions Completed — home_stats() RPC (reads past owner-only RLS)
-      try{const {data}=await sb.rpc('home_stats'); const m=document.getElementById('stMissions'); if(m&&data&&data.missions_completed!=null)m.textContent=fmt(data.missions_completed);}catch(e){}
-    });
-  })();
-  </script>
-
-  <!-- xp.js then shared.js LAST — shared.js creates window.sb (index has its own .topbar, so shared.js skips nav injection) -->
-  <script src="xp.js"></script>
-  <script src="shared.js"></script>
+  <!-- PRODUCTION: <script src="xp.js"></script> then <script src="shared.js"></script> LAST, below the auth gate -->
 </body>
 </html>

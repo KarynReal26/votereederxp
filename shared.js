@@ -225,6 +225,61 @@ authEl.innerHTML = `
     </div>
   </div>
 </div>`;
+
+// Inject self-contained auth-modal CSS (mirrors navStyle) so the login pop-up
+// is styled on every page even when style.css doesn't load. Scoped to #auth-overlay.
+const authStyle = document.createElement('style');
+authStyle.textContent = `
+#auth-overlay.auth-overlay{
+  --text-primary:#fff; --text-dim:rgba(255,255,255,.72); --dim:rgba(255,255,255,.6);
+  --neon-blue:#00f0ff; --neon-pink:#ff00aa; --neon-purple:#bf00ff;
+  --font-ui:'Rajdhani','Inter',sans-serif;
+  position:fixed; inset:0; z-index:5000; display:none;
+  align-items:flex-start; justify-content:center;
+  background:rgba(3,1,12,0.80); backdrop-filter:blur(6px);
+  overflow-y:auto; padding:0 16px;
+  font-family:'Exo 2','Inter',sans-serif;
+}
+#auth-overlay.auth-overlay.open{display:flex;}
+#auth-overlay .auth-box{
+  position:relative; width:100%; max-width:420px; margin:auto;
+  background:linear-gradient(180deg, rgba(18,10,48,0.97), rgba(8,4,22,0.98));
+  border:1px solid rgba(0,240,255,0.25); border-radius:18px;
+  padding:2.2rem 1.8rem 1.8rem;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6), 0 0 50px rgba(0,240,255,0.10);
+}
+#auth-overlay .auth-title{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:900;color:#fff;text-align:center;margin-bottom:.35rem;}
+#auth-overlay .auth-sub{font-family:var(--font-ui);font-size:.95rem;color:var(--text-dim);text-align:center;margin-bottom:1.5rem;}
+#auth-overlay .auth-form{display:none;flex-direction:column;}
+#auth-overlay .auth-form.active{display:flex;}
+#auth-overlay .form-group{margin-bottom:1rem;display:flex;flex-direction:column;gap:.35rem;}
+#auth-overlay .form-group label{font-family:var(--font-ui);font-size:.85rem;font-weight:600;color:var(--neon-blue);letter-spacing:.03em;}
+#auth-overlay input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(0,240,255,0.25);border-radius:9px;padding:.72rem 1rem;color:#fff;font-family:var(--font-ui);font-size:.95rem;outline:none;transition:border-color .2s, box-shadow .2s;}
+#auth-overlay input::placeholder{color:rgba(255,255,255,0.32);}
+#auth-overlay input:focus{border-color:var(--neon-blue);box-shadow:0 0 0 3px rgba(0,240,255,0.10);}
+#auth-overlay .forgot-link{font-family:var(--font-ui);font-size:.85rem;color:var(--neon-blue);cursor:pointer;align-self:flex-end;margin:-.15rem 0 .9rem;}
+#auth-overlay .forgot-link:hover{text-decoration:underline;}
+#auth-overlay .form-submit{width:100%;font-family:var(--font-ui);font-weight:700;font-size:1rem;letter-spacing:.04em;text-transform:uppercase;color:#04121a;background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));border:none;border-radius:9px;padding:.85rem;cursor:pointer;transition:.2s;box-shadow:0 0 18px rgba(0,240,255,0.2);}
+#auth-overlay .form-submit:hover{transform:translateY(-1px);filter:brightness(1.05);}
+#auth-overlay .form-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+#auth-overlay .auth-msg{text-align:center;font-family:var(--font-ui);font-size:.9rem;margin-top:.75rem;min-height:1.2em;}
+#auth-overlay .auth-msg.success{color:#00ff88;}
+#auth-overlay .auth-msg.error{color:#ff6a6a;}
+#auth-overlay .back-to-login{font-family:var(--font-ui);font-size:.88rem;color:var(--neon-blue);cursor:pointer;margin-bottom:1rem;display:inline-block;}
+#auth-overlay .back-to-login:hover{text-decoration:underline;}
+#auth-overlay .pw-requirements{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:.7rem 1rem;margin-top:.5rem;}
+#auth-overlay .pw-req-list{list-style:none;padding:0;margin:0;}
+#auth-overlay .pw-req-item{font-family:var(--font-ui);font-size:.82rem;color:#ff6a6a;padding:.12rem 0;}
+#auth-overlay .pw-req-item::before{content:'✗ ';}
+#auth-overlay .pw-req-item.met{color:#00ff88;}
+#auth-overlay .pw-req-item.met::before{content:'✓ ';}
+@media(max-width:480px){
+  #auth-overlay .auth-box{padding:1.8rem 1.2rem 1.4rem;}
+  #auth-overlay .auth-title{font-size:1.3rem;}
+}
+`;
+document.head.appendChild(authStyle);
+
 document.body.appendChild(authEl);
 
 // close on background click
