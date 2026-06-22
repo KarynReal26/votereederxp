@@ -10,7 +10,7 @@
 <!--
   leaderboard.html (self-contained preview). CLAUDE CODE: wire podium, player
   table, and guild table to Supabase (stubs at bottom); keep #stars; keep
-  xp.js then shared.js LAST. Nav is injected by shared.js (single shared menu site-wide).
+  xp.js then shared.js LAST. Has its own .topbar so shared.js skips nav.
 -->
 <style>
   :root{
@@ -27,7 +27,13 @@
   .bound{max-width:1160px;margin:0 auto;width:100%;padding:0 28px;position:relative;z-index:3;}
   a{color:inherit;}
 
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
+  .topbar .row{display:flex;align-items:center;gap:18px;height:64px;}
   .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .topbar nav{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap;}
+  .topbar nav a{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--text-dim);text-decoration:none;}
+  .topbar nav a:hover{color:var(--neon-blue);} .topbar nav a.act{color:var(--neon-blue);}
+  @media(max-width:900px){.topbar nav{display:none;}}
 
   .eyebrow{font-family:var(--font-ui);font-weight:700;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--neon-pink);text-shadow:0 0 12px var(--neon-pink);}
   .btn{font-family:var(--font-ui);font-weight:700;font-size:1rem;letter-spacing:1.2px;text-transform:uppercase;padding:13px 26px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .2s;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff;box-shadow:0 0 20px rgba(191,0,255,.4);}
@@ -103,6 +109,20 @@
       <circle cx="110" cy="95" r="28" fill="url(#suit)"/><circle cx="110" cy="95" r="28" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="2"/>
     </svg>
   </div>
+
+  <header class="topbar">
+    <div class="bound row">
+      <a href="/index.html" class="logo">⚡ VoteReederXP</a>
+      <nav>
+        <a href="/index.html">Home</a>
+        <a href="/leaderboard.html" class="act">Leaderboard</a>
+        <a href="/guilds.html">Guilds</a>
+        <a href="/how-to-play.html">How to Play</a>
+        <a href="/about.html">Karen's Platform</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
 
   <!-- HERO + COUNTDOWN -->
   <div class="phero">
@@ -184,66 +204,90 @@
       function tick(){for(const p of parts){p.y-=p.s;p.x+=p.dx;p.tw+=0.03;if(p.y<-10)Object.assign(p,mk(false));}draw(false);requestAnimationFrame(tick);}
       addEventListener('resize',resize);resize();if(!reduce)tick();})();
 
+    /* ============================================================
+       LIVE DATA — podium + Top Players + Top Guilds from Supabase (window.sb).
+       Reads profiles.total_xp (same column the dashboard uses). In preview
+       (no window.sb) it safely leaves the demo rows in place.
+       ============================================================ */
+    (function(){
+      function waitForSb(){return new Promise(res=>{if(window.sb)return res(window.sb);const t=setInterval(()=>{if(window.sb){clearInterval(t);res(window.sb);}},80);setTimeout(()=>{clearInterval(t);res(window.sb||null);},6000);});}
+      const comma = n => Number(n||0).toLocaleString('en-US');
+      const initials = u => (String(u||'').replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase() || 'P');
+      function rankName(xp){xp=xp||0; return xp>=2500?'Champion':xp>=2000?'Catalyst':xp>=1500?'Builder':xp>=1000?'Advocate':xp>=500?'Organizer':'Supporter';}
+      const GUILD_META = {
+        'The Momentum':{em:'🔥',tag:'Energy is contagious.'},
+        'The Treasury':{em:'⚡',tag:'Resources win elections.'},
+        'Turnout Titans':{em:'🌊',tag:'Every vote counts.'},
+        'District Warriors':{em:'⚔️',tag:'Hold the line.'},
+        'The Signal':{em:'📡',tag:'Control the narrative.'},
+        'The Architects':{em:'🏛️',tag:'Strategy before action.'},
+        'The Miners':{em:'⛏️',tag:'Every voter has a story.'}
+      };
+
+      (async function(){
+        const sb = await waitForSb();
+        if(!sb) return; // preview / offline — keep demo rows
+
+        let me = null;
+        try { const { data:{ user } } = await sb.auth.getUser(); me = user ? user.id : null; } catch(e){}
+
+        let profs;
+        try {
+          const { data } = await sb.from('profiles').select('id,username,guild,avatar,total_xp');
+          profs = data;
+        } catch(e){ console.warn('leaderboard load failed', e); return; }
+        if(!profs || !profs.length) return;
+
+        const ranked = [...profs].sort((a,b)=>(b.total_xp||0)-(a.total_xp||0));
+
+        // ---- Podium (top 3) ----
+        const slot = {0:'.p1',1:'.p2',2:'.p3'};
+        ranked.slice(0,3).forEach((p,i)=>{
+          const el = document.querySelector('#podium '+slot[i]); if(!el) return;
+          const av=el.querySelector('.avatar'); if(av) av.textContent = initials(p.username);
+          const nm=el.querySelector('[data-name]'); if(nm) nm.textContent = p.username||'—';
+          const gd=el.querySelector('[data-guild]'); if(gd) gd.textContent = p.guild||'';
+          const xp=el.querySelector('[data-xp]'); if(xp) xp.textContent = comma(p.total_xp||0)+' XP';
+        });
+
+        // ---- Top Players board (top 15, + your row if outside it) ----
+        const board = document.getElementById('playerBoard');
+        if(board){
+          const rowHTML = (p, rank, isMe) => {
+            const rk = rank<=3 ? 'rk g'+rank : 'rk';
+            const youTag = isMe ? ' (you)' : '';
+            return '<div class="lrow'+(isMe?' me':'')+'"><span class="'+rk+'">'+rank+'</span>'
+              + '<span class="av">'+initials(p.username)+'</span>'
+              + '<div class="info"><div class="nm">'+(p.username||'Player')+youTag+'</div>'
+              + '<div class="gd">'+(p.guild||'No Guild')+' · '+rankName(p.total_xp)+'</div></div>'
+              + '<span class="xp">'+comma(p.total_xp||0)+'</span></div>';
+          };
+          let rows = ranked.slice(0,15).map((p,i)=>rowHTML(p, i+1, me && p.id===me)).join('');
+          const myIdx = ranked.findIndex(p=>me && p.id===me);
+          if(myIdx >= 15) rows += rowHTML(ranked[myIdx], myIdx+1, true);
+          board.innerHTML = '<div class="ptitle">🏅 Top Players</div>' + rows;
+        }
+
+        // ---- Top Guilds board (sum total_xp by guild) ----
+        const gboard = document.getElementById('guildBoard');
+        if(gboard){
+          const sums = {};
+          Object.keys(GUILD_META).forEach(g=>sums[g]=0);
+          profs.forEach(p=>{ if(p.guild && sums[p.guild]!=null) sums[p.guild]+=(p.total_xp||0); });
+          const order = Object.keys(GUILD_META).sort((a,b)=>sums[b]-sums[a]);
+          const rows = order.map((g,i)=>{
+            const rank=i+1, rk = rank<=3 ? 'rk g'+rank : 'rk';
+            return '<div class="lrow"><span class="'+rk+'">'+rank+'</span>'
+              + '<span class="em">'+GUILD_META[g].em+'</span>'
+              + '<div class="info"><div class="nm">'+g+'</div>'
+              + '<div class="gd">"'+GUILD_META[g].tag+'"</div></div>'
+              + '<span class="xp">'+comma(sums[g])+'</span></div>';
+          }).join('');
+          gboard.innerHTML = '<div class="ptitle">⚔️ Top Guilds</div>' + rows;
+        }
+      })();
+    })();
   </script>
-
-  <!-- LIVE DATA — Supabase wiring (window.sb is provided by shared.js below; this polls until ready) -->
-  <script>
-  (function(){
-    const RANKS=[['Champion',2500],['Catalyst',2000],['Builder',1500],['Advocate',1000],['Organizer',500],['Supporter',0]];
-    function rankName(xp){xp=xp||0;for(const [n,t] of RANKS)if(xp>=t)return n;return'Supporter';}
-    function fmt(n){return Number(n||0).toLocaleString();}
-    function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-    function initials(name){if(!name)return'??';const p=name.replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return(((p[0]||'')[0]||'')+((p[1]||'')[0]||(p[0]||'')[1]||'')).toUpperCase()||'??';}
-    function setAvatar(el,p){if(!el)return;if(p&&p.avatar){el.textContent='';el.style.backgroundImage='url('+p.avatar+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center top';}else{el.textContent=initials(p&&p.username);}}
-    function avAttr(p){return p&&p.avatar?(' style="background-image:url('+esc(p.avatar)+');background-size:cover;background-position:center top;"'):'';}
-    const GUILDS=[
-      {name:'The Treasury',em:'⚡',tag:'"Resources win elections."'},
-      {name:'Turnout Titans',em:'🌊',tag:'"Every vote counts."'},
-      {name:'District Warriors',em:'⚔️',tag:'"Hold the line."'},
-      {name:'The Signal',em:'📡',tag:'"Control the narrative."'},
-      {name:'The Miners',em:'⛏️',tag:'"Every voter has a story."'},
-      {name:'The Architects',em:'🏛️',tag:'"Strategy before action."'},
-      {name:'The Momentum',em:'🔥',tag:'"Energy is contagious."'},
-    ];
-    function waitForSb(cb){if(window.sb)return cb(window.sb);let n=0;const i=setInterval(()=>{if(window.sb){clearInterval(i);cb(window.sb);}else if(++n>80){clearInterval(i);}},100);}
-
-    waitForSb(async (sb)=>{
-      let list=[];
-      try{const {data}=await sb.from('profiles').select('id,username,total_xp,guild,avatar').order('total_xp',{ascending:false});list=data||[];}
-      catch(e){console.warn('[leaderboard] supabase wiring failed',e);return;}
-      let meId=null;try{const {data:{user}}=await sb.auth.getUser();meId=user&&user.id;}catch(e){}
-
-      // Podium (data [0]=.p1, [1]=.p2, [2]=.p3)
-      ['p1','p2','p3'].forEach((cls,idx)=>{const el=document.querySelector('.podium .'+cls);if(!el)return;const p=list[idx];
-        const av=el.querySelector('.avatar'),nm=el.querySelector('[data-name]'),gd=el.querySelector('[data-guild]'),xp=el.querySelector('[data-xp]');
-        if(!p){if(nm)nm.textContent='—';if(gd)gd.textContent='—';if(xp)xp.textContent='0 XP';if(av)av.textContent='—';return;}
-        if(nm)nm.textContent=p.username||'Anonymous';if(gd)gd.textContent=p.guild||'Unguilded';if(xp)xp.textContent=fmt(p.total_xp)+' XP';setAvatar(av,p);});
-
-      // Top Players
-      const pb=document.getElementById('playerBoard');
-      if(pb){let html='<div class="ptitle">🏅 Top Players</div>';
-        const top=list.slice(0,15);
-        top.forEach((p,i)=>{const rk=i+1,g=rk===1?'g1':rk===2?'g2':rk===3?'g3':'',me=meId&&p.id===meId?' me':'';
-          html+='<div class="lrow'+me+'"><span class="rk '+g+'">'+rk+'</span><span class="av"'+avAttr(p)+'>'+(p.avatar?'':initials(p.username))+'</span><div class="info"><div class="nm">'+esc(p.username||'Anonymous')+(me?' (you)':'')+'</div><div class="gd">'+esc(p.guild||'Unguilded')+' · '+rankName(p.total_xp)+'</div></div><span class="xp">'+fmt(p.total_xp)+'</span></div>';});
-        if(meId&&!top.some(p=>p.id===meId)){const idx=list.findIndex(p=>p.id===meId);if(idx>=0){const p=list[idx];
-          html+='<div class="lrow me"><span class="rk">'+(idx+1)+'</span><span class="av"'+avAttr(p)+'>'+(p.avatar?'':initials(p.username))+'</span><div class="info"><div class="nm">'+esc(p.username||'You')+' (you)</div><div class="gd">'+esc(p.guild||'Unguilded')+' · '+rankName(p.total_xp)+'</div></div><span class="xp">'+fmt(p.total_xp)+'</span></div>';}}
-        if(!list.length)html+='<div class="lrow"><div class="info"><div class="gd">No players yet — be the first to earn XP!</div></div></div>';
-        pb.innerHTML=html;}
-
-      // Top Guilds (sum total_xp per guild)
-      const sums={};list.forEach(p=>{if(p.guild)sums[p.guild]=(sums[p.guild]||0)+(p.total_xp||0);});
-      const ranked=GUILDS.map(g=>({...g,xp:sums[g.name]||0})).sort((a,b)=>b.xp-a.xp);
-      const gb=document.getElementById('guildBoard');
-      if(gb){let html='<div class="ptitle">⚔️ Top Guilds</div>';
-        ranked.forEach((g,i)=>{const rk=i+1,c=rk===1?'g1':rk===2?'g2':rk===3?'g3':'';
-          html+='<div class="lrow"><span class="rk '+c+'">'+rk+'</span><span class="em">'+g.em+'</span><div class="info"><div class="nm">'+g.name+'</div><div class="gd">'+g.tag+'</div></div><span class="xp">'+fmt(g.xp)+'</span></div>';});
-        gb.innerHTML=html;}
-    });
-  })();
-  </script>
-
-  <!-- xp.js then shared.js LAST — shared.js creates window.sb -->
-  <script src="xp.js"></script>
-  <script src="shared.js"></script>
+  <!-- PRODUCTION: <script src="xp.js"></script> then <script src="shared.js"></script> LAST -->
 </body>
 </html>
