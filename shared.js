@@ -123,7 +123,7 @@ footerEl.innerHTML = `
   <li><a href="game.html#leaderboard">Leaderboard</a></li>
   <li><a href="game.html#guilds">Guilds</a></li>
   <li><a href="how-to-play.html">How to Play</a></li>
-  <li><a href="register.html">Voting 101</a></li>
+  <li><a href="/learn.html">Voting 101</a></li>
   <li><a href="volunteer.html">Join the Campaign</a></li>
   <li><a href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate</a></li>
   <li><a href="about.html">Karen's Platform</a></li>
@@ -143,7 +143,7 @@ footerEl.innerHTML = `
     &nbsp;·&nbsp;
     <a href="terms.html" style="color:#aaaacc;text-decoration:none;font-family:Rajdhani,sans-serif;">Terms of Use</a>
     &nbsp;·&nbsp;
-    <a href="register.html" style="color:#aaaacc;text-decoration:none;font-family:Rajdhani,sans-serif;">Voting 101</a>
+    <a href="/learn.html" style="color:#aaaacc;text-decoration:none;font-family:Rajdhani,sans-serif;">Voting 101</a>
   </span>
 </div>`;
 document.body.appendChild(footerEl);

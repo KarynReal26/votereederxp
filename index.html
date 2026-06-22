@@ -74,19 +74,15 @@
   .hstat .v{font-family:var(--font-display);font-weight:700;font-size:1.8rem;color:var(--neon-gold);text-shadow:0 0 12px var(--neon-gold);}
   .hstat .n{font-family:var(--font-ui);font-weight:600;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);}
   /* figures anchored to the bottom corners, out of the text's way */
-  .hkaren{position:absolute;left:2.5%;bottom:44px;z-index:2;}
-  .hkaren .ph{position:relative;width:208px;aspect-ratio:4/5;border-radius:18px;background:radial-gradient(120% 90% at 50% 0%, rgba(0,240,255,0.18), transparent 55%),linear-gradient(180deg, rgba(191,0,255,0.10), rgba(5,1,15,0.7));border:1px solid var(--border-glow);box-shadow:0 0 45px rgba(0,240,255,.25);display:flex;align-items:flex-end;justify-content:center;overflow:hidden;transform-origin:bottom center;animation:hfloat 4.4s ease-in-out infinite;}
-  .hkaren .sil{width:62%;height:82%;align-self:flex-end;border-radius:50% 50% 8px 8px;background:linear-gradient(180deg, rgba(0,240,255,.28), rgba(191,0,255,.2));filter:blur(1px);}
-  .hkaren .nm{position:absolute;top:46%;left:0;right:0;transform:translateY(-60%);text-align:center;font-family:var(--font-display);font-weight:900;font-size:1.1rem;letter-spacing:2px;color:#fff;text-shadow:0 0 18px rgba(0,240,255,.5);}
-  .hkaren .note{position:absolute;bottom:0;left:0;right:0;padding:6px;text-align:center;font-family:var(--font-ui);font-size:.66rem;color:var(--text-dim);background:rgba(0,0,0,.45);}
+  .hkaren{position:absolute;left:1.8%;bottom:26px;z-index:2;}
+  .hkaren img{width:clamp(180px,13vw,235px);height:auto;display:block;transform-origin:bottom center;animation:hfloat 4.4s ease-in-out infinite;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(0,240,255,.16));}
   @keyframes hfloat{0%,100%{transform:rotate(0) translateY(0);}33%{transform:rotate(.8deg) translateY(-12px);}66%{transform:rotate(-.8deg) translateY(-6px);}}
-  .mascot{position:absolute;right:2.5%;bottom:0;z-index:2;}
-  .mascot svg{width:232px;height:auto;filter:drop-shadow(0 0 34px rgba(191,0,255,.55));transform-origin:bottom center;animation:sway 3.6s ease-in-out infinite;}
-  @keyframes sway{0%,100%{transform:skewX(0) translateY(0);}25%{transform:skewX(-1.5deg) translateY(-7px);}50%{transform:skewX(0) translateY(0);}75%{transform:skewX(1.3deg) translateY(-5px);}}
+  .mascot{position:absolute;right:1.8%;bottom:26px;z-index:2;}
+  .mascot img{width:clamp(230px,17vw,330px);height:auto;display:block;transform-origin:bottom center;animation:hfloat 5s ease-in-out infinite;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55)) drop-shadow(0 0 30px rgba(191,0,255,.22));}
   .ticker{position:absolute;bottom:0;left:0;right:0;overflow:hidden;padding:9px 0;z-index:5;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink),var(--neon-blue));background-size:200%;animation:grad 4s linear infinite;}
   @keyframes grad{0%{background-position:0}100%{background-position:200%}}
   .ticker span{font-family:var(--font-ui);font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:.9rem;color:rgba(0,0,0,.82);white-space:nowrap;}
-  @media(max-width:1100px){.hkaren,.mascot{display:none;}}
+  @media(max-width:1150px){.hkaren,.mascot{display:none;}}
 
   /* ---------- MEET KAREN ---------- */
   .meet{padding:90px 0;position:relative;}
@@ -181,23 +177,10 @@
   <section class="hero">
     <!-- figures anchored to the bottom corners -->
     <div class="hkaren">
-      <div class="ph">
-        <img src="/images/karen-reeder-2.png" alt="Karen Reeder" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
-      </div>
+      <img src="images/karen-reeder-2.png" alt="Karen Reeder">
     </div>
     <div class="mascot">
-      <svg viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg" aria-label="GIG mascot placeholder">
-        <defs>
-          <linearGradient id="cape" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bf00ff"/><stop offset="1" stop-color="#ff00aa"/></linearGradient>
-          <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#0044ff"/></linearGradient>
-        </defs>
-        <path d="M120 80 L200 270 L130 248 L70 280 L80 80 Z" fill="url(#cape)" opacity="0.85"/>
-        <rect x="86" y="210" width="18" height="70" rx="8" fill="url(#suit)"/><rect x="116" y="210" width="18" height="70" rx="8" fill="url(#suit)"/>
-        <path d="M78 120 Q110 100 142 120 L150 215 Q110 230 70 215 Z" fill="url(#suit)"/>
-        <polygon points="110,150 120,168 110,186 100,168" fill="#ffcf3f"/>
-        <path d="M78 130 L55 170 L80 175 L88 150 Z" fill="url(#suit)"/><path d="M142 130 L165 170 L140 175 L132 150 Z" fill="url(#suit)"/>
-        <circle cx="110" cy="95" r="28" fill="url(#suit)"/><circle cx="110" cy="95" r="28" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="2"/>
-      </svg>
+      <img src="images/karen-hero.png" alt="VoteReederXP superhero">
     </div>
 
     <div class="hcontent">
@@ -233,7 +216,9 @@
   <section class="meet">
     <div class="bound grid">
       <div class="kphoto">
-        <img src="/images/karen-photo1.jpg" alt="Karen Reeder" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+        <div class="sil"></div>
+        <div class="nm">KAREN<br>REEDER</div>
+        <div class="note">↳ images/karen-photo1.png</div>
       </div>
       <div>
         <span class="eyebrow">Meet the Candidate</span>
@@ -339,7 +324,6 @@
   <!-- LIVE DATA — Supabase wiring (window.sb is provided by shared.js below; this polls until ready) -->
   <script>
   (function(){
-    const RANKS=[['Champion',2500],['Catalyst',2000],['Builder',1500],['Advocate',1000],['Organizer',500],['Supporter',0]];
     function fmt(n){return Number(n||0).toLocaleString();}
     function initials(name){if(!name)return'??';const p=name.replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/);return(((p[0]||'')[0]||'')+((p[1]||'')[0]||(p[0]||'')[1]||'')).toUpperCase()||'??';}
     function setAvatar(el,p){if(!el)return;if(p&&p.avatar){el.textContent='';el.style.backgroundImage='url('+p.avatar+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center top';}else{el.textContent=initials(p&&p.username);}}
@@ -377,7 +361,7 @@
   })();
   </script>
 
-  <!-- xp.js then shared.js LAST — shared.js creates window.sb -->
+  <!-- xp.js then shared.js LAST — shared.js creates window.sb (index has its own .topbar, so shared.js skips nav injection) -->
   <script src="xp.js"></script>
   <script src="shared.js"></script>
 </body>
