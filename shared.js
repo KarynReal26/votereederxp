@@ -146,6 +146,24 @@ footerEl.innerHTML = `
     <a href="/learn.html" style="color:#aaaacc;text-decoration:none;font-family:Rajdhani,sans-serif;">Voting 101</a>
   </span>
 </div>`;
+
+// Inject self-contained footer CSS (mirrors navStyle) so the injected footer is
+// styled on every page even when style.css doesn't load. Brand colors hardcoded.
+const footerStyle = document.createElement('style');
+footerStyle.textContent = `
+footer{border-top:1px solid rgba(0,240,255,0.20);padding:46px 24px 40px;text-align:center;background:rgba(5,1,15,0.72);position:relative;z-index:3;font-family:'Exo 2','Inter',sans-serif;}
+footer .footer-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:1px;background:linear-gradient(90deg,#00e5ff,#bf00ff,#ff0080);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+footer .footer-tag{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.60);margin-bottom:22px;}
+footer .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 22px;list-style:none;padding:0;margin:0 0 22px;}
+footer .footer-links li{list-style:none;}
+footer .footer-links a{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;color:rgba(255,255,255,0.70);text-decoration:none;}
+footer .footer-links a:hover{color:#00e5ff;}
+footer .footer-copy{font-family:'Rajdhani',sans-serif;font-size:13px;color:rgba(255,255,255,0.60);line-height:1.8;}
+footer .footer-copy a{color:#00e5ff;text-decoration:none;}
+footer .footer-copy a:hover{text-decoration:underline;}
+`;
+document.head.appendChild(footerStyle);
+
 document.body.appendChild(footerEl);
 } // end footer guard (skipped when the page already has its own <footer>)
 
