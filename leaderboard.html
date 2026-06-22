@@ -10,7 +10,7 @@
 <!--
   leaderboard.html (self-contained preview). CLAUDE CODE: wire podium, player
   table, and guild table to Supabase (stubs at bottom); keep #stars; keep
-  xp.js then shared.js LAST. Has its own .topbar so shared.js skips nav.
+  xp.js then shared.js LAST. Nav is injected by shared.js (single shared menu site-wide).
 -->
 <style>
   :root{
@@ -27,13 +27,8 @@
   .bound{max-width:1160px;margin:0 auto;width:100%;padding:0 28px;position:relative;z-index:3;}
   a{color:inherit;}
 
-  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
-  .topbar .row{display:flex;align-items:center;gap:18px;height:64px;}
+  /* .logo kept — the footer reuses it. The top nav is injected by shared.js. */
   .logo{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-  .topbar nav{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap;}
-  .topbar nav a{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--text-dim);text-decoration:none;}
-  .topbar nav a:hover{color:var(--neon-blue);} .topbar nav a.act{color:var(--neon-blue);}
-  @media(max-width:900px){.topbar nav{display:none;}}
 
   .eyebrow{font-family:var(--font-ui);font-weight:700;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--neon-pink);text-shadow:0 0 12px var(--neon-pink);}
   .btn{font-family:var(--font-ui);font-weight:700;font-size:1rem;letter-spacing:1.2px;text-transform:uppercase;padding:13px 26px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .2s;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff;box-shadow:0 0 20px rgba(191,0,255,.4);}
@@ -80,8 +75,8 @@
   .xp{font-family:var(--font-display);font-weight:700;font-size:.95rem;color:var(--neon-gold);white-space:nowrap;}
   .em{font-size:1.5rem;width:38px;text-align:center;}
 
-  .lbmascot{position:fixed;right:1%;bottom:0;width:155px;z-index:2;pointer-events:none;opacity:.9;}
-  .lbmascot svg{width:100%;height:auto;filter:drop-shadow(0 0 24px rgba(191,0,255,.5));transform-origin:bottom center;animation:sway 3.8s ease-in-out infinite;}
+  .lbmascot{position:fixed;right:1%;bottom:0;width:clamp(150px,13vw,200px);z-index:2;pointer-events:none;}
+  .lbmascot img{width:100%;height:auto;display:block;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55)) drop-shadow(0 0 24px rgba(191,0,255,.4));transform-origin:bottom center;animation:sway 3.8s ease-in-out infinite;}
   @keyframes sway{0%,100%{transform:skewX(0) translateY(0);}50%{transform:skewX(1.4deg) translateY(-8px);}}
   @media(max-width:1100px){.lbmascot{display:none;}}
   footer{border-top:1px solid var(--border-glow);padding:40px 0;text-align:center;color:var(--text-dim);font-size:13px;position:relative;z-index:3;}
@@ -94,35 +89,12 @@
 <body>
   <canvas id="stars"></canvas>
 
-  <!-- floating GIG mascot accent (placeholder art) -->
+  <!-- floating corner figure -->
   <div class="lbmascot">
-    <svg viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg" aria-label="GIG mascot">
-      <defs>
-        <linearGradient id="cape" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bf00ff"/><stop offset="1" stop-color="#ff00aa"/></linearGradient>
-        <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#0044ff"/></linearGradient>
-      </defs>
-      <path d="M120 80 L200 270 L130 248 L70 280 L80 80 Z" fill="url(#cape)" opacity="0.85"/>
-      <rect x="86" y="210" width="18" height="70" rx="8" fill="url(#suit)"/><rect x="116" y="210" width="18" height="70" rx="8" fill="url(#suit)"/>
-      <path d="M78 120 Q110 100 142 120 L150 215 Q110 230 70 215 Z" fill="url(#suit)"/>
-      <polygon points="110,150 120,168 110,186 100,168" fill="#ffcf3f"/>
-      <path d="M78 130 L55 170 L80 175 L88 150 Z" fill="url(#suit)"/><path d="M142 130 L165 170 L140 175 L132 150 Z" fill="url(#suit)"/>
-      <circle cx="110" cy="95" r="28" fill="url(#suit)"/><circle cx="110" cy="95" r="28" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="2"/>
-    </svg>
+    <img src="images/karen-fist.png" alt="Karen Reeder">
   </div>
 
-  <header class="topbar">
-    <div class="bound row">
-      <a href="/index.html" class="logo">⚡ VoteReederXP</a>
-      <nav>
-        <a href="/index.html">Home</a>
-        <a href="/leaderboard.html" class="act">Leaderboard</a>
-        <a href="/guilds.html">Guilds</a>
-        <a href="/how-to-play.html">How to Play</a>
-        <a href="/about.html">Karen's Platform</a>
-        <a href="/contact.html">Contact</a>
-      </nav>
-    </div>
-  </header>
+  <!-- top nav injected by shared.js (single shared menu site-wide) -->
 
   <!-- HERO + COUNTDOWN -->
   <div class="phero">
@@ -288,6 +260,8 @@
       })();
     })();
   </script>
-  <!-- PRODUCTION: <script src="xp.js"></script> then <script src="shared.js"></script> LAST -->
+  <!-- xp.js then shared.js LAST — shared.js creates window.sb and injects the shared nav/footer/auth modal -->
+  <script src="xp.js"></script>
+  <script src="shared.js"></script>
 </body>
 </html>
