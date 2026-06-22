@@ -75,7 +75,7 @@ window.joinMission = async function(action, category, xp, icon, verification) {
       if (sub)   sub.textContent   = 'Create a free account to start earning XP and make a real difference in District 29!';
       modal.classList.add('open');
     } else {
-      window.location.href = 'register.html';
+      window.location.href = '/register2.html';
     }
   }
 

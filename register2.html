@@ -1,319 +1,344 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoteReederXP — Join the Grid</title>
+<title>Join the Movement — VoteReederXP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <!--
-  register2.html — VISUAL REFRESH ONLY.
-  The <style> block + font <link> are the only things changed from the original.
-  All body markup, element IDs, inline handlers, and the entire <script> (Supabase
-  signUp, profiles upsert, avatar picker, faction select, redirect to /game.html)
-  are preserved exactly so the signup stays wired.
+  register2.html — MERGED SIGNUP (volunteer pipeline + gamified character setup).
+  Self-contained (no style.css dependency). On submit it: creates the auth account,
+  writes the volunteers row, awards 200 XP, upserts the profiles row (username +
+  avatar + guild + city/state), and fires the Make->Smartsheet webhook.
+  xp.js then shared.js stay LAST (shared.js provides window.sb + the login modal).
 -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --neon-blue:#00f0ff;--neon-purple:#bf00ff;--neon-pink:#ff00aa;--neon-gold:#ffcf3f;--neon-green:#00ff88;
-  --bg-deep:#05010f;--border-glow:rgba(0,240,255,0.22);--text-dim:rgba(255,255,255,0.78);
+  --bg-deep:#05010f;--bg-card:rgba(18,10,48,0.55);--border-glow:rgba(0,240,255,0.22);
+  --text:#fff;--text-dim:rgba(255,255,255,0.80);
   --font-display:'Orbitron',sans-serif;--font-ui:'Rajdhani',sans-serif;--font-body:'Exo 2',sans-serif;
 }
 html,body,input,button,textarea,select{font-family:var(--font-body);color:#fff;}
 html,body{background:var(--bg-deep);min-height:100%;overflow-x:hidden;}
+a{color:var(--neon-blue);}
+body>nav{display:none !important;}
+
+/* starfield bg */
 .bg{position:fixed;inset:0;z-index:0;background:radial-gradient(1200px 700px at 50% -10%, rgba(22,8,52,0.7), transparent 60%),var(--bg-deep);}
 .neb1{position:absolute;width:680px;height:680px;border-radius:50%;background:radial-gradient(circle,rgba(0,240,255,0.10) 0%,transparent 70%);top:-180px;left:-120px;}
 .neb2{position:absolute;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(255,0,170,0.09) 0%,transparent 70%);bottom:-120px;right:-90px;}
 .stars{position:absolute;inset:0;}
-.s{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite;}
+.st{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite;}
 @keyframes tw{0%,100%{opacity:.05;}50%{opacity:.7;}}
-@keyframes spin{from{filter:hue-rotate(0deg);}to{filter:hue-rotate(360deg);}}
 
-/* TOPBAR — matches the home page */
+/* topbar */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:200;backdrop-filter:blur(10px);background:rgba(5,1,15,0.72);border-bottom:1px solid var(--border-glow);}
 .nav-row{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;max-width:1180px;margin:0 auto;}
-.nav-logo{font-family:var(--font-display);font-size:20px;font-weight:900;letter-spacing:1px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo{font-family:var(--font-display);font-size:20px;font-weight:900;letter-spacing:1px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
 .signin-link{font-family:var(--font-ui);font-size:15px;color:var(--text-dim);text-decoration:none;font-weight:600;white-space:nowrap;}
 .signin-link b{color:var(--neon-blue);font-weight:700;}
 .signin-link:hover b{text-decoration:underline;}
 
-/* PORTAL */
-.portal-wrap{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:104px 20px 48px;z-index:10;}
-.terminal-card{background:linear-gradient(180deg, rgba(18,10,48,0.66), rgba(8,4,22,0.78));border:1px solid var(--border-glow);border-radius:22px;width:100%;max-width:1050px;padding:34px;display:grid;grid-template-columns:320px 1fr;gap:32px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 60px rgba(0,240,255,0.08);position:relative;min-height:620px;}
-.panel-header-badge{position:absolute;top:-14px;left:34px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));padding:5px 18px;border-radius:20px;font-family:var(--font-display);font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#04121a;box-shadow:0 0 20px rgba(0,240,255,0.35);}
+/* page */
+.reg-page{position:relative;z-index:10;max-width:780px;margin:0 auto;padding:100px 24px 64px;}
+.reg-eyebrow{font-family:var(--font-ui);font-weight:700;letter-spacing:4px;text-transform:uppercase;font-size:.8rem;color:#fff;text-shadow:0 0 14px rgba(0,240,255,.45);text-align:center;}
+.reg-title{font-family:var(--font-display);font-weight:900;font-size:clamp(1.9rem,5vw,2.8rem);text-align:center;margin:10px 0 18px;background:linear-gradient(135deg,#fff,var(--neon-blue) 55%,var(--neon-purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 
-/* LEFT — live player-card preview */
-.blueprint-panel{background:radial-gradient(120% 80% at 50% 0%, rgba(0,240,255,0.06), transparent 60%),rgba(10,18,42,0.35);border:1px solid var(--border-glow);border-radius:16px;padding:26px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;}
-.large-av-display{width:138px;height:138px;border-radius:26px;background:conic-gradient(from 0deg,var(--neon-blue),var(--neon-purple),var(--neon-pink),var(--neon-blue));padding:4px;position:relative;margin-bottom:18px;animation:spin 16s linear infinite;box-shadow:0 0 30px rgba(191,0,255,0.3);}
-.large-av-inner{width:100%;height:100%;border-radius:22px;background:#0a1230;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:44px;font-weight:900;color:#5fa8ff;overflow:hidden;}
-.large-av-inner img{width:100%;height:100%;object-fit:cover;animation:none;}
-.file-overlay{position:absolute;inset:4px;background:rgba(5,1,15,0.82);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:.2s;cursor:pointer;}
-.large-av-display:hover .file-overlay{opacity:1;}
-.fov-txt{font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--neon-blue);}
-.hud-tag{font-family:var(--font-display);font-size:18px;font-weight:900;margin-bottom:4px;color:#fff;word-break:break-all;}
-.hud-faction{font-family:var(--font-ui);font-size:14px;font-weight:700;color:var(--neon-purple);margin-bottom:16px;letter-spacing:.5px;}
-.hud-stat-list{width:100%;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;display:flex;flex-direction:column;gap:10px;text-align:left;}
-.hud-line{display:flex;justify-content:space-between;font-family:var(--font-ui);font-size:13px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
-.hud-val{font-weight:700;color:var(--neon-blue);}
+/* welcome banner */
+.reg-welcome{background:linear-gradient(135deg, rgba(0,240,255,0.08), rgba(191,0,255,0.08));border:1px solid var(--border-glow);border-radius:16px;padding:1.6rem 2rem;margin-bottom:1.8rem;text-align:center;}
+.reg-welcome-icon{font-size:2.2rem;margin-bottom:.5rem;}
+.reg-welcome-title{font-family:var(--font-display);font-size:clamp(1.1rem,3vw,1.4rem);font-weight:900;color:#fff;margin-bottom:.6rem;}
+.reg-welcome-text{font-size:1rem;color:var(--text-dim);line-height:1.7;max-width:600px;margin:0 auto;}
+.reg-welcome-text strong{color:#fff;}
 
-/* RIGHT */
-.slide-zone{position:relative;overflow:hidden;}
-.phase-screen{display:flex;flex-direction:column;gap:18px;transition:.3s ease-in-out;}
-.phase-screen.hidden{display:none;}
+/* form card */
+.reg-form-card{background:linear-gradient(180deg, rgba(18,10,48,0.66), rgba(8,4,22,0.78));border:1px solid var(--border-glow);border-radius:18px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.55),0 0 50px rgba(0,240,255,0.07);}
+.reg-form-header{background:linear-gradient(135deg,var(--neon-purple),var(--neon-blue));padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.reg-form-header span{font-family:var(--font-display);font-size:.74rem;letter-spacing:.08em;color:#04121a;font-weight:900;}
+.reg-form-body{padding:2rem 2.2rem;}
+@media(max-width:600px){.reg-form-body{padding:1.5rem 1.1rem;}}
 
-/* FACTION CARDS */
-.faction-matrix{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
-.faction-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:13px;cursor:pointer;transition:.2s;display:flex;gap:12px;align-items:center;}
-.faction-card:hover{background:rgba(255,255,255,0.05);transform:translateY(-2px);}
-.faction-card.active{background:rgba(0,240,255,0.06);border-color:var(--neon-blue);box-shadow:0 0 18px rgba(0,240,255,0.15);}
-.f-icon{font-size:24px;background:rgba(255,255,255,0.05);width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
-.f-meta{display:flex;flex-direction:column;gap:2px;}
-.f-title{font-family:var(--font-display);font-size:12px;font-weight:700;}
-.f-sub{font-family:var(--font-ui);font-size:12px;color:var(--text-dim);}
+/* sections */
+.reg-section{font-family:var(--font-display);font-size:.74rem;color:var(--neon-pink);letter-spacing:.14em;text-transform:uppercase;margin:1.8rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border-glow);}
+.reg-section:first-of-type{margin-top:0;}
 
-/* PRESET PICKER (kept; unused markup) */
-.preset-row{display:flex;gap:8px;margin-top:10px;width:100%;justify-content:center;}
-.preset-node{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.15s;}
-.preset-node:hover, .preset-node.active{background:rgba(191,0,255,0.1);border-color:var(--neon-purple);transform:scale(1.05);}
+/* fields */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+@media(max-width:600px){.form-row{grid-template-columns:1fr;}}
+.form-group{margin-bottom:1.2rem;}
+.form-label{display:block;font-family:var(--font-ui);font-size:.9rem;font-weight:600;color:var(--neon-blue);letter-spacing:.03em;margin-bottom:.4rem;}
+.form-label .req{color:var(--neon-pink);}
+.form-label .hint{color:var(--text-dim);font-size:.82rem;font-weight:400;}
+.form-input,.form-select,.form-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(0,240,255,0.25);border-radius:9px;padding:.72rem 1rem;color:#fff;font-family:var(--font-body);font-size:.97rem;outline:none;transition:border-color .2s, box-shadow .2s;}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,255,255,0.32);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--neon-blue);box-shadow:0 0 0 3px rgba(0,240,255,0.10);}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300f0ff' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;background-size:12px;padding-right:2.5rem;}
+.form-select option{background:#0a0a1a;color:#e0e0ff;}
+.form-textarea{resize:vertical;min-height:84px;}
 
-/* INPUTS */
-.form-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.input-block{display:flex;flex-direction:column;gap:7px;}
-.field-lbl{font-family:var(--font-ui);font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.2px;}
-.grid-input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:13px 15px;font-family:var(--font-body);font-size:15px;color:#fff;outline:none;transition:.15s;width:100%;}
-.grid-input::placeholder{color:rgba(255,255,255,0.3);}
-.grid-input:focus{border-color:var(--neon-blue);background:rgba(0,240,255,0.04);box-shadow:0 0 0 3px rgba(0,240,255,0.08);}
+/* username + password */
+.username-input{border-color:rgba(255,207,63,0.35)!important;}
+.username-input:focus{border-color:var(--neon-gold)!important;box-shadow:0 0 0 3px rgba(255,207,63,0.12)!important;}
+.username-note{background:rgba(255,207,63,0.06);border:1px solid rgba(255,207,63,0.2);border-radius:6px;padding:.5rem .75rem;font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);margin-top:.4rem;}
+#username-check-msg{font-size:.84rem;margin-top:.3rem;min-height:1.1em;font-family:var(--font-ui);}
+.pw-requirements{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:.75rem 1rem;margin-top:.5rem;display:none;}
+.pw-req-list{list-style:none;}
+.pw-req-item{font-family:var(--font-ui);font-size:.84rem;color:#ff6a6a;padding:.15rem 0;}
+.pw-req-item::before{content:'✗ ';}
+.pw-req-item.met{color:var(--neon-green);}
+.pw-req-item.met::before{content:'✓ ';}
 
-/* PASSWORD-STRENGTH ("firewall") METER */
-.firewall-wrap{margin-top:2px;}
-.firewall-track{background:rgba(255,255,255,0.07);height:6px;border-radius:10px;overflow:hidden;}
-.firewall-fill{height:100%;width:0%;background:var(--neon-pink);transition:.3s;}
+/* google / divider */
+.social-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:.6rem;padding:.8rem;border-radius:9px;font-family:var(--font-ui);font-size:.97rem;font-weight:700;cursor:pointer;transition:.2s;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;}
+.social-btn:hover{background:rgba(255,255,255,0.1);}
+.social-divider{display:flex;align-items:center;gap:.75rem;margin:1.4rem 0;}
+.social-divider-line{flex:1;height:1px;background:rgba(255,255,255,0.1);}
+.social-divider-text{font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);white-space:nowrap;}
 
-/* BUTTONS — match home */
-.terminal-btn{width:100%;font-family:var(--font-ui);font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:10px;padding:15px;cursor:pointer;transition:.2s;text-align:center;margin-top:8px;}
-.btn-primary{background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));color:#04121a;box-shadow:0 0 22px rgba(0,240,255,0.25);}
-.btn-primary:hover{filter:brightness(1.08);transform:translateY(-2px);}
-.btn-google{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0;}
-.btn-google:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.25);}
-.google-icon{width:18px;height:18px;}
-.divider-row{display:flex;align-items:center;text-align:center;color:rgba(255,255,255,0.3);font-family:var(--font-ui);font-size:12px;text-transform:uppercase;letter-spacing:2px;margin:8px 0;}
-.divider-row::before, .divider-row::after{content:'';flex:1;border-bottom:1px solid rgba(255,255,255,0.08);}
-.divider-row:not(:empty)::before{margin-right:.6em;}.divider-row:not(:empty)::after{margin-left:.6em;}
+/* areas of interest */
+.team-select{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(0,240,255,0.25);border-radius:9px;padding:.5rem;color:#fff;font-family:var(--font-body);font-size:.92rem;outline:none;cursor:pointer;}
+.team-select option{background:#0a0a1a;padding:.4rem;}
 
-/* AVATAR PICKER — 3-tab grid */
-.av-tabs{display:flex;gap:8px;width:100%;margin-top:6px;margin-bottom:8px;}
-.av-tab{flex:1;font-family:var(--font-ui);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text-dim);cursor:pointer;transition:.15s;}
-.av-tab:hover{color:#fff;border-color:var(--neon-blue);}
-.av-tab.active{color:#04121a;background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));border-color:var(--neon-blue);}
-.av-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;width:100%;max-height:158px;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.1);border-radius:10px;}
-.av-grid::-webkit-scrollbar{width:8px;}
-.av-grid::-webkit-scrollbar-thumb{background:rgba(0,240,255,0.3);border-radius:4px;}
-.av-opt{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:rgba(255,255,255,0.05);transition:border-color .15s,box-shadow .15s,transform .15s;}
-.av-opt img{width:100%;height:100%;object-fit:cover;display:block;}
-.av-opt:hover{border-color:rgba(0,240,255,0.5);transform:translateY(-1px);}
-.av-opt.active{border-color:var(--neon-blue);box-shadow:0 0 12px rgba(0,240,255,0.7);}
+/* guild picker */
+.guild-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+@media(max-width:600px){.guild-grid{grid-template-columns:1fr;}}
+.guild-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.1);border-radius:11px;padding:.8rem;cursor:pointer;transition:.2s;display:flex;gap:.7rem;align-items:center;}
+.guild-card:hover{background:rgba(255,255,255,0.05);transform:translateY(-2px);}
+.guild-card.active{background:rgba(0,240,255,0.06);border-color:var(--neon-blue);box-shadow:0 0 16px rgba(0,240,255,0.15);}
+.g-icon{font-size:22px;background:rgba(255,255,255,0.05);width:42px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.g-meta{display:flex;flex-direction:column;gap:1px;}
+.g-title{font-family:var(--font-display);font-size:.78rem;font-weight:700;}
+.g-sub{font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);}
 
-/* RESPONSIVE */
-@media(max-width:820px){
-  .terminal-card{grid-template-columns:1fr;gap:24px;padding:26px;min-height:0;}
-  .form-split{grid-template-columns:1fr;}
-  .faction-matrix{grid-template-columns:1fr;}
-  .av-grid{grid-template-columns:repeat(6,1fr);}
-}
+/* avatar picker */
+.avatar-tabs{display:flex;gap:.5rem;margin-bottom:.9rem;}
+.avatar-tab{flex:1;font-family:var(--font-ui);font-size:.86rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.7rem .5rem;background:rgba(255,255,255,0.04);border:1px solid rgba(0,240,255,0.45);border-radius:8px;color:var(--neon-blue);cursor:pointer;transition:.2s;}
+.avatar-tab:hover{color:#fff;border-color:var(--neon-blue);}
+.avatar-tab.active{color:#04121a;background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));border-color:var(--neon-blue);}
+.avatar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.7rem;background:rgba(255,255,255,0.02);border:1px solid var(--border-glow);border-radius:12px;padding:1rem;max-height:460px;overflow-y:auto;}
+.avatar-grid::-webkit-scrollbar{width:8px;}.avatar-grid::-webkit-scrollbar-thumb{background:rgba(0,240,255,0.3);border-radius:4px;}
+@media(max-width:600px){.avatar-grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));}}
+.avatar-option{position:relative;aspect-ratio:4/5;min-height:140px;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:rgba(10,10,30,0.55);transition:border-color .15s, box-shadow .15s, transform .15s;}
+.avatar-option img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block;}
+.avatar-option:hover{transform:translateY(-2px);border-color:rgba(0,240,255,0.5);}
+.avatar-option.selected{border-color:var(--neon-blue);box-shadow:0 0 14px rgba(0,240,255,0.7), inset 0 0 8px rgba(0,240,255,0.3);}
+.avatar-option.selected::after{content:'✓';position:absolute;top:2px;right:5px;font-size:.8rem;font-weight:700;color:var(--neon-blue);text-shadow:0 0 5px var(--neon-blue);}
+.avatar-selected-label{margin-top:.6rem;font-family:var(--font-ui);font-size:.84rem;color:var(--text-dim);min-height:1.1em;}
+.avatar-selected-label b{color:var(--neon-blue);text-transform:capitalize;}
 
-/* Hide the nav shared.js injects (this page has its own .topbar) */
-body>nav{display:none !important;}
+/* legal */
+.legal-box{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;}
+.legal-box p{font-family:var(--font-ui);font-size:.84rem;color:var(--text-dim);line-height:1.6;margin:0 0 .6rem;}
+.check-row{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.6rem;}
+.check-row input[type="checkbox"]{margin-top:3px;accent-color:var(--neon-blue);width:16px;height:16px;flex-shrink:0;}
+.check-row label{font-family:var(--font-ui);font-size:.9rem;color:var(--text-dim);cursor:pointer;line-height:1.5;}
+.check-row label .req{color:var(--neon-pink);}
+
+/* submit + success */
+.cf-turnstile{margin:1rem 0;}
+.form-error{color:var(--neon-pink);font-family:var(--font-ui);font-size:.84rem;margin-top:.3rem;display:none;}
+.reg-submit-btn{width:100%;font-family:var(--font-ui);font-size:1.05rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));color:#04121a;border:none;border-radius:11px;padding:1rem 2rem;cursor:pointer;margin-top:.5rem;transition:.2s;box-shadow:0 0 22px rgba(0,240,255,0.22);}
+.reg-submit-btn:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(0,240,255,0.4);}
+.reg-submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+#reg-submit-msg{text-align:center;font-family:var(--font-ui);font-size:.95rem;margin-top:.75rem;min-height:1.2em;}
+.already-member{text-align:center;margin-top:1.4rem;font-family:var(--font-ui);font-size:.92rem;color:var(--text-dim);}
+.already-member a{cursor:pointer;}
+.reg-success{display:none;text-align:center;padding:3rem 2rem;}
+.reg-success-icon{font-size:4rem;margin-bottom:1rem;}
+.reg-success h3{font-family:var(--font-display);font-size:1.5rem;color:var(--neon-blue);margin-bottom:.75rem;}
+.reg-success p{font-family:var(--font-ui);color:var(--text-dim);font-size:1rem;margin-bottom:.5rem;line-height:1.6;}
+.reg-success .xp-award{font-family:var(--font-display);font-size:2rem;color:var(--neon-gold);text-shadow:0 0 20px var(--neon-gold);margin:1.1rem 0;}
+.reg-success .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-ui);font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;border-radius:9px;padding:.8rem 1.4rem;margin:.3rem;}
+.btn-go{background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));color:#04121a;}
+.btn-home{background:transparent;border:1px solid var(--neon-blue);color:var(--neon-blue);}
 </style>
 </head>
 <body>
 <div class="bg"><div class="neb1"></div><div class="neb2"></div><div class="stars" id="stars"></div></div>
 
-<!-- TOPBAR NAVIGATION -->
 <div class="topbar">
-<div class="nav-row"><a href="/index.html" style="text-decoration:none;"><div class="nav-logo">VoteReederXP</div></a><a class="signin-link" href="/index.html">Already have an account? <b>Sign In</b></a></div>
+<div class="nav-row"><a href="/index.html" class="nav-logo">VoteReederXP</a><a class="signin-link" href="/index.html">Already have an account? <b>Sign In</b></a></div>
 </div>
 
-<!-- MAIN REGISTRATION & PROFILE PORTAL VIEW -->
-<div class="portal-wrap">
-<div class="terminal-card">
-<div class="panel-header-badge" id="sb-hud-matrix-title">System Identification</div>
+<div class="reg-page">
+<div class="reg-eyebrow">// Enlist Now</div>
+<h1 class="reg-title">Join the Movement</h1>
 
-<!-- LEFT SIDEBAR: LIVE BLUEPRINT HOLO CARD PREVIEW -->
-<div class="blueprint-panel">
-<div class="large-av-display">
-<div class="large-av-inner" id="sb-hud-avatar">🤖</div>
-<label class="file-overlay" for="sb-avatar-upload-hook">
-<span class="fov-txt">Custom Pic</span>
-</label>
-<input type="file" id="sb-avatar-upload-hook" accept="image/*" style="display:none;">
-</div>
-<div class="hud-tag" id="sb-hud-tag">NEW_USER</div>
-<div class="hud-faction" id="sb-hud-faction">Faction Unassigned</div>
-
-<div class="hud-stat-list">
-<div class="hud-line">Operational Base <span class="hud-val" id="sb-hud-base">Manvel, TX</span></div>
-<div class="hud-line">Firewall Security <span class="hud-val" id="sb-hud-security">0%</span></div>
-<div class="hud-line">Starting Multiplier <span class="hud-val">1.0x XP</span></div>
-</div>
+<div class="reg-welcome">
+<div class="reg-welcome-icon">🎖️</div>
+<div class="reg-welcome-title">Thank You for Stepping Up</div>
+<p class="reg-welcome-text">By volunteering for Karen Reeder's campaign, you're fighting for the future of <strong>District 29.</strong> Fill out the form below to join the team, create your VoteReederXP account, pick your guild, and start earning <strong>XP for every action.</strong> Welcome to the movement. ⚡</p>
 </div>
 
-<!-- RIGHT SIDEBAR: DUAL ACCESS FORM PORTAL -->
-<div class="slide-zone">
+<div class="reg-form-card">
+<div class="reg-form-header">
+<span>⚡ Volunteer Enlistment + Account Creation</span>
+<span>+200 XP on completion</span>
+</div>
+<div class="reg-form-body">
 
-<!-- PHASE 1: CHOOSE REGISTRATION ENTRY TYPE -->
-<form class="phase-screen" id="phase-registration-form">
-<div class="input-block">
-<label class="field-lbl" for="email">Account Email Node</label>
-<input class="grid-input" type="email" id="email" required placeholder="name@domain.com">
+<!-- SUCCESS STATE -->
+<div class="reg-success" id="reg-success">
+<div class="reg-success-icon">🎖️</div>
+<h3>MISSION ACCEPTED!</h3>
+<p>Welcome to Team Reeder! Check your email to confirm your account, then jump into the Grid to start earning XP.</p>
+<div class="xp-award">+200 XP AWARDED!</div>
+<p style="margin-top:1rem;">
+<a href="/game.html" class="btn btn-go">⚡ Enter the Grid</a>
+<a href="/index.html" class="btn btn-home">🏠 Home</a>
+</p>
 </div>
 
-<div class="input-block">
-<label class="field-lbl" for="password">Security Encryption Key (Password)</label>
-<input class="grid-input" type="password" id="password" required placeholder="••••••••••••" oninput="calculateFirewallIntegrity(this.value)">
-<div class="firewall-wrap">
-<div class="firewall-track"><div class="firewall-fill" id="sb-firewall-bar"></div></div>
-</div>
-</div>
-<button class="terminal-btn btn-primary" type="submit" id="btn-register-submit">Initialize Onboarding Protocol</button>
+<!-- MAIN FORM -->
+<div id="reg-form-inner">
 
-<div class="divider-row">OR</div>
-
-<!-- Google Oauth authentication pointer hook -->
-<button class="terminal-btn btn-google" type="button" id="btn-google-oauth">
-<img class="google-icon" src="https://www.gstatic.com/images/branding/product/1x/gsa_android_loupe_72dp.png" alt="Google">
-Authenticate via Google Network
+<button onclick="signInWithGoogleVolunteer()" class="social-btn">
+<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+Continue with Google
 </button>
-</form>
 
-<!-- PHASE 2: CHARACTER CUSTOMIZATION MATRIX (Hidden until Phase 1 Resolves) -->
-<div class="phase-screen hidden" id="phase-customization-matrix">
-<div class="form-split">
-<div class="input-block">
-<label class="field-lbl" for="sb-profile-username">Player Handle / Tag</label>
-<input class="grid-input" type="text" id="sb-profile-username" placeholder="Enter custom handle..." oninput="syncHudoTag(this.value)">
+<div class="social-divider"><div class="social-divider-line"></div><span class="social-divider-text">or fill out the form</span><div class="social-divider-line"></div></div>
+
+<!-- PERSONAL INFO -->
+<div class="reg-section">// Your Info</div>
+<div class="form-row">
+<div class="form-group"><label class="form-label">First Name <span class="req">*</span></label><input type="text" id="reg-first" class="form-input" placeholder="First name"></div>
+<div class="form-group"><label class="form-label">Last Name <span class="req">*</span></label><input type="text" id="reg-last" class="form-input" placeholder="Last name"></div>
 </div>
-<div class="input-block">
-<label class="field-lbl" for="sb-profile-bio">Mission Statement (Bio)</label>
-<input class="grid-input" type="text" id="sb-profile-bio" placeholder="What drives your civic strategy?">
+<div class="form-row">
+<div class="form-group"><label class="form-label">Email <span class="req">*</span></label><input type="email" id="reg-email" class="form-input" placeholder="your@email.com"></div>
+<div class="form-group"><label class="form-label">Phone <span class="req">*</span></label><input type="tel" id="reg-phone" class="form-input" placeholder="(555) 000-0000"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label class="form-label">Current Stage <span class="req">*</span></label>
+<select id="reg-stage" class="form-select"><option value="">Select one...</option><option>High School</option><option>College</option><option>Professional</option></select>
+</div>
+<div class="form-group"><label class="form-label">Profession / Job Title <span class="req">*</span></label><input type="text" id="reg-profession" class="form-input" placeholder="Your profession or job title"></div>
+</div>
+<div class="form-group"><label class="form-label">Company / School / Organization <span class="req">*</span></label><input type="text" id="reg-org" class="form-input" placeholder="School, company, or organization"></div>
+
+<!-- AREAS OF INTEREST -->
+<div class="reg-section">// How You Want to Help</div>
+<div class="form-group">
+<label class="form-label">Areas of Interest <span class="req">*</span> <span class="hint">— hold Ctrl/Cmd to pick multiple</span></label>
+<select id="reg-teams" multiple size="10" class="team-select">
+<option value="Core Leadership">🧭 Core Leadership</option>
+<option value="Data Team">📊 Data Team</option>
+<option value="Outreach Team">📣 Outreach Team</option>
+<option value="Field Team">🚪 Field Team</option>
+<option value="Finance Team">💰 Finance Team</option>
+<option value="Communications Team">📢 Communications Team</option>
+<option value="Operations Team">⚙️ Operations Team</option>
+<option value="Political / Coalitions Team">🤝 Political / Coalitions</option>
+<option value="Legal / Compliance Team">⚖️ Legal / Compliance</option>
+<option value="Issue Teams (Advisory)">🎯 Issue Teams (Advisory)</option>
+</select>
+<div class="form-error" id="teams-error">Please select at least one area of interest.</div>
+</div>
+<div class="form-group"><label class="form-label">Anything else you want us to know? <span class="hint">— optional</span></label><textarea id="reg-notes" class="form-textarea" placeholder="Skills, availability, questions..."></textarea></div>
+
+<!-- CHARACTER -->
+<div class="reg-section">// Create Your Character</div>
+
+<div class="form-group">
+<label class="form-label" style="color:var(--neon-gold);">⚡ Choose Your Avatar <span class="req">*</span></label>
+<div class="avatar-tabs">
+<button type="button" class="avatar-tab active" data-tab="women" onclick="switchAvatarTab('women')">Women</button>
+<button type="button" class="avatar-tab" data-tab="men" onclick="switchAvatarTab('men')">Men</button>
+<button type="button" class="avatar-tab" data-tab="symbol" onclick="switchAvatarTab('symbol')">Symbolic</button>
+</div>
+<div class="avatar-grid" id="avatar-grid"></div>
+<div class="avatar-selected-label" id="avatar-selected-label">No avatar selected yet — pick one to represent you.</div>
+<div class="form-error" id="avatar-error">Please choose an avatar.</div>
+</div>
+
+<div class="form-group">
+<label class="form-label" style="color:var(--neon-gold);">⚡ Username <span class="req">*</span></label>
+<input type="text" id="reg-username" class="form-input username-input" placeholder="e.g. TexasTechVoter" maxlength="30" oninput="checkRegUsername(this.value)">
+<div class="username-note">🛡️ <strong>Privacy rule:</strong> Do NOT use your real name. Choose an alias that protects your identity.</div>
+<div id="username-check-msg"></div>
+</div>
+
+<div class="form-group">
+<label class="form-label">Choose Your Guild <span class="req">*</span> <span class="hint">— you can switch guilds every 30 days</span></label>
+<div class="guild-grid">
+<div class="guild-card active" onclick="selectGuild(this,'The Treasury')"><div class="g-icon">⚡</div><div class="g-meta"><span class="g-title">The Treasury</span><span class="g-sub">Resources win elections.</span></div></div>
+<div class="guild-card" onclick="selectGuild(this,'Turnout Titans')"><div class="g-icon">🏆</div><div class="g-meta"><span class="g-title">Turnout Titans</span><span class="g-sub">Every vote counts.</span></div></div>
+<div class="guild-card" onclick="selectGuild(this,'District Warriors')"><div class="g-icon">🛡️</div><div class="g-meta"><span class="g-title">District Warriors</span><span class="g-sub">Hold the line.</span></div></div>
+<div class="guild-card" onclick="selectGuild(this,'The Signal')"><div class="g-icon">📡</div><div class="g-meta"><span class="g-title">The Signal</span><span class="g-sub">Control the narrative.</span></div></div>
+<div class="guild-card" onclick="selectGuild(this,'The Miners')"><div class="g-icon">⛏️</div><div class="g-meta"><span class="g-title">The Miners</span><span class="g-sub">Every voter has a story.</span></div></div>
+<div class="guild-card" onclick="selectGuild(this,'The Architects')"><div class="g-icon">🏛️</div><div class="g-meta"><span class="g-title">The Architects</span><span class="g-sub">Strategy before action.</span></div></div>
+<div class="guild-card" onclick="selectGuild(this,'The Momentum')"><div class="g-icon">🔥</div><div class="g-meta"><span class="g-title">The Momentum</span><span class="g-sub">Energy is contagious.</span></div></div>
 </div>
 </div>
-<div class="form-split">
-<div class="input-block">
-<label class="field-lbl" for="sb-profile-city">Operational City</label>
-<input class="grid-input" type="text" id="sb-profile-city" value="Manvel" oninput="syncHudoLocation()">
+
+<div class="form-row">
+<div class="form-group"><label class="form-label">City</label><input type="text" id="reg-city" class="form-input" value="Manvel"></div>
+<div class="form-group"><label class="form-label">State</label><input type="text" id="reg-state" class="form-input" value="Texas"></div>
 </div>
-<div class="input-block">
-<label class="field-lbl" for="sb-profile-state">Region State</label>
-<input class="grid-input" type="text" id="sb-profile-state" value="Texas" oninput="syncHudoLocation()">
-</div>
-</div>
-<div class="input-block">
-<label class="field-lbl">Select Guild / Faction Core Alignment</label>
-<div class="faction-matrix">
-<div class="faction-card active" onclick="selectFactionCard(this, '⚡ The Treasury', '#bf00ff')">
-<div class="f-icon">⚡</div>
-<div class="f-meta"><span class="f-title">The Treasury</span><span class="f-sub">Resource Mobilization & Scale</span></div>
-</div>
-<div class="faction-card" onclick="selectFactionCard(this, '🔥 The Momentum', '#ff0080')">
-<div class="f-icon">🔥</div>
-<div class="f-meta"><span class="f-title">The Momentum</span><span class="f-sub">Social Acceleration Wave</span></div>
-</div>
-<div class="faction-card" onclick="selectFactionCard(this, '🛡️ District Warriors', '#00e5ff')">
-<div class="f-icon">🛡️</div>
-<div class="f-meta"><span class="f-title">District Warriors</span><span class="f-sub">Ground Defense & Field Operations</span></div>
-</div>
-<div class="faction-card" onclick="selectFactionCard(this, '🏆 Turnout Titans', '#ffd700')">
-<div class="f-icon">🏆</div>
-<div class="f-meta"><span class="f-title">Turnout Titans</span><span class="f-sub">Civic Engagement Champions</span></div>
-</div>
-<div class="faction-card" onclick="selectFactionCard(this, '📡 The Signal', '#00ff88')">
-<div class="f-icon">📡</div>
-<div class="f-meta"><span class="f-title">The Signal</span><span class="f-sub">Narrative &amp; Message Control</span></div>
-</div>
-<div class="faction-card" onclick="selectFactionCard(this, '⛏️ The Miners', '#ff8a3d')">
-<div class="f-icon">⛏️</div>
-<div class="f-meta"><span class="f-title">The Miners</span><span class="f-sub">Data Mining &amp; Voter Insight</span></div>
-</div>
-<div class="faction-card" onclick="selectFactionCard(this, '🏛️ The Architects', '#7c9cff')">
-<div class="f-icon">🏛️</div>
-<div class="f-meta"><span class="f-title">The Architects</span><span class="f-sub">Strategy &amp; Master Planning</span></div>
+
+<!-- ACCOUNT -->
+<div class="reg-section">// Account Security</div>
+<div class="form-group">
+<label class="form-label">Password <span class="req">*</span></label>
+<input type="password" id="reg-password" class="form-input" placeholder="Create a strong password" minlength="8" oninput="checkRegPassword(this.value);document.getElementById('reg-pw-req').style.display='block'">
+<div class="pw-requirements" id="reg-pw-req">
+<ul class="pw-req-list">
+<li class="pw-req-item" id="rreq-length">At least 8 characters</li>
+<li class="pw-req-item" id="rreq-upper">One uppercase letter (A-Z)</li>
+<li class="pw-req-item" id="rreq-lower">One lowercase letter (a-z)</li>
+<li class="pw-req-item" id="rreq-number">One number (0-9)</li>
+<li class="pw-req-item" id="rreq-special">One special character (!@#$%^&amp;*)</li>
+</ul>
 </div>
 </div>
+
+<!-- LEGAL -->
+<div class="reg-section">// Terms &amp; Agreements</div>
+<div class="legal-box">
+<p>By submitting this form and signing up for texts, you consent to receive marketing text messages (e.g., event invitations, program updates), polling or voting-related text messages (e.g., election reminders, opinion surveys), and public service announcement text messages (e.g., legislative updates, voter education) from Karen Reeder for Texas House District 29 at the phone number you provided, including messages sent by autodialer. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe at any time.</p>
+<p>Your information will be used only for campaign communication purposes and will not be sold, rented, or shared with third parties outside of the campaign or its authorized service providers.</p>
+<p style="font-size:.78rem;color:rgba(255,255,255,0.35);">Paid for by Karen Reeder for Texas House District 29.</p>
+<div class="check-row"><input type="checkbox" id="reg-age"><label for="reg-age">I confirm that I am at least 18 years old (or 16 with parental consent for volunteer roles). <span class="req">*</span></label></div>
+<div class="check-row"><input type="checkbox" id="reg-tcpa"><label for="reg-tcpa">I agree to receive campaign text messages and understand I can opt out at any time by replying STOP. <span class="req">*</span></label></div>
+<div class="check-row"><input type="checkbox" id="reg-privacy"><label for="reg-privacy">I agree to the <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms of Use</a>. <span class="req">*</span></label></div>
+<div class="form-error" id="legal-error">Please check all required boxes above.</div>
 </div>
-<div class="input-block">
-<label class="field-lbl">Select Matrix Profile Avatar</label>
-<div class="av-tabs">
-<button type="button" class="av-tab active" data-tab="women" onclick="switchAvatarTab('women')">Women</button>
-<button type="button" class="av-tab" data-tab="men" onclick="switchAvatarTab('men')">Men</button>
-<button type="button" class="av-tab" data-tab="symbol" onclick="switchAvatarTab('symbol')">Symbolic</button>
-</div>
-<div class="av-grid" id="av-grid"></div>
-</div>
-<button class="terminal-btn btn-primary" type="button" id="sb-profile-launch-trigger">Save Configuration & Deploy to Grid</button>
-</div>
+
+<div class="cf-turnstile" data-sitekey="0x4AAAAAADlXJRYWrvbYfwji" data-theme="dark"></div>
+
+<button class="reg-submit-btn" id="reg-submit-btn" onclick="submitRegistration()">⚡ Enlist Now — Join Team Reeder</button>
+<div id="reg-submit-msg"></div>
+<div class="already-member">Already have an account? <a onclick="openLoginModal()">Log in here →</a></div>
+
+</div><!-- end reg-form-inner -->
 </div>
 </div>
 </div>
 
 <script>
-// Particle Background Generator
-const s=document.getElementById('stars');
-for(let i=0;i<60;i++){const d=document.createElement('div');d.className='s';const sz=Math.random()*1.5+0.3;d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*6+2}s;animation-delay:${Math.random()*8}s;`;s.appendChild(d);}
+const SUPABASE_URL = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
+const MAKE_VOLUNTEER_WEBHOOK = 'https://hook.us2.make.com/22nytlq9h0q8x4t0md8yfblf62r7w7fc';
 
-// Sound Synth Matrix Audio Context
-let audioCtx = null;
-function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-function playAscendingBeepSweep() {
-initAudio();
-let time = audioCtx.currentTime;
-let notes = [261.63, 329.63, 392.00, 523.25, 659.25, 1046.50];
-notes.forEach((freq, idx) => {
-let osc = audioCtx.createOscillator();
-let gain = audioCtx.createGain();
-osc.frequency.setValueAtTime(freq, time + (idx * 0.05));
-gain.gain.setValueAtTime(0.1, time + (idx * 0.05));
-gain.gain.exponentialRampToValueAtTime(0.001, time + (idx * 0.05) + 0.12);
-osc.connect(gain); gain.connect(audioCtx.destination);
-osc.start(time + (idx * 0.05)); osc.stop(time + (idx * 0.05) + 0.15);
-});
+// starfield
+(function(){const s=document.getElementById('stars');for(let i=0;i<60;i++){const d=document.createElement('div');d.className='st';const sz=Math.random()*1.5+0.3;d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*6+2}s;animation-delay:${Math.random()*8}s;`;s.appendChild(d);}})();
+
+// ── GUILD PICKER ──
+let selectedGuild = 'The Treasury'; // Treasury card starts active
+function selectGuild(card, name){
+  document.querySelectorAll('.guild-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  selectedGuild = name;
 }
 
-// Firewall Integrity key listener rules loop logic
-function calculateFirewallIntegrity(password) {
-const bar = document.getElementById('sb-firewall-bar');
-const label = document.getElementById('sb-hud-security');
-let strength = Math.min(password.length * 10, 100);
-
-bar.style.width = strength + '%';
-label.textContent = strength + '%';
-
-if (strength < 40) bar.style.background = '#ff0080';
-else if (strength < 80) bar.style.background = '#bf00ff';
-else bar.style.background = '#00ff88';
-}
-
-// Live HUD Sync listeners hooks functions
-function syncHudoTag(value) {
-document.getElementById('sb-hud-tag').textContent = value.trim() !== '' ? value.toUpperCase() : 'NEW_USER';
-}
-function syncHudoLocation() {
-const city = document.getElementById('sb-profile-city').value;
-const state = document.getElementById('sb-profile-state').value;
-document.getElementById('sb-hud-base').textContent = city + ', ' + state;
-}
-function selectFactionCard(card, factionName, colorCode) {
-document.querySelectorAll('.faction-card').forEach(c => c.classList.remove('active'));
-card.classList.add('active');
-const label = document.getElementById('sb-hud-faction');
-label.textContent = factionName;
-label.style.color = colorCode;
-selectedGuild = factionName.replace(/^[^A-Za-z]+/, '').trim(); // strip leading emoji
-}
-
-// ── REAL AVATAR PICKER (72 images in images/avatars/) ──
-const AV_DIR = 'images/avatars/';
+// ── AVATAR PICKER (72 images in images/avatars/) ──
+const AVATAR_DIR = 'images/avatars/';
 const AVATARS = {
 women: [
 'avatar-01-women-maya.png','avatar-02-women-sofia.png','avatar-03-women-jasmine.png','avatar-04-women-aaliyah.png',
@@ -340,114 +365,158 @@ symbol: [
 'avatar-69-symbol-wisdom.png','avatar-70-symbol-growth.png','avatar-71-symbol-excellence.png','avatar-72-symbol-progress.png'
 ]
 };
-let selectedAvatar = null; // full path: images/avatars/<file>
-let selectedGuild = 'The Treasury'; // default (Treasury card starts active)
-function renderAvGrid(tab) {
-const grid = document.getElementById('av-grid');
-if (!grid) return;
-grid.innerHTML = AVATARS[tab].map(f => {
-const path = AV_DIR + f;
-const active = selectedAvatar === path ? ' active' : '';
-return `<div class="av-opt${active}" title="${f}" onclick="selectAvatar('${path}', this)"><img src="${path}" alt="" loading="lazy"></div>`;
-}).join('');
+let selectedAvatar = null;
+function prettyAvatarName(file){ return file.replace(/^avatar-\d+-(women|men|symbol)-/, '').replace(/\.png$/, '').replace(/-/g, ' '); }
+function renderAvatarGrid(tab){
+  const grid = document.getElementById('avatar-grid');
+  if (!grid) return;
+  grid.innerHTML = AVATARS[tab].map(file => {
+    const path = AVATAR_DIR + file;
+    const sel = (selectedAvatar === path) ? ' selected' : '';
+    const name = prettyAvatarName(file);
+    return `<div class="avatar-option${sel}" title="${name}" onclick="selectAvatar('${path}', this)"><img src="${path}" alt="${name}" loading="lazy"></div>`;
+  }).join('');
 }
-function switchAvatarTab(tab) {
-document.querySelectorAll('.av-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-renderAvGrid(tab);
+function switchAvatarTab(tab){
+  document.querySelectorAll('.avatar-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  renderAvatarGrid(tab);
 }
-function selectAvatar(path, el) {
-selectedAvatar = path;
-document.querySelectorAll('.av-opt').forEach(o => o.classList.remove('active'));
-el.classList.add('active');
-document.getElementById('sb-hud-avatar').innerHTML = `<img src="${path}" alt="Avatar">`;
+function selectAvatar(path, el){
+  selectedAvatar = path;
+  document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  const label = document.getElementById('avatar-selected-label');
+  if (label) label.innerHTML = 'Selected: <b>' + prettyAvatarName(path.split('/').pop()) + '</b>';
+  const err = document.getElementById('avatar-error');
+  if (err) err.style.display = 'none';
 }
-renderAvGrid('women');
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ renderAvatarGrid('women'); });
+else renderAvatarGrid('women');
 
-// Wait for shared.js to create window.sb
-function waitForSb() {
-return new Promise(resolve => {
-if (window.sb) return resolve(window.sb);
-let n = 0;
-const i = setInterval(() => {
-if (window.sb) { clearInterval(i); resolve(window.sb); }
-else if (++n > 50) { clearInterval(i); resolve(null); }
-}, 100);
-});
+function checkRegUsername(val){
+  const msg = document.getElementById('username-check-msg');
+  if (!val) { msg.textContent = ''; return; }
+  if (val.length < 3) { msg.style.color = '#ff6a6a'; msg.textContent = '✗ Too short (min 3 characters)'; return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(val)) { msg.style.color = '#ff6a6a'; msg.textContent = '✗ Letters, numbers, and underscores only'; return; }
+  msg.style.color = '#00ff88'; msg.textContent = '✓ Looks good!';
+}
+function checkRegPassword(pw){
+  const set = (id, met) => { const el = document.getElementById(id); if (el) el.classList.toggle('met', met); };
+  set('rreq-length', pw.length >= 8);
+  set('rreq-upper', /[A-Z]/.test(pw));
+  set('rreq-lower', /[a-z]/.test(pw));
+  set('rreq-number', /[0-9]/.test(pw));
+  set('rreq-special', /[^a-zA-Z0-9]/.test(pw));
+}
+function isPasswordStrong(pw){ return pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[^a-zA-Z0-9]/.test(pw); }
+function showRegMsg(type, text){
+  const msg = document.getElementById('reg-submit-msg');
+  const ok = type === 'success';
+  msg.style.cssText = `color:${ok ? '#00ff88' : '#ff6a6a'};margin-top:.75rem;font-family:var(--font-ui);font-size:.95rem;text-align:center;`;
+  msg.textContent = text;
+}
+function openLoginModal(){
+  const overlay = document.getElementById('auth-overlay');
+  if (overlay) { overlay.classList.add('open'); if (window.switchTab) switchTab('login'); }
+  else { window.location.href = '/index.html'; }
 }
 
-let REGISTERED_USER_ID = null;
-
-// Avatar File Reader Sync Loader Stream logic
-document.getElementById('sb-avatar-upload-hook').addEventListener('change', function(e) {
-const file = e.target.files[0];
-if (file) {
-const reader = new FileReader();
-reader.onload = function(event) {
-document.querySelectorAll('.preset-node').forEach(n => n.classList.remove('active'));
-document.getElementById('sb-hud-avatar').innerHTML = `<img src="${event.target.result}" alt="Avatar">`;
+window.signInWithGoogleVolunteer = async function(){
+  localStorage.setItem('reg_source', 'volunteer');
+  const go = (sb) => sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/index.html' } });
+  if (window.sb) { await go(window.sb); }
+  else { const wait = setInterval(() => { if (window.sb) { clearInterval(wait); go(window.sb); } }, 200); }
 };
-reader.readAsDataURL(file);
-}
-});
 
-// Phase Transition Form loop interceptor pointer
-document.getElementById('phase-registration-form').addEventListener('submit', async function(e) {
-e.preventDefault();
-const email = document.getElementById('email').value.trim();
-const password = document.getElementById('password').value;
-const btn = document.getElementById('btn-register-submit');
-if (!email || !password) return;
-const original = btn.textContent;
-btn.disabled = true;
-btn.textContent = 'INITIALIZING...';
-const sb = await waitForSb();
-if (!sb) {
-alert('Network not ready — please try again in a moment.');
-btn.disabled = false; btn.textContent = original; return;
-}
-const { data, error } = await sb.auth.signUp({ email, password });
-if (error) {
-alert('Onboarding failed: ' + error.message);
-btn.disabled = false; btn.textContent = original; return;
-}
-REGISTERED_USER_ID = data?.user?.id || null;
-playAscendingBeepSweep();
-// Slide out Phase 1, reveal Phase 2 customizer
-document.getElementById('phase-registration-form').classList.add('hidden');
-document.getElementById('phase-customization-matrix').classList.remove('hidden');
-document.getElementById('sb-hud-matrix-title').textContent = "Character Customization Matrix";
-});
+async function submitRegistration(){
+  const first = document.getElementById('reg-first').value.trim();
+  const last = document.getElementById('reg-last').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const stage = document.getElementById('reg-stage').value;
+  const prof = document.getElementById('reg-profession').value.trim();
+  const org = document.getElementById('reg-org').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const notes = document.getElementById('reg-notes').value.trim();
+  const city = document.getElementById('reg-city').value.trim();
+  const state = document.getElementById('reg-state').value.trim();
+  const teams = [...document.querySelectorAll('#reg-teams option:checked')].map(o => o.value);
+  const ageOk = document.getElementById('reg-age').checked;
+  const tcpaOk = document.getElementById('reg-tcpa').checked;
+  const privOk = document.getElementById('reg-privacy').checked;
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
-// Launch Complete Form Trigger pointer handler
-document.getElementById('sb-profile-launch-trigger').addEventListener('click', async function() {
-const btn = this;
-const username = document.getElementById('sb-profile-username').value.trim();
-const city = document.getElementById('sb-profile-city').value.trim();
-const state = document.getElementById('sb-profile-state').value.trim();
-playAscendingBeepSweep();
-const original = btn.textContent;
-btn.disabled = true;
-btn.textContent = "TRANSMITTING OPERATIONS GRID...";
-btn.style.opacity = '0.6';
-const sb = await waitForSb();
-if (!sb || !REGISTERED_USER_ID) {
-alert('Session not ready — please complete Phase 1 first.');
-btn.disabled = false; btn.textContent = original; btn.style.opacity = '1'; return;
+  let valid = true;
+  if (!first || !last || !email || !phone || !stage || !prof || !org) { showRegMsg('error', '✗ Please fill in all required personal info fields.'); valid = false; }
+  if (teams.length === 0) { document.getElementById('teams-error').style.display = 'block'; valid = false; } else { document.getElementById('teams-error').style.display = 'none'; }
+  if (!selectedAvatar) { document.getElementById('avatar-error').style.display = 'block'; valid = false; } else { document.getElementById('avatar-error').style.display = 'none'; }
+  if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) { showRegMsg('error', '✗ Please choose a valid username (letters, numbers, underscores, min 3 chars).'); valid = false; }
+  if (!isPasswordStrong(password)) { showRegMsg('error', '✗ Please create a stronger password that meets all requirements.'); valid = false; }
+  if (!ageOk || !tcpaOk || !privOk) { document.getElementById('legal-error').style.display = 'block'; valid = false; } else { document.getElementById('legal-error').style.display = 'none'; }
+  if (!turnstileToken) { showRegMsg('error', '✗ Please complete the security check.'); valid = false; }
+  if (!valid) return;
+
+  const btn = document.getElementById('reg-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⚡ Enlisting...';
+
+  const waitForSb = () => new Promise(resolve => { if (window.sb) return resolve(); const i = setInterval(() => { if (window.sb) { clearInterval(i); resolve(); } }, 100); });
+
+  try {
+    await waitForSb();
+
+    // 1. Create Supabase auth account
+    const { data: authData, error: authError } = await window.sb.auth.signUp({
+      email, password,
+      options: { data: { username, full_name: first + ' ' + last, avatar: selectedAvatar } }
+    });
+    if (authError) throw authError;
+    const userId = authData?.user?.id;
+
+    // 2. Save volunteer record
+    await fetch(`${SUPABASE_URL}/rest/v1/volunteers`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ first_name: first, last_name: last, email, phone, current_stage: stage, profession: prof, organization: org, roles: teams.join(', '), privacy_agreed: true, notes, username })
+    });
+
+    // 3. Award 200 XP
+    if (userId) {
+      await fetch(`${SUPABASE_URL}/rest/v1/rpc/award_xp`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_user_id: userId, p_action: 'volunteer_signup', p_category: 'Field Work', p_amount: 200 })
+      }).catch(() => {});
+    }
+
+    // 3b. Upsert the profiles row the dashboard reads (username + avatar + guild + location)
+    if (userId) {
+      await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({ id: userId, username, avatar: selectedAvatar, guild: selectedGuild, city, state })
+      }).catch(() => {});
+    }
+
+    // 4. Fire Make webhook → Smartsheet
+    fetch(MAKE_VOLUNTEER_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: first, last_name: last, email, phone, current_stage: stage, profession: prof, organization: org, roles: teams.join(', '), notes, username, avatar: selectedAvatar, guild: selectedGuild, city, state })
+    }).catch(() => {});
+
+    // 5. Show success
+    document.getElementById('reg-form-inner').style.display = 'none';
+    document.getElementById('reg-success').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(err) {
+    showRegMsg('error', '✗ ' + (err.message || 'Something went wrong. Please try again.'));
+    btn.disabled = false;
+    btn.textContent = '⚡ Enlist Now — Join Team Reeder';
+    if (window.turnstile) turnstile.reset();
+  }
 }
-const { error } = await sb.from('profiles').upsert({
-id: REGISTERED_USER_ID,
-username,
-guild: selectedGuild,
-avatar: selectedAvatar, // full path: images/avatars/<file>
-city,
-state
-});
-if (error) {
-alert('Deploy failed: ' + error.message);
-btn.disabled = false; btn.textContent = original; btn.style.opacity = '1'; return;
-}
-window.location.href = '/game.html';
-});
 </script>
 <script src="xp.js"></script>
 <script src="shared.js"></script>

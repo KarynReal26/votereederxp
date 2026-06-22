@@ -306,11 +306,6 @@ sbScript.onload = () => {
         };
       }
 
-      // If on register or volunteer page while logged in, redirect to home
-      if (page === 'register.html') {
-        window.location.href = 'index.html';
-      }
-
     } else {
       // Logged out state
       if (myXpLi) myXpLi.style.display = 'none';
