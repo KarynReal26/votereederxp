@@ -181,7 +181,18 @@ footer .footer-copy a:hover{text-decoration:underline;}
 `;
 document.head.appendChild(footerStyle);
 
-document.body.appendChild(footerEl);
+// On the fixed-viewport dashboard app-shell (game.html) the whole .layout is
+// position:fixed with html/body overflow:hidden, so a footer appended to <body>
+// lands at the document origin and overlaps the panels. Drop it at the end of the
+// scrollable main column instead, so it sits at the BOTTOM (below the board) and
+// scrolls into view rather than covering the dashboard.
+const dashMain = document.querySelector('.layout .main .main-inner');
+if (dashMain) {
+  footerEl.style.marginTop = '24px';
+  dashMain.appendChild(footerEl);
+} else {
+  document.body.appendChild(footerEl);
+}
 } // end footer guard (skipped when the page already has its own <footer>)
 
 // ── AUTH MODAL ───────────────────────────────────────────
@@ -320,6 +331,12 @@ document.body.appendChild(authEl);
 // close on background click
 authEl.addEventListener('click', e => { if (e.target === authEl) authEl.classList.remove('open'); });
 
+// Land /index.html?login=1 (e.g. redirect from a gated page like game.html) on the
+// login pop-up so logged-out users get an immediate prompt to log in or join.
+if (/[?&]login=1/.test(location.search)) {
+  authEl.classList.add('open');
+}
+
 // Nav auth button — opens login modal. Guard: it doesn't exist on pages whose own
 // .topbar suppressed the injected nav, and this runs BEFORE window.sb is created,
 // so a null here would abort the whole script (and window.sb would never load).
@@ -368,7 +385,15 @@ sbScript.onload = () => {
       setTimeout(async () => {
         try {
           const { data: p } = await window.sb.from('profiles')
-            .select('username, avatar, total_xp, guild').eq('id', _uid).single();
+            .select('username, avatar, total_xp, guild, onboarded').eq('id', _uid).maybeSingle();
+          // ── ONBOARDING GATE ── un-onboarded accounts may browse public pages, but the
+          // gated app pages route them to finish the volunteer form first. (register2 is
+          // never in this list — it IS the form, so gating it would loop.)
+          const GATED_PAGES = ['game.html','leaderboard.html','guilds.html','events.html','profile.html'];
+          if ((!p || !p.onboarded) && GATED_PAGES.includes(page)) {
+            window.location.replace('/register2.html?finish=1');
+            return;
+          }
           const name = (p && p.username) || metaName || 'My Account';
           const xp   = (p && p.total_xp) || 0;            // total_xp — same column the dashboard reads
           const nm = document.getElementById('nav-username'); if (nm) nm.textContent = name;
@@ -518,7 +543,10 @@ window.signInWithGoogle = async function() {
   if (!window.sb) return;
   await window.sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/game.html' }
+    options: {
+      redirectTo: window.location.origin + '/game.html',
+      queryParams: { prompt: 'select_account' }   // always show the account picker (no silent re-login)
+    }
   });
 };
 

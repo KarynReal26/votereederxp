@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style>html.auth-pending{visibility:hidden}</style>
+<script>document.documentElement.classList.add('auth-pending');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VoteReederXP — Dashboard</title>
@@ -247,6 +249,10 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
 .nav-logo{ letter-spacing:1px; }
 .nav-donate{ font-family:'Rajdhani','Inter',sans-serif; font-size:14px;font-weight:700;letter-spacing:.5px; color:#ffcf3f;text-decoration:none; border:1px solid rgba(255,207,63,0.45); border-radius:7px;padding:6px 14px;white-space:nowrap;transition:.15s; }
 .nav-donate:hover{ background:rgba(255,207,63,0.12); }
+.logout-btn{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;
+  color:#ff5a7a;background:transparent;border:1px solid rgba(255,90,122,.45);
+  border-radius:7px;padding:6px 14px;cursor:pointer;transition:.15s;}
+.logout-btn:hover{background:rgba(255,90,122,.12);}
 </style>
 </head>
 <body>
@@ -277,6 +283,7 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
         <div><div class="av-name" id="nav-username">ReederRising</div><div class="av-rank" id="nav-level">Level 29 · Advocate</div></div>
         <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-left:4px;">▼</span>
       </div>
+      <button id="logoutBtn" class="logout-btn">Log Out</button>
     </div>
   </div>
   <div class="ticker">
@@ -726,43 +733,55 @@ document.querySelectorAll('.t-btn').forEach(btn=>{
   });
 });
 
-/* ── INIT ── */
-// Wait for shared.js to set window.sb
-const _initInterval = setInterval(() => {
-  if (window.sb) {
-    clearInterval(_initInterval);
-    loadProfile();
-    initChat();
-    loadMissions();
-  }
-}, 100);
-// Fallback after 3s if no shared.js
-setTimeout(() => { clearInterval(_initInterval); }, 3000);
+/* ── INIT — handled by the single auth gate below (session-checked) ── */
 </script>
 <script>
-/* ── AUTH GATE — waits for window.sb from shared.js ── */
+/* ── AUTH + ONBOARDING GATE — waits for window.sb (shared.js creates the client) ──
+   • No session              → home page login prompt (/index.html?login=1)
+   • Session, NOT onboarded  → finish the volunteer form (/register2.html?finish=1)
+   • Session, onboarded      → reveal dashboard + load data
+   The page stays hidden via html.auth-pending until we confirm an ONBOARDED session,
+   so logged-out / half-registered users never see a dashboard flash. */
 const _authInterval = setInterval(() => {
   if (!window.sb) return;
   clearInterval(_authInterval);
-  window.sb.auth.getSession().then(({data:{session}}) => {
-    if (session) {
-      loadProfile();
-      initChat();
-      loadMissions();
-    } else {
-      window.location.href = '/index.html';
-    }
-  });
+  clearTimeout(_authFallback);
+  (async function(){
+    let session = null;
+    try { session = (await window.sb.auth.getSession()).data.session; }
+    catch(e) { window.location.replace('/index.html?login=1'); return; }
+    if (!session) { window.location.replace('/index.html?login=1'); return; }
+    // Onboarding gate — un-onboarded accounts must finish registration first. A
+    // transient error fails toward the form; register2.html re-checks and bounces a
+    // genuinely-onboarded user straight back here, so this is self-correcting.
+    try {
+      const { data: prof } = await window.sb.from('profiles')
+        .select('onboarded').eq('id', session.user.id).maybeSingle();
+      if (!prof || !prof.onboarded) { window.location.replace('/register2.html?finish=1'); return; }
+    } catch(e) { window.location.replace('/register2.html?finish=1'); return; }
+    document.documentElement.classList.remove('auth-pending'); // onboarded -> reveal
+    loadProfile();
+    initChat();
+    loadMissions();
+  })();
+  // Handle later sign-out / token loss — don't leave a stale dashboard up. (Onboarding
+  // is gated on load above; this only needs to catch the session going away.)
   window.sb.auth.onAuthStateChange((event, session) => {
-    if (session) {
-      loadProfile();
-      initChat();
-      loadMissions();
-    } else {
-      window.location.href = '/index.html';
-    }
+    if (!session) window.location.replace('/index.html?login=1');
   });
 }, 200);
+// Safety net: if shared.js never sets window.sb (CDN/load failure), don't trap the
+// user on a permanently hidden blank page — send them home to the login prompt.
+const _authFallback = setTimeout(() => {
+  clearInterval(_authInterval);
+  if (!window.sb) window.location.replace('/index.html?login=1');
+}, 6000);
+
+/* ── LOG OUT ── */
+document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+  try { await window.sb?.auth.signOut(); } catch(e) {}
+  window.location.replace('/index.html');
+});
 </script>
 <!-- ⚠️ CRITICAL: xp.js and shared.js MUST be last — never move above auth check -->
 <script src="xp.js"></script>

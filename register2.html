@@ -174,7 +174,7 @@ body>nav{display:none !important;}
 <div class="reg-success" id="reg-success">
 <div class="reg-success-icon">🎖️</div>
 <h3>MISSION ACCEPTED!</h3>
-<p>Welcome to Team Reeder! Check your email to confirm your account, then jump into the Grid to start earning XP.</p>
+<p id="reg-success-text">Welcome to Team Reeder! Check your email to confirm your account, then jump into the Grid to start earning XP.</p>
 <div class="xp-award">+200 XP AWARDED!</div>
 <p style="margin-top:1rem;">
 <a href="/game.html" class="btn btn-go">⚡ Enter the Grid</a>
@@ -271,8 +271,8 @@ Continue with Google
 </div>
 
 <!-- ACCOUNT -->
-<div class="reg-section">// Account Security</div>
-<div class="form-group">
+<div class="reg-section" id="sec-account">// Account Security</div>
+<div class="form-group" id="reg-password-group">
 <label class="form-label">Password <span class="req">*</span></label>
 <input type="password" id="reg-password" class="form-input" placeholder="Create a strong password" minlength="8" oninput="checkRegPassword(this.value);document.getElementById('reg-pw-req').style.display='block'">
 <div class="pw-requirements" id="reg-pw-req">
@@ -411,10 +411,49 @@ function openLoginModal(){
 
 window.signInWithGoogleVolunteer = async function(){
   localStorage.setItem('reg_source', 'volunteer');
-  const go = (sb) => sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/index.html' } });
+  const go = (sb) => sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/register2.html?finish=1', queryParams: { prompt: 'select_account' } } });
   if (window.sb) { await go(window.sb); }
   else { const wait = setInterval(() => { if (window.sb) { clearInterval(wait); go(window.sb); } }, 200); }
 };
+
+// ── GOOGLE "FINISH REGISTRATION" MODE (?finish=1) ──
+// A user redirected here from the auth gate already has a session (Google or email)
+// but hasn't completed the volunteer form. Pre-fill from their identity, drop the
+// password step (the account already exists), and complete the profile on submit.
+let FINISH_USER = null;
+async function initFinishMode(){
+  const waitForSb = () => new Promise(r => { if (window.sb) return r(); const i=setInterval(()=>{ if(window.sb){clearInterval(i);r();} },100); });
+  await waitForSb();
+  let session = null;
+  try { session = (await window.sb.auth.getSession()).data.session; } catch(e) { return; }
+  if (!session) return;                       // no session → normal email-signup flow
+
+  // Already onboarded? Don't make them re-register — send them to the dashboard.
+  try {
+    const { data: prof } = await window.sb.from('profiles').select('onboarded').eq('id', session.user.id).maybeSingle();
+    if (prof && prof.onboarded) { window.location.replace('/game.html'); return; }
+  } catch(e) {}
+
+  FINISH_USER = session.user;
+  const md = FINISH_USER.user_metadata || {};
+  const fullName = String(md.full_name || md.name || '').trim();
+  const parts = fullName ? fullName.split(/\s+/) : [];
+  const firstEl = document.getElementById('reg-first');
+  const lastEl  = document.getElementById('reg-last');
+  const emailEl = document.getElementById('reg-email');
+  if (firstEl && parts[0]) firstEl.value = parts[0];
+  if (lastEl && parts.length > 1) lastEl.value = parts.slice(1).join(' ');
+  if (md.username) { const u = document.getElementById('reg-username'); if (u && !u.value) { u.value = md.username; checkRegUsername(md.username); } }
+  if (emailEl) { emailEl.value = FINISH_USER.email || ''; emailEl.readOnly = true; }
+
+  // Already authenticated → no password, no Google button.
+  const pwGroup = document.getElementById('reg-password-group'); if (pwGroup) pwGroup.style.display = 'none';
+  const acctSec = document.getElementById('sec-account');        if (acctSec) acctSec.style.display = 'none';
+  const gBtn = document.querySelector('.social-btn');            if (gBtn) gBtn.style.display = 'none';
+  const gDiv = document.querySelector('.social-divider');        if (gDiv) gDiv.style.display = 'none';
+  const submitBtn = document.getElementById('reg-submit-btn');   if (submitBtn) submitBtn.textContent = '⚡ Finish My Registration';
+}
+initFinishMode();
 
 async function submitRegistration(){
   const first = document.getElementById('reg-first').value.trim();
@@ -440,7 +479,7 @@ async function submitRegistration(){
   if (teams.length === 0) { document.getElementById('teams-error').style.display = 'block'; valid = false; } else { document.getElementById('teams-error').style.display = 'none'; }
   if (!selectedAvatar) { document.getElementById('avatar-error').style.display = 'block'; valid = false; } else { document.getElementById('avatar-error').style.display = 'none'; }
   if (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username)) { showRegMsg('error', '✗ Please choose a valid username (letters, numbers, underscores, min 3 chars).'); valid = false; }
-  if (!isPasswordStrong(password)) { showRegMsg('error', '✗ Please create a stronger password that meets all requirements.'); valid = false; }
+  if (!FINISH_USER && !isPasswordStrong(password)) { showRegMsg('error', '✗ Please create a stronger password that meets all requirements.'); valid = false; }
   if (!ageOk || !tcpaOk || !privOk) { document.getElementById('legal-error').style.display = 'block'; valid = false; } else { document.getElementById('legal-error').style.display = 'none'; }
   if (!turnstileToken) { showRegMsg('error', '✗ Please complete the security check.'); valid = false; }
   if (!valid) return;
@@ -454,13 +493,21 @@ async function submitRegistration(){
   try {
     await waitForSb();
 
-    // 1. Create Supabase auth account
-    const { data: authData, error: authError } = await window.sb.auth.signUp({
-      email, password,
-      options: { data: { username, full_name: first + ' ' + last, avatar: selectedAvatar } }
-    });
-    if (authError) throw authError;
-    const userId = authData?.user?.id;
+    // 1. Create Supabase auth account — UNLESS we're finishing an existing (Google)
+    //    session, in which case the account already exists and we reuse its user id.
+    let userId;
+    if (FINISH_USER) {
+      userId = FINISH_USER.id;
+      // Keep the chosen username/avatar on the auth identity for the nav/profile.
+      await window.sb.auth.updateUser({ data: { username, full_name: first + ' ' + last, avatar: selectedAvatar } }).catch(() => {});
+    } else {
+      const { data: authData, error: authError } = await window.sb.auth.signUp({
+        email, password,
+        options: { data: { username, full_name: first + ' ' + last, avatar: selectedAvatar } }
+      });
+      if (authError) throw authError;
+      userId = authData?.user?.id;
+    }
 
     // 2. Save volunteer record
     await fetch(`${SUPABASE_URL}/rest/v1/volunteers`, {
@@ -478,13 +525,24 @@ async function submitRegistration(){
       }).catch(() => {});
     }
 
-    // 3b. Upsert the profiles row the dashboard reads (username + avatar + guild + location)
+    // 3b. Upsert the profiles row the dashboard reads (username + avatar + guild +
+    //     location) and flip onboarded=true — done LAST, after the volunteer + XP
+    //     writes, so a half-finished submit never marks someone onboarded.
+    //     Google finish-mode runs through the user's own JWT so the auth.uid() = id
+    //     RLS policy passes; the email-signup path keeps its existing anon-key REST
+    //     write (mechanism unchanged) and just carries onboarded:true along.
     if (userId) {
-      await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({ id: userId, username, avatar: selectedAvatar, guild: selectedGuild, city, state })
-      }).catch(() => {});
+      const profileRow = { id: userId, username, avatar: selectedAvatar, guild: selectedGuild, city, state, onboarded: true };
+      if (FINISH_USER) {
+        const { error: upErr } = await window.sb.from('profiles').upsert(profileRow);
+        if (upErr) console.warn('profiles upsert (session):', upErr.message);
+      } else {
+        await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify(profileRow)
+        }).catch(() => {});
+      }
     }
 
     // 4. Fire Make webhook → Smartsheet
@@ -495,6 +553,10 @@ async function submitRegistration(){
     }).catch(() => {});
 
     // 5. Show success
+    if (FINISH_USER) {
+      const st = document.getElementById('reg-success-text');
+      if (st) st.textContent = "You're all set! Your profile is complete — jump into the Grid to start earning XP.";
+    }
     document.getElementById('reg-form-inner').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
