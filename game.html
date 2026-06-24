@@ -302,10 +302,11 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
   </div>
   <div class="xp-milestones">
     <span class="xm done">Supporter · 0</span>
-    <span class="xm done">Organizer · 500</span>
+    <span class="xm done">Organizer · 300</span>
     <span class="xm now">▲ Advocate · 1,000</span>
-    <span class="xm">Builder · 1,500</span>
-    <span class="xm">Champion · 2,500</span>
+    <span class="xm">Builder · 3,500</span>
+    <span class="xm">Catalyst · 8,000</span>
+    <span class="xm">Change Champion · 15,000</span>
   </div>
 </div>
 
@@ -447,15 +448,19 @@ let CURRENT_PROFILE = null;
 
 /* ── RANK THRESHOLDS ── */
 const RANKS = [
-  {name:'Supporter', min:0, max:499},
-  {name:'Organizer', min:500, max:999},
-  {name:'Advocate', min:1000, max:1499},
-  {name:'Builder', min:1500, max:1999},
-  {name:'Catalyst', min:2000, max:2499},
-  {name:'Champion', min:2500, max:Infinity}
+  {name:'Supporter',       min:0,     max:299},
+  {name:'Organizer',       min:300,   max:999},
+  {name:'Advocate',        min:1000,  max:3499},
+  {name:'Builder',         min:3500,  max:7999},
+  {name:'Catalyst',        min:8000,  max:14999},
+  {name:'Change Champion', min:15000, max:Infinity}
 ];
 function getRank(xp){ return RANKS.find(r => xp >= r.min && xp <= r.max) || RANKS[0]; }
-function getRankNextThreshold(xp){ const r = RANKS.find(r => xp >= r.min && xp <= r.max); return r ? r.max+1 : 2500; }
+function getRankNextThreshold(xp){
+  const r = RANKS.find(r => xp >= r.min && xp <= r.max);
+  if (!r) return RANKS[RANKS.length-1].min;
+  return isFinite(r.max) ? r.max+1 : r.min;   // top rank has no "next" — peg to its floor so the bar reads 100%
+}
 
 /* ── LOAD PROFILE ── */
 async function loadProfile() {
@@ -469,7 +474,7 @@ async function loadProfile() {
   const p = data[0];
   CURRENT_PROFILE = p;
 
-  const xp = p.total_xp || 0;
+  const xp = p.xp_score || 0;
   const rank = getRank(xp);
   const nextXp = getRankNextThreshold(xp);
   const pct = Math.min(100, Math.round((xp / nextXp) * 100));
