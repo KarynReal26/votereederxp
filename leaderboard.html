@@ -178,7 +178,7 @@
 
     /* ============================================================
        LIVE DATA — podium + Top Players + Top Guilds from Supabase (window.sb).
-       Reads profiles.total_xp (same column the dashboard uses). In preview
+       Reads profiles.xp_score (same column the dashboard uses). In preview
        (no window.sb) it safely leaves the demo rows in place.
        ============================================================ */
     (function(){
@@ -205,12 +205,12 @@
 
         let profs;
         try {
-          const { data } = await sb.from('profiles').select('id,username,guild,avatar,total_xp');
+          const { data } = await sb.from('profiles').select('id,username,guild,avatar,xp_score');
           profs = data;
         } catch(e){ console.warn('leaderboard load failed', e); return; }
         if(!profs || !profs.length) return;
 
-        const ranked = [...profs].sort((a,b)=>(b.total_xp||0)-(a.total_xp||0));
+        const ranked = [...profs].sort((a,b)=>(b.xp_score||0)-(a.xp_score||0));
 
         // ---- Podium (top 3) ----
         const slot = {0:'.p1',1:'.p2',2:'.p3'};
@@ -219,7 +219,7 @@
           const av=el.querySelector('.avatar'); if(av) av.textContent = initials(p.username);
           const nm=el.querySelector('[data-name]'); if(nm) nm.textContent = p.username||'—';
           const gd=el.querySelector('[data-guild]'); if(gd) gd.textContent = p.guild||'';
-          const xp=el.querySelector('[data-xp]'); if(xp) xp.textContent = comma(p.total_xp||0)+' XP';
+          const xp=el.querySelector('[data-xp]'); if(xp) xp.textContent = comma(p.xp_score||0)+' XP';
         });
 
         // ---- Top Players board (top 15, + your row if outside it) ----
@@ -231,8 +231,8 @@
             return '<div class="lrow'+(isMe?' me':'')+'"><span class="'+rk+'">'+rank+'</span>'
               + '<span class="av">'+initials(p.username)+'</span>'
               + '<div class="info"><div class="nm">'+(p.username||'Player')+youTag+'</div>'
-              + '<div class="gd">'+(p.guild||'No Guild')+' · '+rankName(p.total_xp)+'</div></div>'
-              + '<span class="xp">'+comma(p.total_xp||0)+'</span></div>';
+              + '<div class="gd">'+(p.guild||'No Guild')+' · '+rankName(p.xp_score)+'</div></div>'
+              + '<span class="xp">'+comma(p.xp_score||0)+'</span></div>';
           };
           let rows = ranked.slice(0,15).map((p,i)=>rowHTML(p, i+1, me && p.id===me)).join('');
           const myIdx = ranked.findIndex(p=>me && p.id===me);
@@ -240,12 +240,12 @@
           board.innerHTML = '<div class="ptitle">🏅 Top Players</div>' + rows;
         }
 
-        // ---- Top Guilds board (sum total_xp by guild) ----
+        // ---- Top Guilds board (sum xp_score by guild) ----
         const gboard = document.getElementById('guildBoard');
         if(gboard){
           const sums = {};
           Object.keys(GUILD_META).forEach(g=>sums[g]=0);
-          profs.forEach(p=>{ if(p.guild && sums[p.guild]!=null) sums[p.guild]+=(p.total_xp||0); });
+          profs.forEach(p=>{ if(p.guild && sums[p.guild]!=null) sums[p.guild]+=(p.xp_score||0); });
           const order = Object.keys(GUILD_META).sort((a,b)=>sums[b]-sums[a]);
           const rows = order.map((g,i)=>{
             const rank=i+1, rk = rank<=3 ? 'rk g'+rank : 'rk';

@@ -210,7 +210,7 @@
       <div class="hbtns">
         <a href="/register2.html" class="btn btn-blue">⚡ Start Earning XP</a>
         <a href="https://secure.actblue.com/donate/votereeder" class="btn btn-gold">🗳️ Donate</a>
-        <a href="/how-to-play.html" class="btn btn-outline">How to Play</a>
+        <a href="/how-to-play.html" class="btn btn-outline">🎮 New here? How to Play →</a>
       </div>
       <div class="hstats">
         <div class="hstat"><div class="v" id="stXP">125K</div><div class="n">XP Earned</div></div>
@@ -348,7 +348,7 @@
       const sb = await waitForSb();
       if(!sb) return; // preview / offline — keep placeholders
 
-      const XP_COL = 'total_xp';   // (1) VERIFIED: profiles.total_xp (matches leaderboard.html + game.html)
+      const XP_COL = 'xp_score';   // (1) VERIFIED: profiles.xp_score (matches leaderboard.html + game.html)
       const GOAL = 100000;
       try{
         const { data: profs } = await sb.from('profiles').select(`username,guild,avatar,${XP_COL}`);

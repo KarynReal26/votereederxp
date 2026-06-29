@@ -214,11 +214,11 @@ function parseCSV(text) {
 
 async function loadGuildStats() {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?guild=eq.${encodeURIComponent(GUILD_NAME)}&select=id,username,total_xp`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?guild=eq.${encodeURIComponent(GUILD_NAME)}&select=id,username,xp_score`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
     const members = await res.json();
-    const totalXP = members.reduce((sum, m) => sum + (m.total_xp || 0), 0);
+    const totalXP = members.reduce((sum, m) => sum + (m.xp_score || 0), 0);
     document.getElementById('guild-members').textContent = members.length;
     // Show full badge if at capacity
     if(members.length >= GUILD_MAX) {
@@ -228,7 +228,7 @@ async function loadGuildStats() {
     document.getElementById('guild-total-xp').textContent = totalXP.toLocaleString();
 
     // Leaderboard
-    const sorted = [...members].sort((a,b) => (b.total_xp||0) - (a.total_xp||0));
+    const sorted = [...members].sort((a,b) => (b.xp_score||0) - (a.xp_score||0));
     const avatars = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
     const lb = document.getElementById('guild-leaderboard');
     lb.innerHTML = sorted.slice(0,10).map((m,i) => {
@@ -238,7 +238,7 @@ async function loadGuildStats() {
         <div class="guild-lb-num ${rankClass}">${i+1}</div>
         <div class="guild-lb-avatar">${avatars[i]||'⚡'}</div>
         <div class="guild-lb-name">${m.username||'Anonymous'}${isYou?' (You)':''}</div>
-        <div class="guild-lb-xp">${(m.total_xp||0).toLocaleString()} XP</div>
+        <div class="guild-lb-xp">${(m.xp_score||0).toLocaleString()} XP</div>
       </div>`;
     }).join('') || '<div style="font-family:var(--font-ui);font-size:.82rem;color:var(--text-dim);text-align:center;padding:1rem;">No members yet — be the first!</div>';
 
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { data: { session } } = await window.sb.auth.getSession();
     if (session?.user) {
       currentUser = session.user;
-      const { data: profile } = await window.sb.from('profiles').select('username,guild,total_xp').eq('id', session.user.id).single();
+      const { data: profile } = await window.sb.from('profiles').select('username,guild,xp_score').eq('id', session.user.id).single();
       currentUsername = profile?.username || session.user.email.split('@')[0];
       isGuildMember = profile?.guild === GUILD_NAME;
 

@@ -253,6 +253,61 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
   color:#ff5a7a;background:transparent;border:1px solid rgba(255,90,122,.45);
   border-radius:7px;padding:6px 14px;cursor:pointer;transition:.15s;}
 .logout-btn:hover{background:rgba(255,90,122,.12);}
+
+/* ============================================================
+   MOBILE + HIGH-CONTRAST + AVATAR PASS  (accessibility)
+   Placed LAST so it wins over base rules, the CALM-PASS block,
+   and style.css (which may not load). Goal: bigger + higher
+   contrast for an older user on a phone. Does NOT touch
+   .kcol / .layout / .kcol-scroll / setLayout() or the protected
+   scroll rules.
+   ============================================================ */
+
+/* 1 — PROFILE AVATAR: hard-cap at 120px so it can NEVER blow out (even if
+       style.css fails to load), and anchor the crop to the TOP so her full
+       head shows. Rounded square fits the head-and-shoulders portrait. */
+.prof-av-sq{ width:120px!important; height:120px!important; flex:0 0 120px!important; max-width:120px!important; border-radius:16px!important; overflow:hidden!important; padding:3px!important; }
+.prof-av-sq-in{ width:100%!important; height:100%!important; max-width:120px!important; max-height:120px!important; border-radius:14px!important; overflow:hidden!important; }
+.prof-av-sq-in img{ width:100%!important; height:100%!important; max-width:120px!important; max-height:120px!important; object-fit:cover!important; object-position:top center!important; border-radius:14px!important; display:block!important; }
+
+/* 2 — ACHIEVEMENT BADGES: bigger label + icon, readable on a phone; grid stays
+       fractional (can't overflow) and tightens its gap on small screens. */
+.badge-box{ font-size:32px!important; height:64px!important; }
+.badge-nm{ font-size:13px!important; line-height:1.25!important; }
+@media(max-width:600px){ .badges-grid{ grid-template-columns:repeat(4,1fr)!important; gap:6px!important; } .badge-nm{ font-size:12px!important; } }
+
+/* 3 — XP PROGRESS BAR: thicker bar, bigger rank labels + XP numbers. */
+.xp-track{ height:14px!important; }
+.xp-tag{ font-size:14px!important; }
+.xp-right{ font-size:15px!important; font-weight:800!important; }
+.xm{ font-size:13px!important; font-weight:700!important; }
+
+/* 4 — NO GRAY TEXT: every white-with-opacity / muted label → pure #fff at full
+       opacity (this also overrides the CALM-PASS text muting). Saturated accents
+       — cyan, gold, pink, purple, green, guild colors — are NOT in this list and
+       stay as-is. */
+.card-label,.xp-line-lbl,.mstat-lbl,.chat-online,.chat-msg-txt,.chat-msg-time,
+.t-sub,.kcard-sub,.uz-txt,.xp-tag,.ti-lbl,.ti-val,.tc,.tg,.tp,.tpk,.tgr,
+.xp-right,.xm,.bl .badge-nm,.prof-xpt,.chat-sep,.boost-sub,.nl{
+  color:#ffffff!important; opacity:1!important;
+}
+/* keep the milestone + active-nav accents distinguishable (and bright) */
+.xm.done{ color:#00e5ff!important; } .xm.now{ color:#ff5aa0!important; } .nl.a{ color:#00f0ff!important; }
+
+/* 5 — DONATE: cyan outline, white letters, transparent fill, subtle glow so it
+       pops on the black background — more prominent than the calmed buttons. */
+.nav-donate{ color:#ffffff!important; border:2px solid #00e5ff!important; background:rgba(0,229,255,0.08)!important; box-shadow:0 0 12px rgba(0,229,255,0.45)!important; font-weight:800!important; text-shadow:0 0 6px rgba(0,229,255,0.55); }
+.nav-donate:hover{ background:rgba(0,229,255,0.18)!important; box-shadow:0 0 18px rgba(0,229,255,0.75)!important; }
+
+/* 6 — NAV THREE-ZONE: LEFT (logo+links) | MIDDLE (page extras) | RIGHT (donate, bell,
+       logout, avatar). nav-row is already flex+space-between, so three children anchor
+       LEFT at the start and RIGHT at the far end; the avatar is the last child of
+       nav-right, so it's the rightmost element and never shifts when middle items change. */
+.nav-middle{ display:flex; align-items:center; gap:12px; }
+
+/* Pending-review subtitle is an intentional PURPLE accent, not gray — keep it purple at
+   full opacity. Higher specificity than the .kcard-sub white sweep above, so it wins. */
+.kcard-sub.pending{ color:#bf00ff!important; opacity:1!important; }
 </style>
 </head>
 <body>
@@ -265,6 +320,7 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
       <a href="/index.html" style="text-decoration:none;"><div class="nav-logo">VoteReederXP</div></a>
       <div class="nav-links">
         <span class="nl a" onclick="location.href='/game.html'">Dashboard</span>
+        <span class="nl" onclick="location.href='/how-to-play.html'">How to Play</span>
         <span class="nl" onclick="location.href='/leaderboard.html'">Leaderboard</span>
         <span class="nl" onclick="location.href='/guilds.html'">Guilds</span>
         <span class="nl" onclick="location.href='/events.html'">Events</span>
@@ -273,17 +329,21 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
         <span class="nl" onclick="location.href='/about.html'">About</span>
       </div>
     </div>
-    <div class="nav-right">
+    <!-- MIDDLE zone — page-specific extras (XP multiplier + XP·rank pill) -->
+    <div class="nav-middle">
       <div class="boost-badge"><div class="boost-val">⚡ 2X XP</div><div class="boost-sub">02:14:37</div></div>
       <div class="xp-pill"><span class="xp-num" id="nav-xp">1,000</span><span class="xp-lbl">XP · <span id="nav-rank">Advocate</span></span></div>
+    </div>
+    <!-- RIGHT zone — Donate, bell, (logout), then avatar pinned FAR RIGHT (rightmost on every page) -->
+    <div class="nav-right">
       <a class="nav-donate" href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate</a>
       <div class="bell">🔔<span class="bell-dot">3</span></div>
+      <button id="logoutBtn" class="logout-btn">Log Out</button>
       <div class="avatar-wrap" onclick="location.href='/profile.html'">
         <div class="av-ring"><div class="av-in" id="nav-avatar">KR</div></div>
         <div><div class="av-name" id="nav-username">ReederRising</div><div class="av-rank" id="nav-level">Level 29 · Advocate</div></div>
         <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-left:4px;">▼</span>
       </div>
-      <button id="logoutBtn" class="logout-btn">Log Out</button>
     </div>
   </div>
   <div class="ticker">
@@ -409,7 +469,7 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
         <div class="kcol kpe">
           <div class="kh"><span class="kh-title kh-pe">🕐 Pending Review</span><span class="kh-n kn-pe" id="count-pending">1</span></div>
           <div class="kcol-scroll" id="col-pending">
-            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Post Event Selfie</span><span class="vtag vt-photo">PHOTO PROOF</span></div><div class="kcard-sub" style="color:rgba(191,0,255,0.7);">Awaiting coordinator approval</div><div class="upload-zone" onclick="document.getElementById('f1').click()"><span class="uz-ico">📤</span><div class="uz-txt">Upload Screenshot</div><div class="uz-sub">→ Google Drive · XP instantly</div><input type="file" id="f1" accept="image/*" style="display:none" onchange="doUp(this,'s1')"></div><div id="s1" style="font-size:11px;text-align:center;margin-top:5px;"></div></div>
+            <div class="kcard"><div class="kcard-top"><span class="kcard-name">Post Event Selfie</span><span class="vtag vt-photo">PHOTO PROOF</span></div><div class="kcard-sub pending">Awaiting coordinator approval</div><div class="upload-zone" onclick="document.getElementById('f1').click()"><span class="uz-ico">📤</span><div class="uz-txt">Upload Screenshot</div><div class="uz-sub">→ Google Drive · XP instantly</div><input type="file" id="f1" accept="image/*" style="display:none" onchange="doUp(this,'s1')"></div><div id="s1" style="font-size:11px;text-align:center;margin-top:5px;"></div></div>
           </div>
         </div>
         <div class="kcol kco">
@@ -534,7 +594,7 @@ function renderTaskCard(t, status) {
     return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub">+${xp} XP · Complete</div></div>`;
   }
   if (status === 'pending') {
-    return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub" style="color:rgba(191,0,255,0.7);">Awaiting coordinator approval</div></div>`;
+    return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub pending">Awaiting coordinator approval</div></div>`;
   }
   return `<div class="kcard" data-task-id="${id}">${top}<div class="kcard-sub">+${xp} XP · ${vm.label === 'AUTO' ? 'Auto Verified' : 'Manual Verification'}</div><button class="mark-btn" onclick="markTaskComplete('${id}', this)">Mark Complete</button></div>`;
 }

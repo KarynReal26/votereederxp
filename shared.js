@@ -22,6 +22,7 @@ if (!document.querySelector('.topbar')) {
 .topbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,1,15,0.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,240,255,0.22);font-family:'Rajdhani','Inter',sans-serif;}
 .topbar .nav-row{display:flex;align-items:center;justify-content:space-between;padding:11px 26px;gap:16px;flex-wrap:wrap;max-width:1280px;margin:0 auto;}
 .topbar .nav-left{display:flex;align-items:center;gap:30px;}
+.topbar .nav-middle{display:flex;align-items:center;gap:14px;}
 .topbar .nav-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:1px;text-decoration:none;background:linear-gradient(90deg,#00f0ff,#bf00ff,#ff00aa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .topbar .nav-links{display:flex;gap:24px;list-style:none;margin:0;padding:0;}
 .topbar .nl{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,0.62);cursor:pointer;transition:.15s;text-decoration:none;}
@@ -54,13 +55,18 @@ if (!document.querySelector('.topbar')) {
       <a class="nav-logo" href="index.html">VoteReederXP</a>
       <div class="nav-links">
         <span class="nl ${page==='game.html'?'active':''}" onclick="location.href='/game.html'">Dashboard</span>
+        <span class="nl ${page==='how-to-play.html'?'active':''}" onclick="location.href='/how-to-play.html'">How to Play</span>
         <span class="nl ${page==='leaderboard.html'?'active':''}" onclick="location.href='/leaderboard.html'">Leaderboard</span>
         <span class="nl ${page==='guilds.html'?'active':''}" onclick="location.href='/guilds.html'">Guilds</span>
         <span class="nl ${page==='events.html'?'active':''}" onclick="location.href='/events.html'">Events</span>
         <span class="nl ${page==='learn.html'?'active':''}" onclick="location.href='/learn.html'">Learn</span>
         <span class="nl ${page==='blog.html'?'active':''}" onclick="location.href='/blog.html'">Blog</span>
+        <span class="nl ${page==='about.html'?'active':''}" onclick="location.href='/about.html'">About</span>
       </div>
     </div>
+    <!-- MIDDLE zone — page-specific extras go here (empty on shared pages); keeps the
+         three-zone structure identical to game.html so LEFT/RIGHT anchor the same way -->
+    <div class="nav-middle"></div>
     <div class="nav-right">
       <a class="nav-donate" href="https://secure.actblue.com/donate/votereeder" target="_blank">Donate ▸</a>
       <a class="nav-login" href="#" id="nav-auth-btn">Login / Sign Up</a>
@@ -111,13 +117,13 @@ if (!document.querySelector('.topbar')) {
 <a href="#" onclick="document.getElementById('auth-overlay').classList.add('open');this.closest('.nav-menu').classList.remove('open');return false;">🔑 Log In / Sign Up</a>
 <hr>
 <a href="/game.html">Dashboard</a>
+<a href="/how-to-play.html">How to Play</a>
 <a href="/leaderboard.html">Leaderboard</a>
 <a href="/guilds.html">Guilds</a>
 <a href="/events.html">Events</a>
 <a href="/learn.html">Learn</a>
 <a href="/blog.html">Blog</a>
 <a href="/about.html">About</a>
-<a href="/how-to-play.html">How to Play</a>
 <hr>
 <a href="/volunteer.html">Join Campaign</a>
 <a href="/contact.html">Contact Us</a>
