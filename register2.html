@@ -493,12 +493,15 @@ async function submitRegistration(){
   try {
     await waitForSb();
 
-    // 1. Create Supabase auth account — UNLESS we're finishing an existing (Google)
-    //    session, in which case the account already exists and we reuse its user id.
+    // ── 1) Ensure auth user + an ACTIVE SESSION ────────────────────────────────
+    //    Email signup creates the account; Google "finish" mode reuses the existing
+    //    session. Either way we need a session afterward, because the profiles write
+    //    below goes through the user's own JWT so the auth.uid() = id RLS policy passes.
+    //    (The old anon-key REST write was silently blocked by RLS — that's why new
+    //    signups landed onboarded=false / guild=NULL / xp_score=0.)
     let userId;
     if (FINISH_USER) {
       userId = FINISH_USER.id;
-      // Keep the chosen username/avatar on the auth identity for the nav/profile.
       await window.sb.auth.updateUser({ data: { username, full_name: first + ' ' + last, avatar: selectedAvatar } }).catch(() => {});
     } else {
       const { data: authData, error: authError } = await window.sb.auth.signUp({
@@ -508,51 +511,54 @@ async function submitRegistration(){
       if (authError) throw authError;
       userId = authData?.user?.id;
     }
+    if (!userId) throw new Error('Could not create your account — please try again.');
 
-    // 2. Save volunteer record
-    await fetch(`${SUPABASE_URL}/rest/v1/volunteers`, {
+    const { data: { session } } = await window.sb.auth.getSession();
+    if (!session) {
+      // Email-confirmation is enabled → no session yet. Don't half-write the profile;
+      // they'll confirm, log in, and finish via the ?finish=1 gate.
+      throw new Error('Account created! Check your email to confirm, then log in to finish setup.');
+    }
+
+    // ── 2) Write the profile row — ONLY real public.profiles columns (verified against
+    //    the table). Contact fields (name/phone/email/stage/profession/org/interests) are
+    //    NOT columns here — they go to the volunteers + Make webhook below. onboarded is
+    //    deliberately NOT set here; if this write fails we throw and never flip onboarded,
+    //    so a failure can't leave onboarded=true with no profile data.
+    const profileRow = {
+      id: userId,
+      username,
+      avatar: selectedAvatar,          // game.html reads p.avatar — write the SAME column
+      guild: selectedGuild,            // the guild picked at signup — must not be null
+      city,
+      state,
+      xp_score: 200                    // +200 completion XP (direct, idempotent write)
+    };
+    const { error: profErr } = await window.sb.from('profiles').upsert(profileRow);
+    if (profErr) throw profErr;        // hard stop — never proceed to onboarded on a failed profile write
+
+    // ── 3) ONLY now (auth + profile upsert both succeeded) flip onboarded=true. This is
+    //    blocking — it must land BEFORE the webhook so a webhook failure can never leave a
+    //    valid, paid-up user un-onboarded (which would re-trap them in the redirect loop).
+    const { error: obErr } = await window.sb.from('profiles').update({ onboarded: true }).eq('id', userId);
+    if (obErr) throw obErr;
+
+    // ── 4) Fire the volunteer-pipeline record + Make webhook with the FULL form data
+    //    (contact PII lives here, NOT on profiles). Fire-and-forget AFTER onboarding —
+    //    non-blocking: on failure just console.warn and continue; never throw, never gate
+    //    onboarded or the redirect on it.
+    fetch(`${SUPABASE_URL}/rest/v1/volunteers`, {
       method: 'POST',
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
       body: JSON.stringify({ first_name: first, last_name: last, email, phone, current_stage: stage, profession: prof, organization: org, roles: teams.join(', '), privacy_agreed: true, notes, username })
-    });
-
-    // 3. Award 200 XP
-    if (userId) {
-      await fetch(`${SUPABASE_URL}/rest/v1/rpc/award_xp`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p_user_id: userId, p_action: 'volunteer_signup', p_category: 'Field Work', p_amount: 200 })
-      }).catch(() => {});
-    }
-
-    // 3b. Upsert the profiles row the dashboard reads (username + avatar + guild +
-    //     location) and flip onboarded=true — done LAST, after the volunteer + XP
-    //     writes, so a half-finished submit never marks someone onboarded.
-    //     Google finish-mode runs through the user's own JWT so the auth.uid() = id
-    //     RLS policy passes; the email-signup path keeps its existing anon-key REST
-    //     write (mechanism unchanged) and just carries onboarded:true along.
-    if (userId) {
-      const profileRow = { id: userId, username, avatar: selectedAvatar, guild: selectedGuild, city, state, onboarded: true };
-      if (FINISH_USER) {
-        const { error: upErr } = await window.sb.from('profiles').upsert(profileRow);
-        if (upErr) console.warn('profiles upsert (session):', upErr.message);
-      } else {
-        await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-          method: 'POST',
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-          body: JSON.stringify(profileRow)
-        }).catch(() => {});
-      }
-    }
-
-    // 4. Fire Make webhook → Smartsheet
+    }).catch(e => console.warn('volunteers POST failed (non-blocking):', e));
     fetch(MAKE_VOLUNTEER_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ first_name: first, last_name: last, email, phone, current_stage: stage, profession: prof, organization: org, roles: teams.join(', '), notes, username, avatar: selectedAvatar, guild: selectedGuild, city, state })
-    }).catch(() => {});
+    }).catch(e => console.warn('Make webhook failed (non-blocking):', e));
 
-    // 5. Show success
+    // ── 5) Success → straight into the Grid (now onboarded=true, so no redirect loop) ──
     if (FINISH_USER) {
       const st = document.getElementById('reg-success-text');
       if (st) st.textContent = "You're all set! Your profile is complete — jump into the Grid to start earning XP.";
@@ -560,6 +566,7 @@ async function submitRegistration(){
     document.getElementById('reg-form-inner').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => { window.location.replace('/game.html'); }, 1500);
   } catch(err) {
     showRegMsg('error', '✗ ' + (err.message || 'Something went wrong. Please try again.'));
     btn.disabled = false;

@@ -27,7 +27,7 @@ window.awardXP = async function(action, category, amount) {
     // Refresh XP display
     const { data: profile } = await window.sb
       .from('profiles')
-      .select('total_xp')
+      .select('xp_score')
       .eq('id', user.id)
       .single();
 
@@ -35,9 +35,9 @@ window.awardXP = async function(action, category, amount) {
       const statXp  = document.getElementById('stat-xp');
       const xpLabel = document.getElementById('xp-current-label');
       const navXp   = document.getElementById('nav-xp-display');
-      if (statXp)  statXp.textContent  = profile.total_xp.toLocaleString();
-      if (xpLabel) xpLabel.textContent = profile.total_xp.toLocaleString() + ' XP';
-      if (navXp)   navXp.textContent   = '⚡ ' + profile.total_xp.toLocaleString() + ' XP';
+      if (statXp)  statXp.textContent  = profile.xp_score.toLocaleString();
+      if (xpLabel) xpLabel.textContent = profile.xp_score.toLocaleString() + ' XP';
+      if (navXp)   navXp.textContent   = '⚡ ' + profile.xp_score.toLocaleString() + ' XP';
 
       // Flash green to confirm XP awarded
       if (statXp) {

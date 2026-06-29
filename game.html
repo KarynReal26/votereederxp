@@ -426,9 +426,10 @@ html,body{background:#0a0e1a;height:100%;overflow:hidden;}
 </div>
 
 <script>
-/* ── SUPABASE CONFIG ── */
-const _SB_URL = 'https://ljxvkdslqxmmedfhrwgu.supabase.co';
-const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqeHZrZHNscXhtbWVkZmhyd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTU0ODQsImV4cCI6MjA5NTMzMTQ4NH0.nUCmAINQ1yL_XdDX9rNBl0gadjyP0ON9rWvb3Tarut4';
+/* ── SUPABASE CONFIG ──
+   _SB_URL / _SB_KEY are declared ONCE in xp.js (loaded at the end of <body>, before any
+   sbFetch call runs) and shared via global scope. Do NOT re-declare them here, or the
+   const collides with xp.js's and throws "_SB_URL has already been declared". */
 
 async function sbFetch(path, opts={}) {
   const res = await fetch(`${_SB_URL}/rest/v1/${path}`, {
@@ -641,13 +642,13 @@ async function initChat() {
   // Use window.sb (authenticated, carries user JWT) so the chat_messages SELECT RLS policy passes
   const { data: msgs } = await window.sb
     .from('chat_messages')
-    .select('*, profiles(username,guild,avatar)')
+    .select('*')   // no FK to embed profiles; username/guild are stored denormalized on the row
     .order('created_at', { ascending: true })
     .limit(50);
   if (msgs && msgs.length) {
     const box = document.getElementById('chat-messages');
     box.innerHTML = '';
-    msgs.forEach(m => appendChatMsg(m.profiles?.username || 'Player', m.profiles?.guild || '', m.message, m.created_at));
+    msgs.forEach(m => appendChatMsg(m.username || 'Player', m.guild || '', m.message, m.created_at));
   }
   // Realtime subscription
   window.sb.channel('chat').on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages'}, payload => {

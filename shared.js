@@ -385,7 +385,7 @@ sbScript.onload = () => {
       setTimeout(async () => {
         try {
           const { data: p } = await window.sb.from('profiles')
-            .select('username, avatar, total_xp, guild, onboarded').eq('id', _uid).maybeSingle();
+            .select('username, avatar, xp_score, guild, onboarded').eq('id', _uid).maybeSingle();
           // ── ONBOARDING GATE ── un-onboarded accounts may browse public pages, but the
           // gated app pages route them to finish the volunteer form first. (register2 is
           // never in this list — it IS the form, so gating it would loop.)
@@ -395,7 +395,7 @@ sbScript.onload = () => {
             return;
           }
           const name = (p && p.username) || metaName || 'My Account';
-          const xp   = (p && p.total_xp) || 0;            // total_xp — same column the dashboard reads
+          const xp   = (p && p.xp_score) || 0;            // xp_score — same column the dashboard reads
           const nm = document.getElementById('nav-username'); if (nm) nm.textContent = name;
           const sc = document.getElementById('nav-score');    if (sc) sc.textContent = xp.toLocaleString() + ' XP · ' + rankFromXp(xp);
           const av = document.getElementById('nav-avatar');
